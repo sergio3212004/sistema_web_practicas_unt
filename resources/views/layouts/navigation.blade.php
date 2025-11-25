@@ -32,25 +32,12 @@
                 $rol = Auth::user()->rol->nombre;
 
                 $menus = [
-                    'Admin' => [
+                    'administrador' => [
                         [
                             'route' => 'admin.usuarios.index',
                             'name' => 'Usuarios',
                             'icon' => 'heroicon-o-users'
                         ],
-                        [
-                            'route' => 'admin.modulos.index',
-                            'name' => 'Módulos',
-                            'icon' => 'heroicon-o-folder'
-                        ],
-                    ],
-
-                    'Empleado' => [
-                        [
-                            'route' => 'empleado.reportes.index',
-                            'name' => 'Reportes',
-                            'icon' => 'heroicon-o-chart-bar'
-                        ]
                     ],
                 ];
             @endphp
@@ -68,28 +55,7 @@
                 @endforeach
             @endif
 
-            <div x-data="{ openSub: false }">
-                <button @click="openSub = !openSub"
-                        class="w-full flex items-center px-4 py-3 hover:bg-gray-800 rounded-md transition">
-                    @svg('heroicon-o-folder', 'w-6 h-6 flex-shrink-0')
-                    <span class="ml-3 flex-1 text-left">Módulos</span>
-                    <svg :class="openSub ? 'rotate-180' : ''"
-                         class="h-5 w-5 transform transition-transform flex-shrink-0"
-                         fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                              stroke-width="2" d="M19 9l-7 7-7-7" />
-                    </svg>
-                </button>
 
-                <div x-show="openSub" x-transition x-cloak class="ml-4 space-y-1">
-                    <a href="#" class="block px-2 py-2 hover:bg-gray-800 rounded">
-                        Sub opción 1
-                    </a>
-                    <a href="#" class="block px-2 py-2 hover:bg-gray-800 rounded">
-                        Sub opción 2
-                    </a>
-                </div>
-            </div>
         </nav>
 
         <!-- Opciones de usuario (perfil y logout) -->

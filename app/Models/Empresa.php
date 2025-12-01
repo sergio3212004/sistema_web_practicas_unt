@@ -7,4 +7,29 @@ use Illuminate\Database\Eloquent\Model;
 class Empresa extends Model
 {
     //
+    protected $table = 'empresas';
+    protected $fillable = [
+        'ruc',
+        'nombre',
+        'user_id',
+        'nombre',
+        'telefono',
+        'departamento',
+        'provincia',
+        'distrito',
+        'direccion',
+        'razon_social_id'
+    ];
+
+    public function user() {
+        return $this->belongsTo(User::class, 'user_id', 'id');
+    }
+
+    public function razonSocial() {
+        return $this->belongsTo(RazonSocial::class, 'razon_social_id', 'id');
+    }
+
+    public function publicacion() {
+        return $this->hasMany(Publicacion::class, 'empresa_id', 'id');
+    }
 }

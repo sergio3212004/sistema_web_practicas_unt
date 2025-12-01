@@ -18,6 +18,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+// Rutas de Administrador
 Route::middleware(['auth', 'rol:administrador'])
     ->prefix('admin')
     ->as('admin.')
@@ -33,5 +34,46 @@ Route::middleware(['auth', 'rol:administrador'])
 
     });
 
+// Rutas de la empresa
+Route::middleware(['auth', 'rol:empresa'])
+    ->prefix('empresa')
+    ->as('empresa.')
+    ->group(function () {
+
+        // Registro de empresa
+        Route::post('register', [\App\Http\Controllers\Empresa\EmpresaRegisterController::class, 'register'])
+            ->name('empresa.register');
+        // Dashboard de empresa
+        Route::get('/', function () {
+            return view('dashboard');
+        })->name('dashboard');
+
+        // Publicaciones
+        Route::resource('publicaciones', \App\Http\Controllers\Empresa\PublicacionController::class);
+    });
+
+
+// Rutas del alumno
+Route::middleware(['auth', 'rol:alumno'])
+    ->prefix('alumno')
+    ->as('alumno.')
+    ->group(function () {
+
+        // Dashboard de alumno
+        Route::get('/', function () {
+            return view('dashboard');
+        });
+
+        // Listar prácticas disponibles
+        Route::get('practicas', [\App\Http\Controllers\Alumno\VerPracticaController::class, 'index'])
+            ->name('practicas.index');
+
+        // Ver detalle de práctica
+        Route::get('practicas/{id}', [\App\Http\Controllers\Alumno\VerPracticaController::class, 'show'])
+            ->name('practicas.show');
+
+        // Ficha de registro
+        Route::resource('ficha-registro', \App\Http\Controllers\Alumno\FichaController::class);
+    });
 
 require __DIR__.'/auth.php';

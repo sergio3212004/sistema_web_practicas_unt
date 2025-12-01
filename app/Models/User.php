@@ -57,4 +57,12 @@ class User extends Authenticatable
     public function administrador() {
         return $this->hasOne(Administrador::class, 'user_id', 'id');
     }
+
+    public function empresa() {
+        return $this->hasOne(Empresa::class, 'user_id', 'id');
+    }
+
+    public function profesor() {
+        return $this->hasOne(Profesor::class, 'user_id', 'id');
+    }
 }

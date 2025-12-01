@@ -1,86 +1,109 @@
 <x-app-layout>
+    <div class="max-w-7xl mx-auto bg-white p-6 md:p-10 rounded-xl shadow-2xl">
 
-    <x-slot name="header">
-        <h2 class="text-xl font-semibold text-gray-800 leading-tight">
-            Lista de Usuarios
-        </h2>
-    </x-slot>
-
-    <div class="py-6">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-
-            @if (session('success'))
-                <div class="mb-4 p-3 bg-green-100 border border-green-300 rounded text-green-700">
-                    {{ session('success') }}
-                </div>
-            @endif
-
-            <div class="bg-white shadow-md rounded-lg p-6">
-
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-lg font-semibold text-gray-700">Usuarios Registrados</h3>
-
-                    <a href="{{ route('admin.usuarios.create') }}"
-                       class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
-                        + Nuevo Usuario
-                    </a>
-                </div>
-
-                <div class="overflow-x-auto">
-                    <table class="min-w-full bg-white border border-gray-200 rounded-lg">
-                        <thead>
-                        <tr class="bg-gray-100 border-b">
-                            <th class="px-6 py-3 text-left text-gray-600 font-semibold">Nombre</th>
-                            <th class="px-6 py-3 text-left text-gray-600 font-semibold">Email</th>
-                            <th class="px-6 py-3 text-left text-gray-600 font-semibold">Rol</th>
-                            <th class="px-6 py-3"></th>
-                        </tr>
-                        </thead>
-
-                        <tbody>
-                        @foreach ($usuarios as $usuario)
-                            <tr class="border-b hover:bg-gray-50 transition">
-                                <td class="px-6 py-3 text-gray-700">{{ $usuario->name }}</td>
-                                <td class="px-6 py-3 text-gray-700">{{ $usuario->email }}</td>
-                                <td class="px-6 py-3">
-                                    <span class="px-3 py-1 bg-gray-200 rounded text-gray-700 text-sm">
-                                        {{ $usuario->rol->nombre }}
-                                    </span>
-                                </td>
-
-                                <td class="px-6 py-3 text-right">
-
-                                    <a href="{{ route('admin.usuarios.edit', $usuario) }}"
-                                       class="text-blue-600 hover:text-blue-800 font-medium mr-3">
-                                        Editar
-                                    </a>
-
-                                    <form action="{{ route('admin.usuarios.destroy', $usuario) }}"
-                                          method="POST" class="inline">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit"
-                                                onclick="return confirm('¿Seguro que deseas eliminar este usuario?')"
-                                                class="text-red-600 hover:text-red-800 font-medium">
-                                            Eliminar
-                                        </button>
-                                    </form>
-
-                                </td>
-                            </tr>
-                        @endforeach
-                        </tbody>
-
-                    </table>
-                </div>
-
-                <!-- Paginación -->
-                <div class="mt-4">
-                    {{ $usuarios->links() }}
-                </div>
-
-            </div>
+        <!-- Título y botón -->
+        <div class="flex justify-between items-center mb-6 border-b pb-4">
+            <h1 class="text-2xl md:text-3xl font-bold text-gray-800">Listado de Usuarios</h1>
+            <a href="{{ route('admin.usuarios.create') }}"
+               class="px-4 py-2 bg-indigo-600 text-white rounded-lg shadow hover:bg-indigo-700">
+                + Nuevo Usuario
+            </a>
         </div>
-    </div>
 
+        <!-- Mensajes -->
+        @if (session('success'))
+            <div class="bg-green-100 text-green-800 border border-green-300 p-3 rounded mb-4">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        <!-- Tabla -->
+        <div class="overflow-x-auto rounded-lg border border-gray-200 shadow-sm">
+            <table class="min-w-full divide-y divide-gray-200">
+
+                <thead class="bg-gray-100">
+                <tr>
+                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700">Email</th>
+                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700">Nombre</th>
+                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700">Rol</th>
+                    <th class="px-4 py-3 text-center text-xs font-semibold text-gray-700">Acciones</th>
+                </tr>
+                </thead>
+
+                <tbody class="bg-white divide-y divide-gray-200">
+                @foreach ($users as $user)
+                    <tr class="hover:bg-gray-50 transition">
+
+                        <!-- Email -->
+                        <td class="px-4 py-3 text-sm text-gray-800">
+                            {{ $user->email }}
+                        </td>
+
+                        <!-- Nombre -->
+                        <td class="px-4 py-3 text-sm text-gray-900">
+                            @if ($user->rol->nombre === 'empresa' && $user->empresa)
+                                {{ $user->empresa->nombre }} ({{ $user->empresa->razonSocial->acronimo ?? '' }})
+                            @elseif ($user->rol->nombre === 'administrador')
+                                {{ $user->administrador->nombres ?? '—' }}
+                                {{ $user->administrador->apellido_paterno ?? '' }}
+                            @elseif ($user->rol->nombre === 'alumno')
+                                {{ $user->alumno->nombres ?? '—' }}
+                                {{ $user->alumno->apellido_paterno ?? '' }}
+                            @elseif ($user->rol->nombre === 'profesor')
+                                {{ $user->profesor->nombres ?? '-' }}
+                                {{ $user->profesor->apellido_paterno ?? '' }}
+                            @else
+                                <span class="italic text-gray-400">Sin perfil</span>
+                            @endif
+                        </td>
+
+                        <!-- Rol -->
+                        <td class="px-4 py-3 text-sm text-gray-800 capitalize">
+                            {{ $user->rol->nombre }}
+                        </td>
+
+                        <!-- Acciones -->
+                        <td class="px-4 py-3 text-sm text-center">
+                            <div class="flex justify-center gap-2">
+
+                                <!-- Ver -->
+                                <a href="{{ route('admin.usuarios.show', $user->id) }}"
+                                   class="px-3 py-1 text-white bg-blue-600 rounded hover:bg-blue-700 text-sm">
+                                    Ver
+                                </a>
+
+                                <!-- Editar -->
+                                <a href="{{ route('admin.usuarios.edit', $user->id) }}"
+                                   class="px-3 py-1 text-white bg-indigo-600 rounded hover:bg-indigo-700 text-sm">
+                                    Editar
+                                </a>
+
+                                <!-- Eliminar -->
+                                <form action="{{ route('admin.usuarios.destroy', $user->id) }}"
+                                      method="POST"
+                                      onsubmit="return confirm('¿Deseas eliminar este usuario?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button
+                                        class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-sm">
+                                        Eliminar
+                                    </button>
+                                </form>
+
+                            </div>
+                        </td>
+
+                    </tr>
+                @endforeach
+                </tbody>
+
+            </table>
+        </div>
+
+        <!-- Paginación -->
+        <div class="mt-6">
+            {{ $users->links() }}
+        </div>
+
+    </div>
 </x-app-layout>

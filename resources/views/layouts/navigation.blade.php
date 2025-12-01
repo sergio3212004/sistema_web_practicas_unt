@@ -39,6 +39,25 @@
                             'icon' => 'heroicon-o-users'
                         ],
                     ],
+                    'alumno' => [
+                        [
+                            'route' => 'alumno.practicas.index',
+                            'name' => 'Prácticas Disponibles',
+                            'icon' => 'heroicon-o-newspaper' // puedes usar el mismo icono de publicaciones
+                        ],
+                        [
+                            'route' => 'alumno.ficha-registro.index',
+                            'name' => 'Ficha de registro',
+                            'icon' => 'heroicon-o-document'
+                        ]
+                    ],
+                    'empresa' => [
+                        [
+                            'route' => 'empresa.publicaciones.index',
+                            'name' => 'Publicaciones',
+                            'icon' => 'heroicon-o-newspaper'
+                        ]
+                    ]
                 ];
             @endphp
 

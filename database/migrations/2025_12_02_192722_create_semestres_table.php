@@ -11,8 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('fichas_registro', function (Blueprint $table) {
+        Schema::create('semestres', function (Blueprint $table) {
             $table->id();
+            $table->string('nombre', 20);
+            $table->boolean('activo')->default(false);
             $table->timestamps();
         });
     }
@@ -22,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('fichas_registro');
+        Schema::dropIfExists('semestres');
     }
 };

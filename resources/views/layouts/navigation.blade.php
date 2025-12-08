@@ -38,6 +38,11 @@
                             'name' => 'Usuarios',
                             'icon' => 'heroicon-o-users'
                         ],
+                        [
+                            'route' => 'admin.aulas.index',
+                            'name' => 'Aulas',
+                            'icon' => 'heroicon-o-academic-cap'
+                        ]
                     ],
                     'alumno' => [
                         [

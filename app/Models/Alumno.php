@@ -12,6 +12,7 @@ class Alumno extends Model
     protected $fillable = [
         'codigo_matricula',
         'user_id',
+        'aula_id',
         'nombres',
         'apellido_paterno',
         'apellido_materno',
@@ -22,4 +23,16 @@ class Alumno extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    // Relación con aula
+    public function aula()
+    {
+        return $this->belongsTo(Aula::class);
+    }
+
+    public function getNombreCompletoAttribute(): string
+    {
+        return "{$this->nombres} {$this->apellido_paterno} {$this->apellido_materno}";
+    }
+
 }

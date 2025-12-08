@@ -20,4 +20,8 @@ class Profesor extends Model
     public function user() {
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
+
+    public function aula() {
+        return $this->hasOne(Aula::class, 'aula_id', 'id');
+    }
 }

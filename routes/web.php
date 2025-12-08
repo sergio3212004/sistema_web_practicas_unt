@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Admin\AulaController;
+use App\Http\Controllers\Admin\SemestreController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -8,9 +10,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -24,13 +24,26 @@ Route::middleware(['auth', 'rol:administrador'])
     ->as('admin.')
     ->group(function () {
 
-        // Dashboard de admin
-        Route::get('/', function () {
-            return view('dashboard');
-        })->name('dashboard');
+        // Semestre
+        Route::post('semestre/cerrar', [SemestreController::class, 'cerrar'])->name('semestre.cerrar');
+        Route::post('semestre/nuevo', [SemestreController::class, 'store'])->name('semestre.nuevo');
 
         // Usuarios
         Route::resource('usuarios', UserController::class);
+
+        // Aulas
+        Route::resource('aulas', \App\Http\Controllers\Admin\AulaController::class);
+
+        // Mostrar formulario para agregar alumnos
+        Route::get('aulas/{aula}/agregar-alumnos', [AulaController::class, 'agregarAlumnos'])
+            ->name('aulas.agregar-alumnos');
+
+        // Guardar alumnos asignados
+        Route::post('aulas/{aula}/asignar-alumnos', [AulaController::class, 'asignarAlumnos'])
+            ->name('aulas.asignar-alumnos');
+
+        Route::delete('aulas/{aula}/quitar-alumno/{alumno}', [AulaController::class, 'quitarAlumno'])
+            ->name('aulas.quitar-alumno');
 
     });
 
@@ -43,10 +56,6 @@ Route::middleware(['auth', 'rol:empresa'])
         // Registro de empresa
         Route::post('register', [\App\Http\Controllers\Empresa\EmpresaRegisterController::class, 'register'])
             ->name('empresa.register');
-        // Dashboard de empresa
-        Route::get('/', function () {
-            return view('dashboard');
-        })->name('dashboard');
 
         // Publicaciones
         Route::resource('publicaciones', \App\Http\Controllers\Empresa\PublicacionController::class);
@@ -58,11 +67,6 @@ Route::middleware(['auth', 'rol:alumno'])
     ->prefix('alumno')
     ->as('alumno.')
     ->group(function () {
-
-        // Dashboard de alumno
-        Route::get('/', function () {
-            return view('dashboard');
-        });
 
         // Listar prácticas disponibles
         Route::get('practicas', [\App\Http\Controllers\Alumno\VerPracticaController::class, 'index'])

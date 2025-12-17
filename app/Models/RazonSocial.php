@@ -15,4 +15,8 @@ class RazonSocial extends Model
     public function empresa() {
         return $this->hasOne(Empresa::class, 'razon_social_id', 'id');
     }
+
+    public function solicitudEmpresa() {
+        return $this->hasOne(SolicitudEmpresa::class);
+    }
 }

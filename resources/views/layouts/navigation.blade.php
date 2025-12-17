@@ -42,6 +42,11 @@
                             'route' => 'admin.aulas.index',
                             'name' => 'Aulas',
                             'icon' => 'heroicon-o-academic-cap'
+                        ],
+                        [
+                            'route' => 'admin.aprobaciones.index',
+                            'name' => 'Aprobaciones',
+                            'icon' => 'heroicon-o-check-circle'
                         ]
                     ],
                     'alumno' => [
@@ -54,6 +59,18 @@
                             'route' => 'alumno.ficha-registro.index',
                             'name' => 'Ficha de registro',
                             'icon' => 'heroicon-o-document'
+                        ]
+                    ],
+                    'profesor' => [
+                        [
+                            'route' => 'profesor.entregas.index',
+                            'name' => 'Informes',
+                            'icon' => 'heroicon-o-document-text'
+                        ],
+                        [
+                            'route' => 'profesor.entregas.create',
+                            'name' => 'Crear Entregas',
+                            'icon' => 'heroicon-o-document-plus'
                         ]
                     ],
                     'empresa' => [

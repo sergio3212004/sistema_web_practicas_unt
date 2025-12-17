@@ -64,6 +64,20 @@
                 @endif
             </div>
 
+            <div class="flex justify-center gap-4 mb-6">
+                <a href="{{ route('login') }}"
+                   class="px-6 py-2 text-sm font-semibold rounded-lg
+              {{ request()->routeIs('login') ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-700' }}">
+                    Login
+                </a>
+
+                <a href="{{ route('empresa.register.form') }}"
+                   class="px-6 py-2 text-sm font-semibold rounded-lg
+              {{ request()->routeIs('empresa.*') ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-700' }}">
+                    Registro Empresa
+                </a>
+            </div>
+
             {{-- Contenido dinámico (formulario, etc.) --}}
             <div class="mt-6 text-left">
                 {{ $slot }}

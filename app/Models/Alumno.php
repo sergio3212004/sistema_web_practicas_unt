@@ -30,6 +30,12 @@ class Alumno extends Model
         return $this->belongsTo(Aula::class);
     }
 
+    public function fichasRegistro()
+    {
+        return $this->hasMany(\App\Models\FichaRegistro::class, 'alumno_id');
+    }
+
+
     public function getNombreCompletoAttribute(): string
     {
         return "{$this->nombres} {$this->apellido_paterno} {$this->apellido_materno}";

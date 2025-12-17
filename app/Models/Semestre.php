@@ -30,4 +30,10 @@ class Semestre extends Model
     public function aula() {
         return $this->hasOne(Aula::class, 'aula_id', 'id');
     }
+
+    public function fichasRegistro()
+    {
+        return $this->hasMany(\App\Models\FichaRegistro::class, 'semestre_id');
+    }
+
 }

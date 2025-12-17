@@ -18,7 +18,10 @@ class Empresa extends Model
         'provincia',
         'distrito',
         'direccion',
-        'razon_social_id'
+        'codigo_verificacion',
+        'email_verificado',
+        'razon_social_id',
+        'aprobado'
     ];
 
     public function user() {

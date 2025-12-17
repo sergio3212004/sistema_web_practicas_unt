@@ -21,7 +21,7 @@ class Profesor extends Model
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
-    public function aula() {
-        return $this->hasOne(Aula::class, 'aula_id', 'id');
+    public function aulas() {
+        return $this->hasMany(Aula::class, 'profesor_id', 'id');
     }
 }

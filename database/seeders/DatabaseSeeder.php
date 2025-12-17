@@ -21,7 +21,8 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             AdminSeeder::class,
             RazonesSocialesSeeder::class,
-            AlumnoSeeder::class
+            AlumnoSeeder::class,
+            SemestreSeeder::class
         ]);
     }
 }

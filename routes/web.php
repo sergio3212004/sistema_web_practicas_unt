@@ -3,8 +3,9 @@
 use App\Http\Controllers\Admin\AulaController;
 use App\Http\Controllers\Admin\SemestreController;
 use App\Http\Controllers\Admin\UserController;
-use App\Http\Controllers\Alumno\FichaCodigoController;
-use App\Http\Controllers\Alumno\FichaController;
+
+use App\Http\Controllers\Alumno\FichaRegistroController;
+use App\Http\Controllers\Alumno\FirmaTokenController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -117,25 +118,34 @@ Route::middleware(['auth', 'rol:alumno'])
         Route::get('practicas/{id}', [\App\Http\Controllers\Alumno\VerPracticaController::class, 'show'])
             ->name('practicas.show');
 
-        // Ficha de registro
-        Route::resource('ficha-registro', FichaController::class)
-            ->except(['create', 'store'])
-            ->whereNumber('ficha_registro');
 
-        Route::middleware('verificar.codigo.ficha')->group(function () {
+        // Ficha Registro
+        // Listado
+        Route::get('fichas', [FichaRegistroController::class, 'index'])
+            ->name('ficha.index');
 
-            Route::get('ficha-registro/create', [FichaController::class, 'create'])
-                ->name('ficha-registro.create');
+        // Verificación de código
+        Route::get('fichas/verificar-codigo', [FichaRegistroController::class, 'formVerificarCodigo'])
+            ->name('ficha.codigo');
 
-            Route::post('ficha-registro', [FichaController::class, 'store'])
-                ->name('ficha-registro.store');
-        });
+        Route::post('fichas/verificar-codigo', [FichaRegistroController::class, 'verificarCodigo'])
+            ->name('ficha.codigo.verificar');
 
-        // Código por email
+        // Crear ficha (PROTEGIDO)
+        Route::get('fichas/create', [FichaRegistroController::class, 'create'])
+            ->middleware('verificar.codigo.ficha')
+            ->name('ficha.create');
 
-        Route::post('ficha-registro/codigo/enviar', [FichaCodigoController::class, 'enviar'])
-            ->name('ficha.codigo.enviar');
+        Route::post('fichas/store', [FichaRegistroController::class, 'store'])->name('ficha-registro.store');
+
 
     });
+
+Route::get('/firmar/{token}', [FirmaTokenController::class, 'show'])
+    ->name('firmas.show');
+
+Route::post('/firmar/{token}', [FirmaTokenController::class, 'store'])
+    ->name('firmas.store');
+
 
 require __DIR__.'/auth.php';

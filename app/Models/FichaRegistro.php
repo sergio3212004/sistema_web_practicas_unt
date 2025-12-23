@@ -9,11 +9,14 @@ class FichaRegistro extends Model
     //
     protected $table = 'fichas_registro';
     protected $fillable = [
+        // Alumno
         'alumno_id',
         'ciclo',
         'semestre_id',
+        // Empresa
         'razon_social',
         'ruc',
+        'correo_empresa',
         'nombre_gerente',
         'nombre_jefe_rrhh',
         'direccion',
@@ -60,6 +63,10 @@ class FichaRegistro extends Model
             ->orderBy('hora_inicio', 'asc');
     }
 
+    public function firmaTokens()
+    {
+        return $this->hasMany(\App\Models\FirmaToken::class);
+    }
     /* -------------------------------------
     | MUTADORES / CASTS
     ------------------------------------- */

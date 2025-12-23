@@ -41,4 +41,9 @@ class Alumno extends Model
         return "{$this->nombres} {$this->apellido_paterno} {$this->apellido_materno}";
     }
 
+    public function codigosFicha()
+    {
+        return $this->hasMany(CodigoFicha::class);
+    }
+
 }

@@ -16,5 +16,6 @@
 </head>
 <body class="font-sans antialiased">
     @include('layouts.navigation')
+    @stack('scripts')
 </body>
 </html>

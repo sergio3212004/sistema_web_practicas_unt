@@ -11,19 +11,16 @@ use Illuminate\Queue\SerializesModels;
 
 class CodigoFichaMail extends Mailable
 {
-    use Queueable, SerializesModels;
+    public $codigo;
 
-    public int $codigo;
-
-    public function __construct(int $codigo)
+    public function __construct($codigo)
     {
         $this->codigo = $codigo;
     }
 
     public function build()
     {
-        return $this
-            ->subject('Código de verificación - Ficha de Prácticas')
+        return $this->subject('Código de verificación - Ficha de Registro')
             ->view('emails.codigo-ficha');
     }
 }

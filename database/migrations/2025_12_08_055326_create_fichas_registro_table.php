@@ -29,6 +29,7 @@ return new class extends Migration
             // Datos de la empresa
             $table->string('razon_social', 80);
             $table->char('ruc', 11);
+            $table->string('correo_empresa'); // Correo de la empresa
             $table->string('nombre_gerente', 80);
             $table->string('nombre_jefe_rrhh', 80);
             $table->string('direccion', 255);

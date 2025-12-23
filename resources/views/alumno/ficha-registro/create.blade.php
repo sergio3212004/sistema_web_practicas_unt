@@ -1,294 +1,513 @@
 <x-app-layout>
-    <div class="container mx-auto px-4 py-8">
-        <div class="bg-white rounded-lg shadow-md p-8">
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            {{ __('Nueva Ficha de Registro') }}
+        </h2>
+    </x-slot>
 
-            <!-- ENCABEZADO -->
-            <div class="text-center mb-8 border-b pb-6">
-                <h2 class="text-xl font-bold text-gray-800">FACULTAD DE CIENCIAS FÍSICAS Y MATEMÁTICAS</h2>
-                <h3 class="text-lg font-semibold text-gray-700 mt-2">PROGRAMA DE INFORMÁTICA</h3>
-                <h4 class="text-md font-semibold text-gray-600 mt-2">MONITOREO DE PRÁCTICAS PRE PROFESIONALES</h4>
-                <p class="text-sm text-gray-500 mt-2">FORMATO 01: FICHA DE REGISTRO</p>
+    <div class="py-12">
+        <div class="max-w-5xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-8">
+                    <!-- Encabezado del formulario -->
+                    <div class="text-center mb-8 border-b pb-6">
+                        <h1 class="text-xl font-bold text-gray-800">FACULTAD DE CIENCIAS FÍSICAS Y MATEMÁTICAS</h1>
+                        <h2 class="text-lg font-semibold text-gray-700 mt-1">PROGRAMA DE INFORMÁTICA</h2>
+                        <h3 class="text-md font-medium text-gray-600 mt-2">MONITOREO DE PRÁCTICAS PRE PROFESIONALES</h3>
+                        <p class="text-sm text-gray-500 mt-2">FORMATO 01: FICHA DE REGISTRO</p>
+                    </div>
+
+                    <form method="POST" action="{{ route('alumno.ficha-registro.store') }}" id="formFicha">
+                        @csrf
+
+                        <!-- 1. ESTUDIANTE -->
+                        <div class="mb-8 border-2 border-gray-300 rounded-lg p-6">
+                            <h3 class="text-lg font-bold text-gray-800 mb-4">1. ESTUDIANTE:</h3>
+
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Apellidos y Nombre:</label>
+                                <input type="text"
+                                       value="{{ $alumno->nombre_completo }}"
+                                       disabled
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100">
+                            </div>
+
+                            <div class="grid grid-cols-3 gap-4 mb-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Nro. Matrícula:</label>
+                                    <input type="text"
+                                           value="{{ $alumno->codigo_matricula }}"
+                                           disabled
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Ciclo: <span class="text-red-500">*</span></label>
+                                    <input type="number"
+                                           name="ciclo"
+                                           min="1"
+                                           max="10"
+                                           value="{{ old('ciclo') }}"
+                                           required
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                                        Año y Semestre:
+                                    </label>
+
+                                    <input type="text"
+                                           value="{{ $semestreActual->nombre }}"
+                                           disabled
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100">
+
+                                    <input type="hidden" name="semestre_id" value="{{ $semestreActual->id }}">
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Telf. Celular:</label>
+                                    <input type="text"
+                                           value="{{ $alumno->telefono }}"
+                                           disabled
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Correo:</label>
+                                    <input type="email"
+                                           value="{{ $alumno->user->email }}"
+                                           disabled
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 2. EMPRESA O INSTITUCIÓN -->
+                        <div class="mb-8 border-2 border-gray-300 rounded-lg p-6">
+                            <h3 class="text-lg font-bold text-gray-800 mb-4">2. EMPRESA O INSTITUCIÓN:</h3>
+
+                            <div class="grid grid-cols-3 gap-4 mb-4">
+                                <div class="col-span-2">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Nombre de la Empresa: <span class="text-red-500">*</span></label>
+                                    <input type="text"
+                                           name="nombre_empresa"
+                                           value="{{ old('nombre_empresa') }}"
+                                           required
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Razón Social: <span class="text-red-500">*</span></label>
+                                    <select name="razon_social_id" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                        <option value="">Seleccione</option>
+                                        @foreach($razonesSociales as $razon)
+                                            <option value="{{ $razon->id }}" {{ old('razon_social_id') == $razon->id ? 'selected' : '' }}>
+                                                {{ $razon->acronimo }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="correo_empresa" class="form-label">
+                                    Correo electrónico de la empresa
+                                </label>
+                                <input
+                                    type="email"
+                                    name="correo_empresa"
+                                    id="correo_empresa"
+                                    class="form-control @error('correo_empresa') is-invalid @enderror"
+                                    value="{{ old('correo_empresa') }}"
+                                    required
+                                >
+                                @error('correo_empresa')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+
+                            <div class="grid grid-cols-2 gap-4 mb-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">RUC: <span class="text-red-500">*</span></label>
+                                    <input type="text"
+                                           name="ruc"
+                                           maxlength="11"
+                                           pattern="[0-9]{11}"
+                                           value="{{ old('ruc') }}"
+                                           required
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Gerente General: <span class="text-red-500">*</span></label>
+                                    <input type="text"
+                                           name="nombre_gerente"
+                                           value="{{ old('nombre_gerente') }}"
+                                           required
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Jefe de RRHH: <span class="text-red-500">*</span></label>
+                                <input type="text"
+                                       name="nombre_jefe_rrhh"
+                                       value="{{ old('nombre_jefe_rrhh') }}"
+                                       required
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Dirección: <span class="text-red-500">*</span></label>
+                                <input type="text"
+                                       name="direccion"
+                                       value="{{ old('direccion') }}"
+                                       required
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-4 mb-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Telf. Fijo: <span class="text-red-500">*</span></label>
+                                    <input type="text"
+                                           name="telefono_fijo"
+                                           value="{{ old('telefono_fijo') }}"
+                                           required
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Telf. Celular: <span class="text-red-500">*</span></label>
+                                    <input type="text"
+                                           name="telefono_movil"
+                                           value="{{ old('telefono_movil') }}"
+                                           required
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-3 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Departamento: <span class="text-red-500">*</span></label>
+                                    <input type="text"
+                                           name="departamento"
+                                           value="{{ old('departamento', 'La Libertad') }}"
+                                           required
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Provincia: <span class="text-red-500">*</span></label>
+                                    <input type="text"
+                                           name="provincia"
+                                           value="{{ old('provincia', 'Trujillo') }}"
+                                           required
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Distrito: <span class="text-red-500">*</span></label>
+                                    <input type="text"
+                                           name="distrito"
+                                           value="{{ old('distrito') }}"
+                                           required
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 3. CARACTERÍSTICAS DE LA PRÁCTICA -->
+                        <div class="mb-8 border-2 border-gray-300 rounded-lg p-6">
+                            <h3 class="text-lg font-bold text-gray-800 mb-4">3. CARACTERÍSTICAS DE LA PRÁCTICA:</h3>
+
+                            <div class="grid grid-cols-2 gap-4 mb-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Fecha de Inicio: <span class="text-red-500">*</span></label>
+                                    <input type="date"
+                                           name="fecha_inicio"
+                                           value="{{ old('fecha_inicio') }}"
+                                           required
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Fecha de Término: <span class="text-red-500">*</span></label>
+                                    <input type="date"
+                                           name="fecha_termino"
+                                           value="{{ old('fecha_termino') }}"
+                                           required
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                </div>
+                            </div>
+
+                            <!-- HORARIOS -->
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Días y Horario: <span class="text-red-500">*</span></label>
+                                <div class="overflow-x-auto">
+                                    <table class="min-w-full border border-gray-300">
+                                        <thead class="bg-gray-50">
+                                        <tr>
+                                            <th class="border border-gray-300 px-2 py-2 text-xs font-medium">LUNES</th>
+                                            <th class="border border-gray-300 px-2 py-2 text-xs font-medium">MARTES</th>
+                                            <th class="border border-gray-300 px-2 py-2 text-xs font-medium">MIÉRCOLES</th>
+                                            <th class="border border-gray-300 px-2 py-2 text-xs font-medium">JUEVES</th>
+                                            <th class="border border-gray-300 px-2 py-2 text-xs font-medium">VIERNES</th>
+                                            <th class="border border-gray-300 px-2 py-2 text-xs font-medium">SÁBADO</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                            @for($dia = 1; $dia <= 6; $dia++)
+                                                <td class="border border-gray-300 px-2 py-3">
+                                                    <div class="flex items-center mb-2">
+                                                        <input type="checkbox"
+                                                               id="dia_{{ $dia }}"
+                                                               onchange="toggleHorario({{ $dia }})"
+                                                               class="mr-2">
+                                                        <label for="dia_{{ $dia }}" class="text-xs">Activar</label>
+                                                    </div>
+                                                    <div id="horario_{{ $dia }}" class="hidden">
+                                                        <label class="block text-xs text-gray-600 mb-1">De:</label>
+                                                        <input type="time"
+                                                               name="horarios[{{ $dia }}][hora_inicio]"
+                                                               class="w-full px-1 py-1 text-xs border border-gray-300 rounded mb-2">
+                                                        <label class="block text-xs text-gray-600 mb-1">A:</label>
+                                                        <input type="time"
+                                                               name="horarios[{{ $dia }}][hora_fin]"
+                                                               class="w-full px-1 py-1 text-xs border border-gray-300 rounded">
+                                                        <input type="hidden"
+                                                               name="horarios[{{ $dia }}][dia_semana]"
+                                                               value="{{ $dia }}">
+                                                    </div>
+                                                </td>
+                                            @endfor
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Descripción de la práctica: <span class="text-red-500">*</span></label>
+                                <textarea name="descripcion"
+                                          rows="4"
+                                          required
+                                          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">{{ old('descripcion') }}</textarea>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-4 mb-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Área de prácticas: <span class="text-red-500">*</span></label>
+                                    <input type="text"
+                                           name="area_practicas"
+                                           value="{{ old('area_practicas') }}"
+                                           required
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Cargo: <span class="text-red-500">*</span></label>
+                                    <input type="text"
+                                           name="cargo"
+                                           value="{{ old('cargo') }}"
+                                           required
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Jefe Directo: <span class="text-red-500">*</span></label>
+                                <input type="text"
+                                       name="nombre_jefe_directo"
+                                       value="{{ old('nombre_jefe_directo') }}"
+                                       required
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Celular de Jefe Directo: <span class="text-red-500">*</span></label>
+                                    <input type="text"
+                                           name="telefono_jefe_directo"
+                                           value="{{ old('telefono_jefe_directo') }}"
+                                           required
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Correo de Jefe Directo: <span class="text-red-500">*</span></label>
+                                    <input type="email"
+                                           name="correo_jefe_directo"
+                                           value="{{ old('correo_jefe_directo') }}"
+                                           required
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- FIRMAS -->
+                        <div class="mb-8 border-2 border-gray-300 rounded-lg p-6">
+                            <h3 class="text-lg font-bold text-gray-800 mb-4">FIRMAS:</h3>
+
+                            <div class="grid grid-cols-3 gap-6">
+                                <div class="text-center">
+                                    <p class="text-sm font-medium text-gray-700 mb-2">VB° de la Empresa</p>
+                                    <div class="h-24 border-2 border-dashed border-gray-300 rounded bg-gray-50 flex items-center justify-center">
+                                        <span class="text-gray-400 text-xs">Pendiente</span>
+                                    </div>
+                                </div>
+
+                                <div class="text-center">
+                                    <p class="text-sm font-medium text-gray-700 mb-2">Firma del Practicante <span class="text-red-500">*</span></p>
+                                    <canvas id="canvasFirma"
+                                            class="border-2 border-gray-300 rounded cursor-crosshair mx-auto"
+                                            width="200"
+                                            height="96">
+                                    </canvas>
+                                    <input type="hidden" name="firma_practicante" id="firmaPracticante">
+                                    <button type="button"
+                                            onclick="limpiarFirma()"
+                                            class="mt-2 text-xs text-blue-600 hover:text-blue-800">
+                                        Limpiar firma
+                                    </button>
+                                </div>
+
+                                <div class="text-center">
+                                    <p class="text-sm font-medium text-gray-700 mb-2">VB° del Programa</p>
+                                    <div class="h-24 border-2 border-dashed border-gray-300 rounded bg-gray-50 flex items-center justify-center">
+                                        <span class="text-gray-400 text-xs">Pendiente</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- BOTONES -->
+                        <div class="flex justify-end gap-4">
+                            <a href="{{ route('alumno.ficha.index') }}"
+                               class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
+                                Cancelar
+                            </a>
+                            <button type="submit"
+                                    class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                                Guardar Ficha de Registro
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
-
-            <form action="{{ route('alumno.ficha-registro.store') }}" method="POST" id="fichaForm">
-                @csrf
-
-                <!-- =========================
-                    1. ESTUDIANTE
-                ========================== -->
-                <div class="mb-8">
-                    <h3 class="text-lg font-bold bg-gray-100 p-3 rounded">1. ESTUDIANTE</h3>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pl-4 mt-4">
-                        <div class="md:col-span-2">
-                            <label class="text-sm font-medium">Apellidos y Nombres</label>
-                            <input type="text" disabled
-                                   value="{{ $alumno->nombre_completo }}"
-                                   class="w-full bg-gray-100 border rounded px-4 py-2">
-                        </div>
-
-                        <div>
-                            <label class="text-sm font-medium">N° Matrícula</label>
-                            <input type="text" disabled
-                                   value="{{ $alumno->codigo_matricula }}"
-                                   class="w-full bg-gray-100 border rounded px-4 py-2">
-                        </div>
-
-                        <div>
-                            <label class="text-sm font-medium">Ciclo</label>
-                            <input type="text" disabled
-                                   value="{{ $alumno->aula->ciclo ?? 'N/A' }}"
-                                   class="w-full bg-gray-100 border rounded px-4 py-2">
-                        </div>
-
-                        <div>
-                            <label class="text-sm font-medium">Semestre</label>
-                            <input type="text" disabled
-                                   value="{{ $semestreActivo->nombre }}"
-                                   class="w-full bg-gray-100 border rounded px-4 py-2">
-                        </div>
-
-                        <div>
-                            <label class="text-sm font-medium">Teléfono</label>
-                            <input type="text" disabled
-                                   value="{{ $alumno->telefono }}"
-                                   class="w-full bg-gray-100 border rounded px-4 py-2">
-                        </div>
-
-                        <div>
-                            <label class="text-sm font-medium">Correo</label>
-                            <input type="text" disabled
-                                   value="{{ $alumno->user->email }}"
-                                   class="w-full bg-gray-100 border rounded px-4 py-2">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- =========================
-                    2. EMPRESA
-                ========================== -->
-                <div class="mb-8">
-                    <h3 class="text-lg font-bold bg-gray-100 p-3 rounded">2. EMPRESA / INSTITUCIÓN</h3>
-
-                    <div class="md:col-span-2">
-                        <label class="text-sm font-medium">
-                            Nombre de la Empresa *
-                        </label>
-                        <input type="text" name="nombre_empresa" required
-                               class="w-full border rounded px-4 py-2">
-                    </div>
-
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pl-4 mt-4">
-                        <div class="md:col-span-2">
-                            <label class="text-sm font-medium">
-                                Razón Social *
-                            </label>
-                            <select name="razon_social_acronimo" required
-                                    class="w-full border rounded px-4 py-2">
-                                <option value="">-- Seleccione --</option>
-                                @foreach($empresas as $razon)
-                                    <option value="{{ $razon->acronimo }}">
-                                        {{ $razon->acronimo }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-
-
-                        <div>
-                            <label class="text-sm font-medium">RUC</label>
-                            <input type="text" id="ruc" name="ruc" required
-                                   class="w-full bg-gray-100 border rounded px-4 py-2">
-                        </div>
-
-                        <div>
-                            <label class="text-sm font-medium">Gerente General *</label>
-                            <input type="text" name="nombre_gerente" required
-                                   class="w-full border rounded px-4 py-2">
-                        </div>
-
-                        <div class="md:col-span-2">
-                            <label class="text-sm font-medium">Jefe RRHH *</label>
-                            <input type="text" name="nombre_jefe_rrhh" required
-                                   class="w-full border rounded px-4 py-2">
-                        </div>
-
-                        <div class="md:col-span-2">
-                            <label class="text-sm font-medium">Dirección *</label>
-                            <input type="text" name="direccion" required
-                                   class="w-full border rounded px-4 py-2">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- =========================
-                    3. PRÁCTICAS
-                ========================== -->
-                <div class="mb-8">
-                    <h3 class="text-lg font-bold bg-gray-100 p-3 rounded">
-                        3. CARACTERÍSTICAS DE LA PRÁCTICA
-                    </h3>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pl-4 mt-4">
-
-                        <div>
-                            <label class="text-sm font-medium">Fecha Inicio *</label>
-                            <input type="date" name="fecha_inicio" required
-                                   class="w-full border rounded px-4 py-2">
-                        </div>
-
-                        <div>
-                            <label class="text-sm font-medium">Fecha Término *</label>
-                            <input type="date" name="fecha_termino" required
-                                   class="w-full border rounded px-4 py-2">
-                        </div>
-
-                        <div class="md:col-span-2">
-                            <label class="text-sm font-medium">Área de Prácticas *</label>
-                            <input type="text" name="area_practicas" required
-                                   class="w-full border rounded px-4 py-2">
-                        </div>
-
-                        <div class="md:col-span-2">
-                            <label class="text-sm font-medium">Cargo del Practicante *</label>
-                            <input type="text" name="cargo" required
-                                   class="w-full border rounded px-4 py-2">
-                        </div>
-
-                        <div class="md:col-span-2">
-                            <label class="text-sm font-medium">Descripción de Actividades *</label>
-                            <textarea name="descripcion" rows="4" required
-                                      class="w-full border rounded px-4 py-2"></textarea>
-                        </div>
-
-                        <div>
-                            <label class="text-sm font-medium">Jefe Directo *</label>
-                            <input type="text" name="nombre_jefe_directo" required
-                                   class="w-full border rounded px-4 py-2">
-                        </div>
-
-                        <div>
-                            <label class="text-sm font-medium">Teléfono Jefe Directo *</label>
-                            <input type="text" name="telefono_jefe_directo" required
-                                   class="w-full border rounded px-4 py-2">
-                        </div>
-
-                        <div class="md:col-span-2">
-                            <label class="text-sm font-medium">Correo Jefe Directo *</label>
-                            <input type="email" name="correo_jefe_directo" required
-                                   class="w-full border rounded px-4 py-2">
-                        </div>
-                    </div>
-
-                    <!-- =========================
-                        HORARIOS
-                    ========================== -->
-                    <div class="pl-4 mt-6">
-                        <h4 class="font-semibold mb-2">Horario de Prácticas *</h4>
-
-                        <table class="w-full border">
-                            <thead class="bg-gray-100">
-                            <tr>
-                                <th class="border px-3 py-2">Día</th>
-                                <th class="border px-3 py-2">Inicio</th>
-                                <th class="border px-3 py-2">Fin</th>
-                                <th class="border px-3 py-2">Activo</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            @foreach($diasSemana as $dia => $nombre)
-                                <tr>
-                                    <td class="border px-3 py-2">{{ $nombre }}</td>
-
-                                    <td class="border px-3 py-2">
-                                        <input type="time"
-                                               name="horarios[{{ $dia }}][hora_inicio]"
-                                               id="hora_inicio_{{ $dia }}"
-                                               disabled
-                                               class="border rounded px-2 py-1 w-full">
-                                    </td>
-
-                                    <td class="border px-3 py-2">
-                                        <input type="time"
-                                               name="horarios[{{ $dia }}][hora_fin]"
-                                               id="hora_fin_{{ $dia }}"
-                                               disabled
-                                               class="border rounded px-2 py-1 w-full">
-                                    </td>
-
-                                    <td class="border text-center">
-                                        <input type="checkbox"
-                                               class="dia-checkbox"
-                                               data-dia="{{ $dia }}">
-                                        <input type="hidden"
-                                               name="horarios[{{ $dia }}][dia_semana]"
-                                               value="{{ $dia }}">
-                                    </td>
-                                </tr>
-                            @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- =========================
-                    FIRMA
-                ========================== -->
-                <div class="mb-8">
-                    <h3 class="text-lg font-bold bg-gray-100 p-3 rounded">FIRMA DEL PRACTICANTE</h3>
-
-                    <canvas id="signaturePad" width="600" height="200"
-                            class="border rounded mt-4"></canvas>
-                    <input type="hidden" name="firma_practicante" id="firma_practicante">
-
-                    <button type="button" id="clearSignature"
-                            class="mt-2 bg-red-500 text-white px-4 py-2 rounded">
-                        Limpiar Firma
-                    </button>
-                </div>
-
-                <!-- BOTONES -->
-                <div class="flex justify-end gap-4">
-                    <a href="{{ route('alumno.ficha-registro.index') }}"
-                       class="bg-gray-300 px-6 py-2 rounded">
-                        Cancelar
-                    </a>
-                    <button type="submit"
-                            class="bg-blue-600 text-white px-6 py-2 rounded">
-                        Guardar Ficha
-                    </button>
-                </div>
-            </form>
         </div>
     </div>
-</x-app-layout>
 
-<script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
+    @push('scripts')
+        <script>
+            // Canvas para firma
+            const canvas = document.getElementById('canvasFirma');
+            const ctx = canvas.getContext('2d');
+            let dibujando = false;
 
-        const canvas = document.getElementById('signaturePad');
-        const signaturePad = new SignaturePad(canvas);
+            canvas.addEventListener('mousedown', iniciarDibujo);
+            canvas.addEventListener('mousemove', dibujar);
+            canvas.addEventListener('mouseup', detenerDibujo);
+            canvas.addEventListener('mouseout', detenerDibujo);
 
-        document.getElementById('clearSignature')
-            .addEventListener('click', () => signaturePad.clear());
+            // Touch events para móviles
+            canvas.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                const touch = e.touches[0];
+                const mouseEvent = new MouseEvent('mousedown', {
+                    clientX: touch.clientX,
+                    clientY: touch.clientY
+                });
+                canvas.dispatchEvent(mouseEvent);
+            });
 
-        document.getElementById('fichaForm')
-            .addEventListener('submit', () => {
-                if (!signaturePad.isEmpty()) {
-                    document.getElementById('firma_practicante')
-                        .value = signaturePad.toDataURL('image/png');
+            canvas.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+                const touch = e.touches[0];
+                const mouseEvent = new MouseEvent('mousemove', {
+                    clientX: touch.clientX,
+                    clientY: touch.clientY
+                });
+                canvas.dispatchEvent(mouseEvent);
+            });
+
+            canvas.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                const mouseEvent = new MouseEvent('mouseup', {});
+                canvas.dispatchEvent(mouseEvent);
+            });
+
+            function iniciarDibujo(e) {
+                dibujando = true;
+                const rect = canvas.getBoundingClientRect();
+                ctx.beginPath();
+                ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+            }
+
+            function dibujar(e) {
+                if (!dibujando) return;
+                const rect = canvas.getBoundingClientRect();
+                ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+                ctx.strokeStyle = '#000';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            }
+
+            function detenerDibujo() {
+                dibujando = false;
+            }
+
+            function limpiarFirma() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                document.getElementById('firmaPracticante').value = '';
+            }
+
+            function toggleHorario(dia) {
+                const checkbox = document.getElementById('dia_' + dia);
+                const horarioDiv = document.getElementById('horario_' + dia);
+                const inputs = horarioDiv.querySelectorAll('input[type="time"]');
+
+                if (checkbox.checked) {
+                    horarioDiv.classList.remove('hidden');
+                    inputs.forEach(input => input.required = true);
+                } else {
+                    horarioDiv.classList.add('hidden');
+                    inputs.forEach(input => {
+                        input.required = false;
+                        input.value = '';
+                    });
+                }
+            }
+
+            // Validar formulario
+            document.getElementById('formFicha').addEventListener('submit', function(e) {
+                // Guardar firma
+                const firmaData = canvas.toDataURL('image/png');
+                document.getElementById('firmaPracticante').value = firmaData;
+
+                // Validar que haya firma
+                const ctx = canvas.getContext('2d');
+                const pixelBuffer = new Uint32Array(
+                    ctx.getImageData(0, 0, canvas.width, canvas.height).data.buffer
+                );
+                const hayFirma = pixelBuffer.some(color => color !== 0);
+
+                if (!hayFirma) {
+                    e.preventDefault();
+                    alert('Por favor, firma en el recuadro correspondiente');
+                    return false;
+                }
+
+                // Validar que al menos un horario esté seleccionado
+                const horariosActivos = Array.from({length: 6}, (_, i) => i + 1)
+                    .filter(dia => document.getElementById('dia_' + dia).checked);
+
+                if (horariosActivos.length === 0) {
+                    e.preventDefault();
+                    alert('Debes seleccionar al menos un día de práctica');
+                    return false;
+                }
+
+                // Remover horarios no seleccionados del formulario
+                for (let dia = 1; dia <= 6; dia++) {
+                    if (!document.getElementById('dia_' + dia).checked) {
+                        const inputs = document.querySelectorAll(`[name^="horarios[${dia}]"]`);
+                        inputs.forEach(input => input.remove());
+                    }
                 }
             });
-
-        document.querySelectorAll('.dia-checkbox').forEach(cb => {
-            cb.addEventListener('change', function () {
-                const dia = this.dataset.dia;
-                document.getElementById(`hora_inicio_${dia}`).disabled = !this.checked;
-                document.getElementById(`hora_fin_${dia}`).disabled = !this.checked;
-            });
-        });
-    });
-
-</script>
+        </script>
+    @endpush
+</x-app-layout>

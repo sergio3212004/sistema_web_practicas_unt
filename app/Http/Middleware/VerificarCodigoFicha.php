@@ -15,6 +15,12 @@ class VerificarCodigoFicha
      */
     public function handle(Request $request, Closure $next): Response
     {
+        if (!$request->session()->get('codigo_ficha_validado')) {
+            return redirect()
+                ->route('alumno.ficha.codigo')
+                ->with('error', 'Debes verificar el código antes de crear una ficha.');
+        }
+
         return $next($request);
     }
 }

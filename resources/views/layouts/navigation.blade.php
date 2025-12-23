@@ -56,7 +56,7 @@
                             'icon' => 'heroicon-o-newspaper' // puedes usar el mismo icono de publicaciones
                         ],
                         [
-                            'route' => 'alumno.ficha-registro.index',
+                            'route' => 'alumno.ficha.index',
                             'name' => 'Ficha de registro',
                             'icon' => 'heroicon-o-document'
                         ]

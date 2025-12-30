@@ -30,11 +30,10 @@ class Alumno extends Model
         return $this->belongsTo(Aula::class);
     }
 
-    public function fichasRegistro()
+    public function fichaRegistro()
     {
-        return $this->hasMany(\App\Models\FichaRegistro::class, 'alumno_id');
+        return $this->hasOne(\App\Models\FichaRegistro::class, 'alumno_id');
     }
-
 
     public function getNombreCompletoAttribute(): string
     {
@@ -44,6 +43,12 @@ class Alumno extends Model
     public function codigosFicha()
     {
         return $this->hasMany(CodigoFicha::class);
+    }
+
+    public function fichaActual()
+    {
+        return $this->hasOne(\App\Models\FichaRegistro::class, 'alumno_id')
+            ->latestOfMany();
     }
 
 }

@@ -63,6 +63,10 @@ class FichaRegistro extends Model
             ->orderBy('hora_inicio', 'asc');
     }
 
+    public function cronograma() {
+        return $this->hasOne(Cronograma::class, 'ficha_id');
+    }
+
     public function firmaTokens()
     {
         return $this->hasMany(\App\Models\FirmaToken::class);

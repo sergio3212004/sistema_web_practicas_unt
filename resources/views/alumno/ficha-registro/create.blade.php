@@ -107,21 +107,18 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="mb-3">
+                            <div class="block text-sm font-medium text-gray-700 mb-2">
                                 <label for="correo_empresa" class="form-label">
-                                    Correo electrónico de la empresa
+                                    Correo electrónico de la empresa: <span class="text-red-500">*</span>
                                 </label>
                                 <input
                                     type="email"
                                     name="correo_empresa"
                                     id="correo_empresa"
-                                    class="form-control @error('correo_empresa') is-invalid @enderror"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 form-control @error('correo_empresa') is-invalid @enderror"
                                     value="{{ old('correo_empresa') }}"
                                     required
                                 >
-                                @error('correo_empresa')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
                             </div>
 
 
@@ -185,30 +182,47 @@
 
                             <div class="grid grid-cols-3 gap-4">
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Departamento: <span class="text-red-500">*</span></label>
-                                    <input type="text"
-                                           name="departamento"
-                                           value="{{ old('departamento', 'La Libertad') }}"
-                                           required
-                                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                                        Departamento <span class="text-red-500">*</span>
+                                    </label>
+                                    <select
+                                        name="departamento"
+                                        id="departamento"
+                                        required
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                        <option value="">Seleccione</option>
+                                    </select>
                                 </div>
+
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Provincia: <span class="text-red-500">*</span></label>
-                                    <input type="text"
-                                           name="provincia"
-                                           value="{{ old('provincia', 'Trujillo') }}"
-                                           required
-                                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                                        Provincia <span class="text-red-500">*</span>
+                                    </label>
+                                    <select
+                                        name="provincia"
+                                        id="provincia"
+                                        required
+                                        disabled
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-gray-100">
+                                        <option value="">Seleccione</option>
+                                    </select>
                                 </div>
+
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Distrito: <span class="text-red-500">*</span></label>
-                                    <input type="text"
-                                           name="distrito"
-                                           value="{{ old('distrito') }}"
-                                           required
-                                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                                        Distrito <span class="text-red-500">*</span>
+                                    </label>
+                                    <select
+                                        name="distrito"
+                                        id="distrito"
+                                        required
+                                        disabled
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-gray-100">
+                                        <option value="">Seleccione</option>
+                                    </select>
                                 </div>
                             </div>
+
                         </div>
 
                         <!-- 3. CARACTERÍSTICAS DE LA PRÁCTICA -->
@@ -508,6 +522,75 @@
                     }
                 }
             });
+
+            document.addEventListener('DOMContentLoaded', async function () {
+
+                const departamentoSelect = document.getElementById("departamento");
+                const provinciaSelect = document.getElementById("provincia");
+                const distritoSelect = document.getElementById("distrito");
+
+                let ubigeo = [];
+
+                try {
+                    ubigeo = await fetch("{{ asset('ubigeo.json') }}")
+                        .then(res => res.json());
+                } catch (error) {
+                    console.error("Error cargando ubigeo.json:", error);
+                    return;
+                }
+
+                // Cargar departamentos
+                ubigeo.forEach(dep => {
+                    const option = document.createElement("option");
+                    option.value = dep.nombre;
+                    option.textContent = dep.nombre;
+                    departamentoSelect.appendChild(option);
+                });
+
+                // Cambio de departamento
+                departamentoSelect.addEventListener("change", () => {
+                    provinciaSelect.innerHTML = '<option value="">Seleccione</option>';
+                    distritoSelect.innerHTML = '<option value="">Seleccione</option>';
+                    provinciaSelect.disabled = true;
+                    distritoSelect.disabled = true;
+
+                    const dep = ubigeo.find(d => d.nombre === departamentoSelect.value);
+                    if (!dep) return;
+
+                    dep.provincias.forEach(prov => {
+                        const option = document.createElement("option");
+                        option.value = prov.nombre;
+                        option.textContent = prov.nombre;
+                        provinciaSelect.appendChild(option);
+                    });
+
+                    provinciaSelect.disabled = false;
+                    provinciaSelect.classList.remove('bg-gray-100');
+                });
+
+                // Cambio de provincia
+                provinciaSelect.addEventListener("change", () => {
+                    distritoSelect.innerHTML = '<option value="">Seleccione</option>';
+                    distritoSelect.disabled = true;
+
+                    const dep = ubigeo.find(d => d.nombre === departamentoSelect.value);
+                    if (!dep) return;
+
+                    const prov = dep.provincias.find(p => p.nombre === provinciaSelect.value);
+                    if (!prov) return;
+
+                    prov.distritos.forEach(dist => {
+                        const option = document.createElement("option");
+                        option.value = dist;
+                        option.textContent = dist;
+                        distritoSelect.appendChild(option);
+                    });
+
+                    distritoSelect.disabled = false;
+                    distritoSelect.classList.remove('bg-gray-100');
+                });
+            });
         </script>
+
     @endpush
 </x-app-layout>

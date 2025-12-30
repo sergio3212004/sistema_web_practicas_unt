@@ -21,6 +21,7 @@ class AlumnoSeeder extends Seeder
             'apellido_paterno' => 'Monge',
             'apellido_materno' => 'Muñoz',
             'telefono' => '968891526',
+            'aula_id' => '1',
             'created_at' => now(),
             'updated_at' => now()
         ]);

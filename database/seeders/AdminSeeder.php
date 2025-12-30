@@ -16,9 +16,9 @@ class AdminSeeder extends Seeder
         //
         DB::table('administradores')->insert([
             'user_id' => 2,
-            'nombres' => 'Chibolo',
-            'apellido_paterno' => 'Meepo',
-            'apellido_materno' => 'Sideral',
+            'nombres' => 'Sergio',
+            'apellido_paterno' => 'Monge',
+            'apellido_materno' => 'Muñoz',
             'telefono' => '968891526',
             'created_at'=>now(),
             'updated_at'=>now()

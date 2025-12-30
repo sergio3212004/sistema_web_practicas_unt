@@ -1,74 +1,81 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Mis Fichas de Registro
+            Ficha de Registro
         </h2>
     </x-slot>
 
     <div class="py-10">
-        <div class="max-w-6xl mx-auto sm:px-6 lg:px-8">
+        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
 
-            <div class="flex justify-end mb-6">
-                <a href="{{ route('alumno.ficha.create') }}"
-                   class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
-                    + Nueva Ficha
-                </a>
-            </div>
+            <div class="bg-white shadow rounded-lg p-8 text-center">
 
-            <div class="bg-white shadow rounded-lg overflow-hidden">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-100">
-                    <tr>
-                        <th class="px-6 py-3 text-left text-sm font-medium text-gray-600">
-                            Ciclo
-                        </th>
-                        <th class="px-6 py-3 text-left text-sm font-medium text-gray-600">
-                            Empresa
-                        </th>
-                        <th class="px-6 py-3 text-left text-sm font-medium text-gray-600">
-                            Periodo
-                        </th>
-                        <th class="px-6 py-3 text-left text-sm font-medium text-gray-600">
-                            Estado
-                        </th>
-                    </tr>
-                    </thead>
+                @if(!$ficha)
+                    {{-- NO EXISTE FICHA --}}
+                    <h3 class="text-lg font-semibold text-gray-700 mb-4">
+                        Aún no has registrado tu ficha
+                    </h3>
 
-                    <tbody class="divide-y divide-gray-200">
-                    @forelse($fichas as $ficha)
-                        <tr>
-                            <td class="px-6 py-4 text-sm text-gray-800">
-                                {{ $ficha->ciclo }}
-                            </td>
-                            <td class="px-6 py-4 text-sm text-gray-800">
-                                {{ $ficha->razon_social }}
-                            </td>
-                            <td class="px-6 py-4 text-sm text-gray-800">
-                                {{ $ficha->fecha_inicio?->format('d/m/Y') }}
-                                -
-                                {{ $ficha->fecha_termino?->format('d/m/Y') }}
-                            </td>
-                            <td class="px-6 py-4">
-                                @if($ficha->aceptado)
-                                    <span class="px-2 py-1 text-xs bg-green-100 text-green-700 rounded">
-                                            Aceptado
-                                        </span>
-                                @else
-                                    <span class="px-2 py-1 text-xs bg-yellow-100 text-yellow-700 rounded">
-                                            En revisión
-                                        </span>
-                                @endif
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="4" class="px-6 py-6 text-center text-gray-500">
-                                Aún no tienes fichas registradas.
-                            </td>
-                        </tr>
-                    @endforelse
-                    </tbody>
-                </table>
+                    <p class="text-sm text-gray-500 mb-6">
+                        Debes registrar tu ficha de prácticas pre profesionales.
+                    </p>
+
+                    <a href="{{ route('alumno.ficha.create') }}"
+                       class="inline-block px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
+                        Registrar Ficha
+                    </a>
+                @else
+                    {{-- EXISTE FICHA --}}
+                    <h3 class="text-lg font-semibold text-gray-700 mb-2">
+                        Tu ficha de registro
+                    </h3>
+
+                    <p class="text-sm text-gray-500 mb-2">
+                        Empresa: <strong>{{ $ficha->razon_social }}</strong>
+                    </p>
+
+                    <p class="mb-6">
+                        Estado:
+                        @if($ficha->aceptado)
+                            <span class="px-2 py-1 text-xs bg-green-100 text-green-700 rounded">
+                Aceptada
+            </span>
+                        @else
+                            <span class="px-2 py-1 text-xs bg-yellow-100 text-yellow-700 rounded">
+                En revisión
+            </span>
+                        @endif
+                    </p>
+
+                    {{-- ACCIONES --}}
+                    <div class="flex justify-center gap-4 flex-wrap">
+
+                        {{-- VER FICHA --}}
+                        <a href="{{ route('alumno.ficha.show', $ficha) }}"
+                           class="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg
+                  hover:bg-blue-700 transition">
+                            Ver Ficha
+                        </a>
+
+                        {{-- CRONOGRAMA --}}
+                        @if(!$ficha->cronograma)
+                            <a href="{{ route('alumno.cronograma.create', $ficha) }}"
+                               class="inline-flex items-center px-6 py-3 bg-indigo-600 text-white rounded-lg
+                      hover:bg-indigo-700 transition">
+                                Crear Cronograma
+                            </a>
+                        @else
+                            <a href="{{ route('alumno.cronograma.show', $ficha->cronograma) }}"
+                               class="inline-flex items-center px-6 py-3 bg-emerald-600 text-white rounded-lg
+                      hover:bg-emerald-700 transition">
+                                Ver Cronograma
+                            </a>
+                        @endif
+
+                    </div>
+                @endif
+
+
             </div>
 
         </div>

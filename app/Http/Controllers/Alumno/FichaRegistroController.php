@@ -28,11 +28,11 @@ class FichaRegistroController extends Controller
     {
         $alumno = Auth::user()->alumno;
 
-        $fichas = FichaRegistro::where('alumno_id', $alumno->id)
-            ->orderByDesc('created_at')
-            ->get();
+        $ficha = FichaRegistro::with('cronograma')
+            ->where('alumno_id', $alumno->id)
+            ->first();
 
-        return view('alumno.ficha-registro.index', compact('fichas'));
+        return view('alumno.ficha-registro.index', compact('ficha'));
     }
 
     /**
@@ -243,6 +243,20 @@ class FichaRegistroController extends Controller
         return redirect()
             ->route('alumno.ficha.index')
             ->with('success', 'Ficha registrada correctamente. Las firmas han sido solicitadas.');
+    }
+
+    public function show(FichaRegistro $fichaRegistro) {
+        if ($fichaRegistro->alumno_id !== auth()->user()->alumno->id) {
+            abort(403);
+        }
+
+        // Cargar relaciones necesarias
+        $fichaRegistro->load([
+            'horarios',
+            'firmaTokens', // si los tienes
+        ]);
+
+        return view('alumno.ficha.show', compact('fichaRegistro'));
     }
 
 }

@@ -17,6 +17,12 @@
                         {{-- 🔵 Lógica para Otros Roles --}}
                     @if (isset($alumno))
                         <x-dashboard.alumno :alumno="$alumno"/>
+                    @endif
+                    @if (isset($profesor))
+                            <x-dashboard.profesor
+                                :profesor="$profesor"
+                                :aulas="$aulas"
+                            />
                     @else
                         {{ __("You're logged in!") }}
                         <p>Tu rol es: **{{ Auth::user()->rol->nombre ?? 'Desconocido' }}**</p>

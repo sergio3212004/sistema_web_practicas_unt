@@ -22,6 +22,17 @@ class DashboardController extends Controller
         if ($user->rol->nombre == 'alumno') {
             $data['alumno'] = $user->alumno;
         }
+        if ($user->rol->nombre == 'alumno') {
+            $data['alumno'] = $user->alumno;
+        }
+
+        if ($user->rol->nombre == 'profesor') {
+            $profesor = $user->profesor;
+
+            // Cargar aulas con su semestre
+            $data['profesor'] = $profesor;
+            $data['aulas'] = $profesor->aulas()->with('semestre')->get();
+        }
         // Puedes agregar lógica para otros roles aquí (profesor, alumno, etc.)
 
         return view('dashboard', $data);

@@ -30,6 +30,13 @@ class UserSeeder extends Seeder
                 'rol_id'=>5,
                 'created_at'=>now(),
                 'updated_at'=>now()
+            ],
+            [
+                'email'=>'profesor2@unitru.edu.pe',
+                'password'=>Hash::make('pene123'),
+                'rol_id'=>2,
+                'created_at'=>now(),
+                'updated_at'=>now()
             ]
         ]);
     }

@@ -51,4 +51,9 @@ class Alumno extends Model
             ->latestOfMany();
     }
 
+    public function entregas()
+    {
+        return $this->hasMany(EntregaAlumno::class);
+    }
+
 }

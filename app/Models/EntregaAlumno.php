@@ -7,13 +7,16 @@ use Illuminate\Database\Eloquent\Model;
 class EntregaAlumno extends Model
 {
     //
-    protected $table = 'entrega_alumno';
+    protected $table = 'entrega_alumnos';
 
     protected $fillable = [
         'entrega_id',
         'alumno_id',
         'link_entrega',
-        'fecha_subida'
+        'fecha_subida',
+        'comentario_profesor',
+        'nota',
+        'fecha_revision'
     ];
 
     protected $casts = [

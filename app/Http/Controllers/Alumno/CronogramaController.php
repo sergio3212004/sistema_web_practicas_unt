@@ -3,104 +3,129 @@
 namespace App\Http\Controllers\Alumno;
 
 use App\Http\Controllers\Controller;
-use App\Mail\FirmaCronogramaMail;
 use App\Models\Cronograma;
+use App\Models\CronogramaActividad;
 use App\Models\FichaRegistro;
-use App\Models\FirmaToken;
+use App\Models\FirmaTokenCronograma;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class CronogramaController extends Controller
 {
     /**
-     * Muestra el formulario para crear el cronograma
+     * Mostrar formulario create
      */
     public function create(FichaRegistro $fichaRegistro)
     {
-        // Verificar que la ficha esté aceptada
-        if (!$fichaRegistro->aceptado) {
-            return redirect()->back()->with('error', 'La ficha de registro debe estar aceptada para crear el cronograma.');
-        }
-
-        // Verificar que no tenga ya un cronograma
-        if ($fichaRegistro->cronograma) {
-            return redirect()->route('alumno.cronograma.show', $fichaRegistro->cronograma)
-                ->with('info', 'Este cronograma ya existe.');
-        }
-
-        // Cargar relaciones necesarias
-        $fichaRegistro->load(['horarios', 'alumno.user', 'alumno.aula.profesor.user', 'semestre']);
-
         return view('alumno.cronograma.create', compact('fichaRegistro'));
     }
 
     /**
-     * Guarda el cronograma con la firma del practicante
+     * Guardar cronograma
      */
     public function store(Request $request, FichaRegistro $fichaRegistro)
     {
         $request->validate([
+            'firma_practicante' => 'required|string',
             'actividades' => 'required|array|min:1|max:5',
-            'actividades.*.nombre' => 'required|string|max:500',
-            'actividades.*.semanas' => 'required|array',
-            'firma_practicante' => 'required|string', // Base64 de la firma
+            'actividades.*.nombre' => 'required|string|max:1000',
+            'actividades.*.semanas' => 'required|array|min:1',
         ]);
 
-        try {
-            DB::beginTransaction();
+        DB::beginTransaction();
 
-            // Crear el cronograma
+        try {
+            /** ==========================
+             * 1. Crear cronograma
+             * ========================== */
             $cronograma = Cronograma::create([
                 'ficha_id' => $fichaRegistro->id,
-                'firma_practicante_at' => now(),
+                'firma_practicante' => null, // se actualiza luego
+                'firma_jefe_directo' => null,
+                'firma_profesor' => null,
             ]);
 
-            // Guardar actividades
+            /** ==========================
+             * 2. Guardar firma del alumno
+             * ========================== */
+            $firmaPath = $this->guardarFirma(
+                $request->firma_practicante,
+                'practicante',
+                $cronograma->id
+            );
+
+            $cronograma->update([
+                'firma_practicante' => $firmaPath,
+            ]);
+
+            /** ==========================
+             * 3. Guardar actividades
+             * ========================== */
             foreach ($request->actividades as $actividad) {
-                $data = [
+
+                $dataActividad = [
                     'cronograma_id' => $cronograma->id,
                     'actividad' => $actividad['nombre'],
                 ];
 
-                // Procesar las semanas marcadas
-                foreach ($actividad['semanas'] as $semana) {
-                    $data[$semana] = true;
+                // Inicializar todas las semanas en false
+                for ($m = 1; $m <= 4; $m++) {
+                    for ($s = 1; $s <= 4; $s++) {
+                        $dataActividad["m{$m}_s{$s}"] = false;
+                    }
                 }
 
-                $cronograma->actividades()->create($data);
+                // Marcar las semanas seleccionadas
+                foreach ($actividad['semanas'] as $semana) {
+                    // Ejemplo: m1_s2
+                    $dataActividad[$semana] = true;
+                }
+
+                CronogramaActividad::create($dataActividad);
+
             }
 
-            // Guardar la firma del practicante (opcional: como archivo)
-            $firmaData = $request->firma_practicante;
-            $firmaPath = $this->guardarFirma($firmaData, 'practicante', $cronograma->id);
+            /** 4. Crear token para JEFE DIRECTO (UNA SOLA VEZ) */
+            $token = Str::uuid();
 
-            // Generar tokens para firmas pendientes
-            $this->generarTokensFirma($cronograma, $fichaRegistro);
+            $firmaToken = FirmaTokenCronograma::create([
+                'cronograma_id' => $cronograma->id,
+                'email' => $fichaRegistro->correo_jefe_directo,
+                'token' => $token,
+                'rol' => 'jefe_directo',
+                'expira_en' => now()->addDays(5),
+            ]);
+
+            /** 5. Enviar correo */
+            Mail::to($firmaToken->email)
+                ->send(new \App\Mail\FirmaCronogramaJefeMail($firmaToken));
+
 
             DB::commit();
 
-            return redirect()->route('alumno.cronograma.show', $cronograma)
-                ->with('success', 'Cronograma creado exitosamente. Se han enviado correos para las firmas pendientes.');
+            return redirect()
+                ->route('alumno.cronograma.show', $cronograma)
+                ->with('success', 'Cronograma creado y firmado correctamente');
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
-            return redirect()->back()
+
+            return back()
                 ->withInput()
-                ->with('error', 'Error al crear el cronograma: ' . $e->getMessage());
+                ->with('error', 'Ocurrió un error al guardar el cronograma');
         }
     }
 
     /**
-     * Muestra el cronograma
+     * Mostrar cronograma
      */
     public function show(Cronograma $cronograma)
     {
         $cronograma->load([
             'fichaRegistro.alumno.user',
-            'fichaRegistro.alumno.aula.profesor.user',
-            'fichaRegistro.horarios',
             'actividades'
         ]);
 
@@ -108,76 +133,21 @@ class CronogramaController extends Controller
     }
 
     /**
-     * Genera tokens de firma para jefe y profesor
+     * Guardar firma base64
      */
-    private function generarTokensFirma(Cronograma $cronograma, FichaRegistro $fichaRegistro)
+    private function guardarFirma(string $firmaBase64, string $tipo, int $cronogramaId): string
     {
-        // Token para el jefe directo
-        $tokenJefe = FirmaToken::create([
-            'ficha_registro_id' => $fichaRegistro->id,
-            'email' => $fichaRegistro->correo_jefe_directo,
-            'tipo' => 'jefe_directo',
-            'contexto' => 'cronograma',
-            'cronograma_id' => $cronograma->id,
-            'token' => Str::random(64),
-            'expires_at' => now()->addDays(7),
-        ]);
+        // Limpiar encabezado base64
+        $firmaBase64 = preg_replace('#^data:image/\w+;base64,#i', '', $firmaBase64);
+        $firmaBase64 = str_replace(' ', '+', $firmaBase64);
 
-        // Token para el profesor
-        $profesor = $fichaRegistro->alumno->aula->profesor;
-        $tokenProfesor = FirmaToken::create([
-            'ficha_registro_id' => $fichaRegistro->id,
-            'email' => $profesor->user->email,
-            'tipo' => 'profesor',
-            'contexto' => 'cronograma',
-            'cronograma_id' => $cronograma->id,
-            'token' => Str::random(64),
-            'expires_at' => now()->addDays(7),
-        ]);
+        $imageData = base64_decode($firmaBase64);
 
-        // Enviar correos
-        $this->enviarCorreoFirma($tokenJefe, $fichaRegistro, 'jefe');
-        $this->enviarCorreoFirma($tokenProfesor, $fichaRegistro, 'profesor');
-    }
+        $nombreArchivo = "cronograma_{$cronogramaId}_{$tipo}.png";
+        $ruta = "firmas/cronogramas/{$nombreArchivo}";
 
-    /**
-     * Envía correo con link de firma
-     */
-    private function enviarCorreoFirma(FirmaToken $token, FichaRegistro $fichaRegistro, $tipoDestinatario)
-    {
-        $url = route('firma.cronograma', ['token' => $token->token]);
+        Storage::disk('public')->put($ruta, $imageData);
 
-        $datosCorreo = [
-            'alumno' => $fichaRegistro->alumno->nombre_completo,
-            'empresa' => $fichaRegistro->razon_social,
-            'url' => $url,
-            'tipo' => $tipoDestinatario,
-            'expira' => $token->expires_at->format('d/m/Y H:i'),
-        ];
-
-        // Aquí implementarías el envío del correo
-        Mail::to($token->email)->send(new FirmaCronogramaMail($datosCorreo));
-    }
-
-    /**
-     * Guarda la firma como imagen (opcional)
-     */
-    private function guardarFirma($base64Data, $tipo, $cronogramaId)
-    {
-        // Decodificar base64
-        $image = str_replace('data:image/png;base64,', '', $base64Data);
-        $image = str_replace(' ', '+', $image);
-        $imageName = "firma_{$tipo}_{$cronogramaId}_" . time() . '.png';
-
-        // Guardar en storage
-        $path = storage_path('app/public/firmas/cronogramas/');
-
-        if (!file_exists($path)) {
-            mkdir($path, 0755, true);
-        }
-
-        file_put_contents($path . $imageName, base64_decode($image));
-
-        return 'firmas/cronogramas/' . $imageName;
+        return $ruta; // se guarda como string en BD
     }
 }

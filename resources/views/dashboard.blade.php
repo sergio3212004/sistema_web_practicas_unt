@@ -23,9 +23,6 @@
                                 :profesor="$profesor"
                                 :aulas="$aulas"
                             />
-                    @else
-                        {{ __("You're logged in!") }}
-                        <p>Tu rol es: **{{ Auth::user()->rol->nombre ?? 'Desconocido' }}**</p>
                     @endif
 
                 </div>

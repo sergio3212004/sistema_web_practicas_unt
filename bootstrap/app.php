@@ -15,7 +15,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'rol' => \App\Http\Middleware\RolMiddelware::class,
             'empresa.aprobada' => \App\Http\Middleware\EmpresaAprobada::class,
-            'verificar.codigo.ficha' => \App\Http\Middleware\VerificarCodigoFicha::class,       ]);
+
+            ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

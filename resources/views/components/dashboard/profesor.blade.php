@@ -8,7 +8,7 @@
            class="bg-white border rounded-lg shadow hover:shadow-lg transition p-4">
 
             <h5 class="text-lg font-semibold text-gray-800">
-                Aula #{{ $aula->numero }}
+                Aula {{ $aula->numero }}
             </h5>
 
             <p class="text-sm text-gray-600">

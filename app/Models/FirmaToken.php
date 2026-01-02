@@ -11,7 +11,6 @@ class FirmaToken extends Model
 
     protected $fillable = [
         'ficha_registro_id',
-        'cronograma_id',
         'contexto',
         'email',
         'tipo',
@@ -30,9 +29,6 @@ class FirmaToken extends Model
         return $this->belongsTo(FichaRegistro::class, 'ficha_registro_id');
     }
 
-    public function cronograma() {
-        return $this->belongsTo(Cronograma::class, 'cronograma_id');
-    }
 
     // Helpers
     public function estaVencido(): bool

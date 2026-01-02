@@ -51,68 +51,6 @@ class FichaRegistroController extends Controller
         ));
     }
 
-    /**
-     * Formulario para ingresar código
-     */
-    public function formVerificarCodigo()
-    {
-        $alumno = Auth::user()->alumno;
-
-        // Evitar reenviar múltiples veces
-        if (!session()->has('codigo_ficha_enviado')) {
-
-            $codigo = random_int(100000, 999999);
-
-            CodigoFicha::create([
-                'alumno_id' => $alumno->id,
-                'codigo' => $codigo,
-                'expires_at' => now()->addMinutes(10),
-                'usado' => false
-            ]);
-
-            Mail::to(Auth::user()->email)
-                ->send(new \App\Mail\CodigoFichaMail($codigo));
-
-            session(['codigo_ficha_enviado' => true]);
-        }
-
-        return view('alumno.ficha-registro.verificar-codigo');
-    }
-
-    /**
-     * Verificar código ingresado
-     */
-    public function verificarCodigo(Request $request)
-    {
-        $request->validate([
-            'codigo' => 'required|digits:6'
-        ]);
-
-        $alumno = Auth::user()->alumno;
-
-        $codigo = CodigoFicha::where('alumno_id', $alumno->id)
-            ->where('codigo', $request->codigo)
-            ->where('usado', false)
-            ->where('expires_at', '>', now())
-            ->latest()
-            ->first();
-
-        if (!$codigo) {
-            return back()->withErrors([
-                'codigo' => 'Código inválido o expirado'
-            ]);
-        }
-
-        // Marcar como usado
-        $codigo->update(['usado' => true]);
-
-        // Validar sesión
-        session(['codigo_ficha_validado' => true]);
-
-        return redirect()
-            ->route('alumno.ficha.create')
-            ->with('success', 'Código verificado correctamente');
-    }
     public function store(Request $request)
     {
         $alumno = Auth::user()->alumno;
@@ -256,7 +194,7 @@ class FichaRegistroController extends Controller
             'firmaTokens', // si los tienes
         ]);
 
-        return view('alumno.ficha.show', compact('fichaRegistro'));
+        return view('alumno.ficha-registro.show', compact('fichaRegistro'));
     }
 
 }

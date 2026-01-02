@@ -39,4 +39,9 @@ class Aula extends Model
         return $this->hasMany(Alumno::class);
     }
 
+    public function entregas()
+    {
+        return $this->hasMany(Entrega::class);
+    }
+
 }

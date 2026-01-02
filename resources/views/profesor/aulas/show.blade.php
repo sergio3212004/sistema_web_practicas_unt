@@ -5,10 +5,10 @@
         {{-- Encabezado --}}
         <div class="bg-white rounded-xl shadow p-6 mb-6">
             <h3 class="text-3xl font-bold text-gray-800">
-                Aula #{{ $aula->numero }}
+                Aula {{ $aula->numero }}
             </h3>
             <p class="text-gray-500 mt-1">
-                📘 Semestre: {{ $aula->semestre->nombre }}
+                Semestre: {{ $aula->semestre->nombre }}
             </p>
         </div>
 
@@ -128,6 +128,14 @@
                                     </button>
                                 </form>
                             @endif
+
+                            @if($ficha && $ficha->cronograma)
+                                <a href="{{ route('profesor.cronogramas.show', $ficha->cronograma) }}"
+                                   class="px-3 py-1 text-sm bg-indigo-600 text-white rounded hover:bg-indigo-700">
+                                    Ver cronograma
+                                </a>
+                            @endif
+
 
                         </div>
                     </li>

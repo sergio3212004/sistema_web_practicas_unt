@@ -337,19 +337,50 @@
                     </div>
                 </div>
 
+                @if(!$cronograma->firma_profesor)
+                    <form id="formFirma"
+                          method="POST"
+                          action="{{ route('profesor.cronogramas.firmar', $cronograma) }}"
+                          class="bg-white shadow rounded-lg p-6 mt-8">
+
+                        @csrf
+
+                        <h3 class="text-lg font-bold mb-4">
+                            Firma del Profesor Supervisor
+                        </h3>
+
+                        <input type="hidden" name="firma" id="firmaJefe">
+
+                        <div class="border border-gray-400 rounded-md p-2 inline-block">
+                            <canvas id="canvasFirma"
+                                    width="500"
+                                    height="150"
+                                    class="bg-white"></canvas>
+                        </div>
+
+                        <div class="mt-4 flex gap-4">
+                            <button type="button"
+                                    onclick="limpiarFirma()"
+                                    class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">
+                                Limpiar
+                            </button>
+
+                            <button type="submit"
+                                    class="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                                Firmar Cronograma
+                            </button>
+                        </div>
+                    </form>
+                @endif
+
+
                 <!-- Botones de acción -->
                 <div class="mt-8 flex justify-between">
-                    <a href="{{ route('alumno.ficha.index') }}"
+                    <a href="{{ route('profesor.aulas.show', $cronograma->fichaRegistro->alumno->aula) }}"
                        class="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
                         Volver
                     </a>
 
-                    @if($cronograma->estaFirmadoCompleto())
-                        <button onclick="window.print()"
-                                class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-                            Imprimir / Descargar PDF
-                        </button>
-                    @endif
                 </div>
             </div>
         </div>
@@ -365,5 +396,79 @@
             }
         }
     </style>
+
+    <script>
+        const canvas = document.getElementById('canvasFirma');
+        const ctx = canvas.getContext('2d');
+        let dibujando = false;
+
+        canvas.addEventListener('mousedown', iniciarDibujo);
+        canvas.addEventListener('mousemove', dibujar);
+        canvas.addEventListener('mouseup', detenerDibujo);
+        canvas.addEventListener('mouseout', detenerDibujo);
+
+        canvas.addEventListener('touchstart', e => {
+            e.preventDefault();
+            const t = e.touches[0];
+            canvas.dispatchEvent(new MouseEvent('mousedown', {
+                clientX: t.clientX,
+                clientY: t.clientY
+            }));
+        });
+
+        canvas.addEventListener('touchmove', e => {
+            e.preventDefault();
+            const t = e.touches[0];
+            canvas.dispatchEvent(new MouseEvent('mousemove', {
+                clientX: t.clientX,
+                clientY: t.clientY
+            }));
+        });
+
+        canvas.addEventListener('touchend', e => {
+            e.preventDefault();
+            canvas.dispatchEvent(new MouseEvent('mouseup'));
+        });
+
+        function iniciarDibujo(e) {
+            dibujando = true;
+            const r = canvas.getBoundingClientRect();
+            ctx.beginPath();
+            ctx.moveTo(e.clientX - r.left, e.clientY - r.top);
+        }
+
+        function dibujar(e) {
+            if (!dibujando) return;
+            const r = canvas.getBoundingClientRect();
+            ctx.lineTo(e.clientX - r.left, e.clientY - r.top);
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+
+        function detenerDibujo() {
+            dibujando = false;
+        }
+
+        function limpiarFirma() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            document.getElementById('firmaJefe').value = '';
+        }
+
+        document.getElementById('formFirma').addEventListener('submit', function(e) {
+            const firmaData = canvas.toDataURL('image/png');
+            document.getElementById('firmaJefe').value = firmaData;
+
+            const pixels = new Uint32Array(
+                ctx.getImageData(0, 0, canvas.width, canvas.height).data.buffer
+            );
+
+            const hayFirma = pixels.some(p => p !== 0);
+            if (!hayFirma) {
+                e.preventDefault();
+                alert('Debe firmar antes de continuar');
+            }
+        });
+    </script>
 
 </x-app-layout>

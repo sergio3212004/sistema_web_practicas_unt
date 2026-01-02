@@ -47,6 +47,11 @@
                             'route' => 'admin.aprobaciones.index',
                             'name' => 'Aprobaciones',
                             'icon' => 'heroicon-o-check-circle'
+                        ],
+                        [
+                            'route' => 'admin.informes-finales.index',
+                            'name' => 'Informes Finales',
+                            'icon' => 'heroicon-o-document-chart-bar'
                         ]
                     ],
                     'alumno' => [
@@ -59,6 +64,11 @@
                             'route' => 'alumno.ficha.index',
                             'name' => 'Ficha de registro',
                             'icon' => 'heroicon-o-document'
+                        ],
+                        [
+                            'route' => 'alumno.informe-final.index',
+                            'name' => 'Informe Final',
+                            'icon' => 'heroicon-o-document-arrow-up'
                         ]
                     ],
                     'profesor' => [
@@ -71,6 +81,11 @@
                             'route' => 'profesor.entregas.create',
                             'name' => 'Crear Entregas',
                             'icon' => 'heroicon-o-document-plus'
+                        ],
+                        [
+                            'route' => 'profesor.informes-finales.index',
+                            'name' => 'Informes Finales',
+                            'icon' => 'heroicon-o-document-chart-bar'
                         ]
                     ],
                     'empresa' => [

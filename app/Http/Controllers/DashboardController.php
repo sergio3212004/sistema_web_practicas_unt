@@ -19,12 +19,11 @@ class DashboardController extends Controller
             $data['semestres'] = Semestre::orderByDesc('id')->get();
             $data['administrador'] = $user->administrador; // Carga la relación
         }
+
         if ($user->rol->nombre == 'alumno') {
-            $data['alumno'] = $user->alumno;
+            $data['alumno'] = $user->alumno->load('aula.semestre');
         }
-        if ($user->rol->nombre == 'alumno') {
-            $data['alumno'] = $user->alumno;
-        }
+
 
         if ($user->rol->nombre == 'profesor') {
             $profesor = $user->profesor;

@@ -12,7 +12,7 @@
                    class="bg-white border rounded-lg shadow hover:shadow-lg transition p-5">
 
                     <h4 class="text-lg font-semibold text-gray-800 mb-2">
-                        Aula #{{ $aula->numero }}
+                        Aula {{ $aula->numero }}
                     </h4>
 
                     <p class="text-sm text-gray-600">

@@ -8,6 +8,7 @@ use App\Http\Controllers\Alumno\CronogramaController;
 use App\Http\Controllers\Alumno\FichaRegistroController;
 use App\Http\Controllers\Alumno\FirmaCronogramaController;
 use App\Http\Controllers\Alumno\FirmaTokenController;
+use App\Http\Controllers\Profesor\EntregaController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -77,6 +78,14 @@ Route::middleware(['auth', 'rol:administrador'])
         Route::get('perfil/solicitud/{id}', [\App\Http\Controllers\Admin\PerfilController::class, 'solicitudEmpresa'])
             ->name('perfil.solicitud');
 
+        // Informes Finales
+        Route::get('informes-finales', [\App\Http\Controllers\Admin\InformeFinalController::class, 'index'])
+            ->name('informes-finales.index');
+        Route::get('informes-finales/{informe}/download', [\App\Http\Controllers\Admin\InformeFinalController::class, 'download'])
+            ->name('informes-finales.download');
+        Route::delete('informes-finales/{informe}', [\App\Http\Controllers\Admin\InformeFinalController::class, 'destroy'])
+            ->name('informes-finales.destroy');
+
     });
 
 
@@ -93,6 +102,23 @@ Route::middleware(['auth', 'rol:profesor'])
             ->name('entregas.create');
         Route::post('entregas', [\App\Http\Controllers\Profesor\EntregaController::class, 'store'])
             ->name('entregas.store');
+        Route::post(
+            'profesor/entregas/{entrega}/calificar/{alumno}',
+            [EntregaController::class, 'calificar']
+        )->name('entregas.calificar');
+
+        // Ver entrega de un alumno
+        Route::get(
+            'profesor/entregas/{entrega}/alumno/{alumno}',
+            [EntregaController::class, 'verEntregaAlumno']
+        )->name('entregas.ver-alumno');
+
+        // Guardar calificación
+        Route::post(
+            'profesor/entregas/{entrega}/alumno/{alumno}/calificar',
+            [EntregaController::class, 'guardarCalificacion']
+        )->name('entregas.guardar-calificacion');
+
 
         // Aulas del profesor
         Route::get('aulas', [\App\Http\Controllers\Profesor\AulaController::class, 'index'])
@@ -101,13 +127,12 @@ Route::middleware(['auth', 'rol:profesor'])
         Route::get('aulas/{aula}', [\App\Http\Controllers\Profesor\AulaController::class, 'show'])
             ->name('aulas.show');
 
-        // Informes (revisar y calificar entregas de alumnos)
-        Route::get('informes', [\App\Http\Controllers\Profesor\InformeController::class, 'index'])
-            ->name('informes.index');
-        Route::get('informes/{entrega}', [\App\Http\Controllers\Profesor\InformeController::class, 'show'])
-            ->name('informes.show');
-        Route::post('informes/{entregaAlumno}/calificar', [\App\Http\Controllers\Profesor\InformeController::class, 'calificar'])
-            ->name('informes.calificar');
+
+        // routes/web.php (grupo profesor)
+
+        Route::get('entregas/{entrega}',
+            [\App\Http\Controllers\Profesor\EntregaController::class, 'show']
+        )->name('entregas.show');
 
 
         // Fichas de registro (profesor)
@@ -118,6 +143,17 @@ Route::middleware(['auth', 'rol:profesor'])
         Route::patch('fichas/{fichaRegistro}/aceptar',
             [\App\Http\Controllers\Profesor\FichaRegistroController::class, 'aceptar']
         )->name('fichas.aceptar');
+
+        // Cronogramas (profesor)
+        Route::get(
+            'cronogramas/{cronograma}',
+            [\App\Http\Controllers\Profesor\CronogramaController::class, 'show']
+        )->name('cronogramas.show');
+
+        Route::post(
+            'cronogramas/{cronograma}/firmar',
+            [\App\Http\Controllers\Profesor\CronogramaController::class, 'firmar']
+        )->name('cronogramas.firmar');
 
         // Informes Finales
         Route::get('informes-finales', [\App\Http\Controllers\Profesor\InformeFinalController::class, 'index'])
@@ -158,16 +194,9 @@ Route::middleware(['auth', 'rol:alumno'])
         Route::get('fichas', [FichaRegistroController::class, 'index'])
             ->name('ficha.index');
 
-        // Verificación de código
-        Route::get('fichas/verificar-codigo', [FichaRegistroController::class, 'formVerificarCodigo'])
-            ->name('ficha.codigo');
-
-        Route::post('fichas/verificar-codigo', [FichaRegistroController::class, 'verificarCodigo'])
-            ->name('ficha.codigo.verificar');
 
         // Crear ficha (PROTEGIDO)
         Route::get('fichas/create', [FichaRegistroController::class, 'create'])
-            ->middleware('verificar.codigo.ficha')
             ->name('ficha.create');
 
         Route::post('fichas/store', [FichaRegistroController::class, 'store'])->name('ficha-registro.store');
@@ -190,9 +219,21 @@ Route::middleware(['auth', 'rol:alumno'])
         )->name('cronograma.show');
 
 
+        // Mis entregas y calificaciones
+        Route::get('mis-entregas', [\App\Http\Controllers\Alumno\MisEntregasController::class, 'index'])
+            ->name('entregas.mis-entregas');
+        Route::get('mis-entregas/{entrega}', [\App\Http\Controllers\Alumno\MisEntregasController::class, 'show'])
+            ->name('entregas.detalle');
+        Route::post('mis-entregas/{entrega}/guardar-link', [\App\Http\Controllers\Alumno\MisEntregasController::class, 'guardarLink'])
+            ->name('entregas.guardar-link');
 
-
-
+        // Informe Final
+        Route::get('informe-final', [\App\Http\Controllers\Alumno\InformeFinalController::class, 'index'])
+            ->name('informe-final.index');
+        Route::post('informe-final', [\App\Http\Controllers\Alumno\InformeFinalController::class, 'store'])
+            ->name('informe-final.store');
+        Route::get('informe-final/download', [\App\Http\Controllers\Alumno\InformeFinalController::class, 'download'])
+            ->name('informe-final.download');
     });
 
 Route::get('/firmar/{token}', [FirmaTokenController::class, 'show'])
@@ -202,12 +243,15 @@ Route::post('/firmar/{token}', [FirmaTokenController::class, 'store'])
     ->name('firmas.store');
 
 
-Route::get('firma/cronograma/{token}',
-    [FirmaCronogramaController::class, 'show']
-)->name('firma.cronograma');
+// Mostrar formulario de firma
+Route::get(
+    'firmas/cronograma/jefe/{token}',
+    [FirmaCronogramaController::class, 'formJefe']
+)->name('firma.cronograma.jefe');
 
-Route::post('firma/cronograma/{token}',
-    [FirmaCronogramaController::class, 'firmar']
-)->name('firma.cronograma.firmar');
-
+// Guardar firma
+Route::post(
+    'firmas/cronograma/jefe/{token}',
+    [FirmaCronogramaController::class, 'guardarFirmaJefe']
+)->name('firma.cronograma.jefe.guardar');
 require __DIR__.'/auth.php';

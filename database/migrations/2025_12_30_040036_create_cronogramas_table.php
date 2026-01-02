@@ -19,9 +19,9 @@ return new class extends Migration
                 ->on('fichas_registro')
                 ->onDelete('cascade');
             // Estados de firma
-            $table->timestamp('firma_practicante_at')->nullable();
-            $table->timestamp('firma_jefe_directo_at')->nullable();
-            $table->timestamp('firma_profesor_at')->nullable();
+            $table->string('firma_practicante')->nullable();
+            $table->string('firma_jefe_directo')->nullable();
+            $table->string('firma_profesor')->nullable();
             $table->timestamps();
         });
     }

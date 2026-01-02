@@ -3,112 +3,69 @@
 namespace App\Http\Controllers\Alumno;
 
 use App\Http\Controllers\Controller;
-use App\Models\FirmaToken;
+use App\Models\FirmaTokenCronograma;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class FirmaCronogramaController extends Controller
 {
-    /**
-     * Muestra la página para firmar con token
-     */
-    public function show($token)
+    //
+    public function formJefe(string $token)
     {
-        $firmaToken = FirmaToken::where('token', $token)
-            ->where('contexto', 'cronograma')
+        $firmaToken = FirmaTokenCronograma::with([
+            'cronograma.fichaRegistro.alumno.user',
+            'cronograma.actividades'
+        ])
+            ->where('token', $token)
+            ->where('rol', 'jefe_directo')
+            ->vigente()
             ->firstOrFail();
 
-        // Verificar si el token está vencido
-        if ($firmaToken->estaVencido()) {
-            return view('firma.vencido', compact('firmaToken'));
-        }
-
-        // Verificar si ya está firmado
-        if ($firmaToken->estaFirmado()) {
-            return view('firma.ya-firmado', compact('firmaToken'));
-        }
-
-        // Cargar el cronograma con sus relaciones
         $cronograma = $firmaToken->cronograma;
-        $cronograma->load([
-            'fichaRegistro.alumno',
-            'fichaRegistro.horarios',
-            'actividades'
-        ]);
 
-        return view('firma.cronograma', compact('firmaToken', 'cronograma'));
+        return view('firmas.cronograma.jefe', compact(
+            'firmaToken',
+            'cronograma'
+        ));
     }
 
-    /**
-     * Procesa la firma
-     */
-    public function firmar(Request $request, $token)
+    public function guardarFirmaJefe(Request $request, string $token)
     {
         $request->validate([
             'firma' => 'required|string',
-            'acepto' => 'required|accepted'
         ]);
 
-        $firmaToken = FirmaToken::where('token', $token)
-            ->where('contexto', 'cronograma')
+        $firmaToken = FirmaTokenCronograma::where('token', $token)
+            ->vigente()
+            ->rol('jefe_directo')
             ->firstOrFail();
 
-        // Verificaciones
-        if ($firmaToken->estaVencido()) {
-            return redirect()->route('firma.cronograma', $token)
-                ->with('error', 'El token ha expirado.');
-        }
+        $cronograma = $firmaToken->cronograma;
 
-        if ($firmaToken->estaFirmado()) {
-            return redirect()->route('firma.cronograma', $token)
-                ->with('info', 'Este documento ya ha sido firmado.');
-        }
+        $rutaFirma = $this->guardarFirma(
+            $request->firma,
+            'jefe',
+            $cronograma->id
+        );
 
-        try {
-            // Actualizar el token
-            $firmaToken->update([
-                'signed_at' => now()
-            ]);
+        $cronograma->update([
+            'firma_jefe_directo' => $rutaFirma,
+        ]);
 
-            // Actualizar el cronograma según el tipo de firma
-            $cronograma = $firmaToken->cronograma;
+        $firmaToken->marcarComoUsado();
 
-            if ($firmaToken->tipo === 'jefe_directo') {
-                $cronograma->update(['firma_jefe_directo_at' => now()]);
-            } elseif ($firmaToken->tipo === 'profesor') {
-                $cronograma->update(['firma_profesor_at' => now()]);
-            }
-
-            // Guardar la firma como imagen (opcional)
-            $this->guardarFirmaToken($request->firma, $firmaToken->tipo, $cronograma->id);
-
-            return view('firma.confirmacion', [
-                'cronograma' => $cronograma,
-                'tipo' => $firmaToken->tipo
-            ]);
-
-        } catch (\Exception $e) {
-            return redirect()->back()
-                ->with('error', 'Error al procesar la firma: ' . $e->getMessage());
-        }
+        return view('firmas.firma-exitosa');
     }
 
-    /**
-     * Guarda la firma como imagen
-     */
-    private function guardarFirmaToken($base64Data, $tipo, $cronogramaId)
+    private function guardarFirma(string $base64, string $tipo, int $cronogramaId): string
     {
-        $image = str_replace('data:image/png;base64,', '', $base64Data);
-        $image = str_replace(' ', '+', $image);
-        $imageName = "firma_{$tipo}_{$cronogramaId}_" . time() . '.png';
+        $base64 = preg_replace('#^data:image/\w+;base64,#i', '', $base64);
+        $base64 = str_replace(' ', '+', $base64);
 
-        $path = storage_path('app/public/firmas/cronogramas/');
+        $ruta = "firmas/cronogramas/cronograma_{$cronogramaId}_{$tipo}.png";
 
-        if (!file_exists($path)) {
-            mkdir($path, 0755, true);
-        }
+        Storage::disk('public')->put($ruta, base64_decode($base64));
 
-        file_put_contents($path . $imageName, base64_decode($image));
-
-        return 'firmas/cronogramas/' . $imageName;
+        return $ruta;
     }
 }

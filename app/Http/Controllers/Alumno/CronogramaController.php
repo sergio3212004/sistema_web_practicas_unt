@@ -7,6 +7,7 @@ use App\Models\Cronograma;
 use App\Models\CronogramaActividad;
 use App\Models\FichaRegistro;
 use App\Models\FirmaTokenCronograma;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
@@ -132,6 +133,40 @@ class CronogramaController extends Controller
         return view('alumno.cronograma.show', compact('cronograma'));
     }
 
+
+    /**
+     * Eliminar cronograma (solo si el profesor no ha firmado)
+     */
+    public function destroy(Cronograma $cronograma)
+    {
+        // Validar que el alumno sea el dueño
+        if ($cronograma->fichaRegistro->alumno_id !== auth()->user()->alumno->id) {
+            abort(403);
+        }
+
+        // Validar que el profesor supervisor no haya firmado
+        if ($cronograma->firma_profesor) {
+            return back()->with('error', 'No puedes eliminar un cronograma ya firmado por el profesor supervisor.');
+        }
+
+        // Eliminar archivos de firmas
+        if ($cronograma->firma_practicante) {
+            Storage::disk('public')->delete($cronograma->firma_practicante);
+        }
+        if ($cronograma->firma_jefe_directo) {
+            Storage::disk('public')->delete($cronograma->firma_jefe_directo);
+        }
+
+        // Eliminar relaciones y el cronograma
+        $cronograma->actividades()->delete();
+        $cronograma->tokensFirma()->delete();
+        $cronograma->delete();
+
+        return redirect()
+            ->route('alumno.ficha.index')
+            ->with('success', 'Cronograma eliminado correctamente.');
+    }
+
     /**
      * Guardar firma base64
      */
@@ -150,4 +185,35 @@ class CronogramaController extends Controller
 
         return $ruta; // se guarda como string en BD
     }
+
+    /**
+     * Descargar Cronograma en PDF
+     */
+    public function downloadPdf(Cronograma $cronograma)
+    {
+        // Verificar que el alumno sea el dueño del cronograma
+        // (A través de la ficha de registro)
+        if ($cronograma->fichaRegistro->alumno_id !== auth()->user()->alumno->id) {
+            abort(403);
+        }
+
+        // Cargar relaciones necesarias
+        $cronograma->load([
+            'fichaRegistro.alumno.user',
+            'actividades'
+        ]);
+
+        // Generar PDF
+        $pdf = Pdf::loadView('alumno.cronograma.pdf', compact('cronograma'));
+
+        // Configurar el PDF
+        $pdf->setPaper('a4', 'portrait');
+
+        // Nombre del archivo
+        $nombreArchivo = 'PlanDePracticas_' . $cronograma->fichaRegistro->alumno->codigo_matricula . '.pdf';
+
+        // Descargar el PDF
+        return $pdf->download($nombreArchivo);
+    }
+
 }

@@ -14,7 +14,6 @@ class FichaRegistroController extends Controller
     {
         // Seguridad por aula del profesor
         $profesor = Auth::user()->profesor;
-
         abort_if(
             $fichaRegistro->alumno->aula->profesor_id !== $profesor->id,
             403

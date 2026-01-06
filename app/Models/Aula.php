@@ -39,9 +39,14 @@ class Aula extends Model
         return $this->hasMany(Alumno::class);
     }
 
-    public function entregas()
+    public function semanas()
     {
-        return $this->hasMany(Entrega::class);
+        return $this->hasMany(Semana::class);
     }
 
+    // Relación con Actividades
+    public function actividades()
+    {
+        return $this->hasMany(Actividad::class);
+    }
 }

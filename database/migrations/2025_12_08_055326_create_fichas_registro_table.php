@@ -33,8 +33,8 @@ return new class extends Migration
             $table->string('nombre_gerente', 80);
             $table->string('nombre_jefe_rrhh', 80);
             $table->string('direccion', 255);
-            $table->string('telefono_fijo', 20);
-            $table->string('telefono_movil', 20);
+            $table->string('telefono_fijo', 10);
+            $table->string('telefono_movil', 9);
             $table->string('departamento', 50);
             $table->string('provincia', 50);
             $table->string('distrito', 50);

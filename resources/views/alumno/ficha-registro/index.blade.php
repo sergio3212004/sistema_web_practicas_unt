@@ -1,82 +1,234 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Ficha de Registro
-        </h2>
+        <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="p-2 bg-gradient-to-br from-blue-800 to-blue-900 rounded-lg">
+                    @svg('heroicon-o-document-text', 'w-6 h-6 text-white')
+                </div>
+                <div>
+                    <h2 class="font-bold text-2xl text-gray-800 leading-tight">
+                        Ficha de Registro
+                    </h2>
+                    <p class="text-sm text-gray-500 mt-0.5">Gestiona tu ficha de prácticas pre profesionales</p>
+                </div>
+            </div>
+        </div>
     </x-slot>
 
-    <div class="py-10">
-        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
+    <div class="py-8">
+        <div class="max-w-5xl mx-auto sm:px-6 lg:px-8">
 
-            <div class="bg-white shadow rounded-lg p-8 text-center">
+            @if(!$ficha)
+                {{-- NO EXISTE FICHA - ESTADO INICIAL --}}
+                <div class="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100">
 
-                @if(!$ficha)
-                    {{-- NO EXISTE FICHA --}}
-                    <h3 class="text-lg font-semibold text-gray-700 mb-4">
-                        Aún no has registrado tu ficha
-                    </h3>
-
-                    <p class="text-sm text-gray-500 mb-6">
-                        Debes registrar tu ficha de prácticas pre profesionales.
-                    </p>
-
-                    <a href="{{ route('alumno.ficha.create') }}"
-                       class="inline-block px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
-                        Registrar Ficha
-                    </a>
-                @else
-                    {{-- EXISTE FICHA --}}
-                    <h3 class="text-lg font-semibold text-gray-700 mb-2">
-                        Tu ficha de registro
-                    </h3>
-
-                    <p class="text-sm text-gray-500 mb-2">
-                        Empresa: <strong>{{ $ficha->razon_social }}</strong>
-                    </p>
-
-                    <p class="mb-6">
-                        Estado:
-                        @if($ficha->aceptado)
-                            <span class="px-2 py-1 text-xs bg-green-100 text-green-700 rounded">
-                Aceptada
-            </span>
-                        @else
-                            <span class="px-2 py-1 text-xs bg-yellow-100 text-yellow-700 rounded">
-                En revisión
-            </span>
-                        @endif
-                    </p>
-
-                    {{-- ACCIONES --}}
-                    <div class="flex justify-center gap-4 flex-wrap">
-
-                        {{-- VER FICHA --}}
-                        <a href="{{ route('alumno.ficha.show', $ficha) }}"
-                           class="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg
-                  hover:bg-blue-700 transition">
-                            Ver Ficha
-                        </a>
-
-                        {{-- CRONOGRAMA --}}
-                        @if(!$ficha->cronograma)
-                            <a href="{{ route('alumno.cronograma.create', $ficha) }}"
-                               class="inline-flex items-center px-6 py-3 bg-indigo-600 text-white rounded-lg
-                      hover:bg-indigo-700 transition">
-                                Crear Cronograma
-                            </a>
-                        @else
-                            <a href="{{ route('alumno.cronograma.show', $ficha->cronograma) }}"
-                               class="inline-flex items-center px-6 py-3 bg-emerald-600 text-white rounded-lg
-                      hover:bg-emerald-700 transition">
-                                Ver Cronograma
-                            </a>
-                        @endif
-
+                    <!-- Banner superior con gradiente -->
+                    <div class="bg-gradient-to-r from-blue-800 to-blue-900 px-8 py-6">
+                        <div class="flex items-center justify-center">
+                            <div class="w-20 h-20 bg-white bg-opacity-20 rounded-full flex items-center justify-center backdrop-blur-sm">
+                                @svg('heroicon-o-document-plus', 'w-10 h-10 text-white')
+                            </div>
+                        </div>
                     </div>
-                @endif
 
+                    <!-- Contenido principal -->
+                    <div class="px-8 py-10 text-center">
+                        <h3 class="text-2xl font-bold text-gray-800 mb-3">
+                            Comienza tu registro
+                        </h3>
 
-            </div>
+                        <p class="text-gray-600 mb-2 max-w-2xl mx-auto">
+                            Aún no has registrado tu ficha de prácticas pre profesionales.
+                        </p>
+
+                        <p class="text-sm text-gray-500 mb-8 max-w-xl mx-auto">
+                            Para iniciar tus prácticas, primero debes completar el registro con los datos de la empresa donde realizarás tus actividades.
+                        </p>
+
+                        <!-- Pasos a seguir -->
+                        <div class="grid md:grid-cols-3 gap-6 mb-10 max-w-3xl mx-auto">
+                            <div class="bg-blue-50 rounded-xl p-6 border border-blue-100">
+                                <div class="w-12 h-12 bg-blue-800 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <span class="text-white font-bold text-lg">1</span>
+                                </div>
+                                <h4 class="font-semibold text-gray-800 mb-2">Registra tu ficha</h4>
+                                <p class="text-sm text-gray-600">Completa los datos de la empresa y tu información</p>
+                            </div>
+
+                            <div class="bg-yellow-50 rounded-xl p-6 border border-yellow-200">
+                                <div class="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <span class="text-gray-800 font-bold text-lg">2</span>
+                                </div>
+                                <h4 class="font-semibold text-gray-800 mb-2">Espera aprobación</h4>
+                                <p class="text-sm text-gray-600">Tu ficha será revisada por el coordinador</p>
+                            </div>
+
+                            <div class="bg-green-50 rounded-xl p-6 border border-green-100">
+                                <div class="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <span class="text-white font-bold text-lg">3</span>
+                                </div>
+                                <h4 class="font-semibold text-gray-800 mb-2">Crea cronograma</h4>
+                                <p class="text-sm text-gray-600">Una vez aceptada, programa tus actividades</p>
+                            </div>
+                        </div>
+
+                        <!-- Botón de acción principal -->
+                        <a href="{{ route('alumno.ficha.create') }}"
+                           class="inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-800 to-blue-900 text-white font-semibold rounded-xl hover:shadow-xl hover:scale-105 transition-all duration-200 group">
+                            @svg('heroicon-o-document-plus', 'w-5 h-5 mr-2 group-hover:rotate-12 transition-transform')
+                            Registrar Ficha de Prácticas
+                        </a>
+                    </div>
+                </div>
+
+            @else
+                {{-- EXISTE FICHA - VISTA CON INFORMACIÓN --}}
+                <div class="space-y-6">
+
+                    <!-- Card principal con información de la ficha -->
+                    <div class="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100">
+
+                        <!-- Header con estado -->
+                        <div class="bg-gradient-to-r from-blue-800 to-blue-900 px-8 py-6">
+                            <div class="flex items-center justify-between flex-wrap gap-4">
+                                <div class="flex items-center space-x-4">
+                                    <div class="w-16 h-16 bg-white bg-opacity-20 rounded-xl flex items-center justify-center backdrop-blur-sm">
+                                        @svg('heroicon-o-briefcase', 'w-8 h-8 text-white')
+                                    </div>
+                                    <div>
+                                        <h3 class="text-xl font-bold text-white mb-1">
+                                            Tu Ficha de Registro
+                                        </h3>
+                                        <p class="text-blue-200 text-sm">
+                                            {{ $ficha->razon_social }}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    @if($ficha->aceptado)
+                                        <span class="inline-flex items-center px-4 py-2 bg-green-500 text-white text-sm font-semibold rounded-full shadow-lg">
+                                            @svg('heroicon-o-check-circle', 'w-5 h-5 mr-2')
+                                            Ficha Aceptada
+                                        </span>
+                                    @else
+                                        <span class="inline-flex items-center px-4 py-2 bg-yellow-400 text-gray-900 text-sm font-semibold rounded-full shadow-lg">
+                                            @svg('heroicon-o-clock', 'w-5 h-5 mr-2')
+                                            En Revisión
+                                        </span>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Información adicional -->
+                        <div class="px-8 py-6">
+                            @if(!$ficha->aceptado)
+                                <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-6">
+                                    <div class="flex items-start">
+                                        <div class="flex-shrink-0">
+                                            @svg('heroicon-o-information-circle', 'w-6 h-6 text-yellow-600')
+                                        </div>
+                                        <div class="ml-3">
+                                            <h4 class="text-sm font-semibold text-yellow-800 mb-1">Tu ficha está en proceso de revisión</h4>
+                                            <p class="text-sm text-yellow-700">
+                                                El coordinador académico está revisando tu solicitud. Recibirás una notificación cuando sea aprobada.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            @else
+                                <div class="bg-green-50 border border-green-200 rounded-xl p-4 mb-6">
+                                    <div class="flex items-start">
+                                        <div class="flex-shrink-0">
+                                            @svg('heroicon-o-check-badge', 'w-6 h-6 text-green-600')
+                                        </div>
+                                        <div class="ml-3">
+                                            <h4 class="text-sm font-semibold text-green-800 mb-1">¡Felicitaciones! Tu ficha ha sido aceptada</h4>
+                                            <p class="text-sm text-green-700">
+                                                Ahora puedes proceder a crear tu cronograma de actividades y comenzar tus prácticas.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+
+                            <!-- Grid de acciones -->
+                            <div class="grid md:grid-cols-2 gap-4">
+
+                                <!-- Ver Ficha -->
+                                <a href="{{ route('alumno.ficha.show', $ficha) }}"
+                                   class="group relative bg-gradient-to-br from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200 border-2 border-blue-200 rounded-xl p-6 transition-all duration-200 hover:shadow-lg">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <div class="w-12 h-12 bg-blue-800 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                                            @svg('heroicon-o-document-magnifying-glass', 'w-6 h-6 text-white')
+                                        </div>
+                                        <div class="w-6 h-6 bg-blue-800 rounded-full flex items-center justify-center group-hover:translate-x-1 transition-transform">
+                                            @svg('heroicon-o-arrow-right', 'w-4 h-4 text-white')
+                                        </div>
+                                    </div>
+                                    <h4 class="text-lg font-bold text-gray-800 mb-1">Ver Ficha Completa</h4>
+                                    <p class="text-sm text-gray-600">Revisa todos los detalles de tu registro</p>
+                                </a>
+
+                                <!-- Cronograma -->
+                                @if(!$ficha->cronograma)
+                                    <a href="{{ route('alumno.cronograma.create', $ficha) }}"
+                                       class="group relative bg-gradient-to-br from-indigo-50 to-indigo-100 hover:from-indigo-100 hover:to-indigo-200 border-2 border-indigo-200 rounded-xl p-6 transition-all duration-200 hover:shadow-lg">
+                                        <div class="flex items-center justify-between mb-3">
+                                            <div class="w-12 h-12 bg-indigo-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                                                @svg('heroicon-o-calendar-days', 'w-6 h-6 text-white')
+                                            </div>
+                                            <div class="w-6 h-6 bg-indigo-600 rounded-full flex items-center justify-center group-hover:translate-x-1 transition-transform">
+                                                @svg('heroicon-o-arrow-right', 'w-4 h-4 text-white')
+                                            </div>
+                                        </div>
+                                        <h4 class="text-lg font-bold text-gray-800 mb-1">Crear Cronograma</h4>
+                                        <p class="text-sm text-gray-600">Programa tus actividades de prácticas</p>
+                                    </a>
+                                @else
+                                    <a href="{{ route('alumno.cronograma.show', $ficha->cronograma) }}"
+                                       class="group relative bg-gradient-to-br from-emerald-50 to-emerald-100 hover:from-emerald-100 hover:to-emerald-200 border-2 border-emerald-200 rounded-xl p-6 transition-all duration-200 hover:shadow-lg">
+                                        <div class="flex items-center justify-between mb-3">
+                                            <div class="w-12 h-12 bg-emerald-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                                                @svg('heroicon-o-calendar-days', 'w-6 h-6 text-white')
+                                            </div>
+                                            <div class="w-6 h-6 bg-emerald-600 rounded-full flex items-center justify-center group-hover:translate-x-1 transition-transform">
+                                                @svg('heroicon-o-arrow-right', 'w-4 h-4 text-white')
+                                            </div>
+                                        </div>
+                                        <h4 class="text-lg font-bold text-gray-800 mb-1">Ver Cronograma</h4>
+                                        <p class="text-sm text-gray-600">Consulta tu planificación de actividades</p>
+                                    </a>
+                                @endif
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card informativa adicional -->
+                    <div class="bg-blue-50 border border-blue-100 rounded-xl p-6">
+                        <div class="flex items-start space-x-4">
+                            <div class="flex-shrink-0">
+                                <div class="w-10 h-10 bg-blue-800 rounded-lg flex items-center justify-center">
+                                    @svg('heroicon-o-light-bulb', 'w-6 h-6 text-white')
+                                </div>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-800 mb-2">¿Necesitas ayuda?</h4>
+                                <p class="text-sm text-gray-600 mb-3">
+                                    Si tienes dudas sobre tu ficha o el proceso de prácticas, puedes contactar al coordinador académico o consultar la guía de prácticas pre profesionales.
+                                </p>
+                                <button class="text-sm font-medium text-blue-800 hover:text-blue-900 inline-flex items-center group">
+                                    Ver guía de prácticas
+                                    @svg('heroicon-o-arrow-right', 'w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform')
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            @endif
 
         </div>
     </div>

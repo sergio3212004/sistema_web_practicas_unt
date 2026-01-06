@@ -27,7 +27,7 @@ class UserSeeder extends Seeder
             [
                 'email'=>'admin@unitru.edu.pe',
                 'password'=>Hash::make('pene123'),
-                'rol_id'=>5,
+                'rol_id'=>4,
                 'created_at'=>now(),
                 'updated_at'=>now()
             ],
@@ -35,6 +35,13 @@ class UserSeeder extends Seeder
                 'email'=>'profesor2@unitru.edu.pe',
                 'password'=>Hash::make('pene123'),
                 'rol_id'=>2,
+                'created_at'=>now(),
+                'updated_at'=>now()
+            ],
+            [
+                'email'=>'smonge67000123@gmail.com',
+                'password'=>Hash::make('pene123'),
+                'rol_id'=>3,
                 'created_at'=>now(),
                 'updated_at'=>now()
             ]

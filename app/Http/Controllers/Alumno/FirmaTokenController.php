@@ -36,7 +36,7 @@ class FirmaTokenController extends Controller
         $firmaBase64 = str_replace(' ', '+', $firmaBase64);
 
         $nombre = 'firma_' . $firmaToken->tipo . '_' . time() . '.png';
-        Storage::disk('public')->put("firmas/$nombre", base64_decode($firmaBase64));
+        Storage::disk('public')->put("firmas/ficha-registro/$nombre", base64_decode($firmaBase64));
 
         // Guardar en ficha según tipo
         $ficha = $firmaToken->ficha;

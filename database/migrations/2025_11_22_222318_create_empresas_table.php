@@ -23,8 +23,6 @@ return new class extends Migration
             $table->string('provincia', 50)->nullable();    // ← AGREGADO
             $table->string('distrito', 50)->nullable();     // ← AGREGADO
             $table->string('direccion', 255)->nullable();   // ← AGREGADO y aumentado tamaño
-            $table->boolean('email_verificado')->default(false);
-            $table->string('codigo_verificacion')->nullable();
             $table->boolean('aprobado')->default(false);
             $table->timestamps();
         });

@@ -1,167 +1,199 @@
 <x-guest-layout>
-    <!-- Register Form - Empresa (Hidden by default) -->
-    <form id="registerForm" method="POST" action="{{ route('empresa.register') }}" >
+    <form method="POST" action="{{ route('empresa.register') }}" class="space-y-8">
         @csrf
 
-        <!-- RUC -->
-        <div>
-            <x-input-label for="ruc" value="RUC *" />
-            <x-text-input
-                id="ruc"
-                class="block mt-1 w-full"
-                type="text"
-                name="ruc"
-                :value="old('ruc')"
-                required
-                maxlength="11"
-                pattern="[0-9]{11}"
-                placeholder="11 dígitos" />
-            <x-input-error :messages="$errors->get('ruc')" class="mt-2" />
+        {{-- ===== Datos principales ===== --}}
+        <div class="space-y-6">
+
+            {{-- RUC --}}
+            <div>
+                <x-input-label for="ruc" value="RUC *" />
+
+                <x-text-input
+                    id="ruc"
+                    name="ruc"
+                    type="text"
+                    :value="old('ruc')"
+                    required
+                    maxlength="11"
+                    pattern="[0-9]{11}"
+                    placeholder="11 dígitos"
+                    class="block w-full rounded-xl px-4 py-3 text-sm
+                           border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                />
+
+                <x-input-error :messages="$errors->get('ruc')" />
+            </div>
+
+            {{-- Nombre --}}
+            <div>
+                <x-input-label for="nombre" value="Nombre de la Empresa *" />
+
+                <x-text-input
+                    id="nombre"
+                    name="nombre"
+                    type="text"
+                    :value="old('nombre')"
+                    required
+                    class="block w-full rounded-xl px-4 py-3 text-sm
+                           border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                />
+
+                <x-input-error :messages="$errors->get('nombre')" />
+            </div>
+
+            {{-- Razón Social --}}
+            <div>
+                <x-input-label for="razon_social_id" value="Razón Social *" />
+
+                <select
+                    id="razon_social_id"
+                    name="razon_social_id"
+                    required
+                    class="block w-full rounded-xl px-4 py-3 text-sm
+                           border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                >
+                    <option value="">Seleccione una razón social</option>
+                    @foreach(\App\Models\RazonSocial::all() as $razon)
+                        <option value="{{ $razon->id }}" @selected(old('razon_social_id') == $razon->id)>
+                            {{ $razon->acronimo }}
+                        </option>
+                    @endforeach
+                </select>
+
+                <x-input-error :messages="$errors->get('razon_social_id')" />
+            </div>
         </div>
 
-        <!-- Nombre de la Empresa -->
-        <div class="mt-4">
-            <x-input-label for="nombre" value="Nombre de la Empresa *" />
-            <x-text-input
-                id="nombre"
-                class="block mt-1 w-full"
-                type="text"
-                name="nombre"
-                :value="old('nombre')"
-                required />
-            <x-input-error :messages="$errors->get('nombre')" class="mt-2" />
+        {{-- ===== Credenciales ===== --}}
+        <div class="space-y-6 border-t pt-8">
+
+            <div>
+                <x-input-label for="register-email" value="Email *" />
+
+                <x-text-input
+                    id="register-email"
+                    name="email"
+                    type="email"
+                    :value="old('email')"
+                    required
+                    class="block w-full rounded-xl px-4 py-3 text-sm
+                           border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                />
+
+                <x-input-error :messages="$errors->get('email')" />
+            </div>
+
+            <div>
+                <x-input-label for="register-password" value="Contraseña *" />
+
+                <x-text-input
+                    id="register-password"
+                    name="password"
+                    type="password"
+                    required
+                    autocomplete="new-password"
+                    class="block w-full rounded-xl px-4 py-3 text-sm
+                           border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                />
+
+                <x-input-error :messages="$errors->get('password')" />
+            </div>
+
+            <div>
+                <x-input-label for="password_confirmation" value="Confirmar Contraseña *" />
+
+                <x-text-input
+                    id="password_confirmation"
+                    name="password_confirmation"
+                    type="password"
+                    required
+                    autocomplete="new-password"
+                    class="block w-full rounded-xl px-4 py-3 text-sm
+                           border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                />
+            </div>
         </div>
 
-        <!-- Razón Social -->
-        <div class="mt-4">
-            <x-input-label for="razon_social_id" value="Razón Social *" />
-            <select
-                id="razon_social_id"
-                name="razon_social_id"
-                class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
-                required>
-                <option value="">Seleccione una razón social</option>
-                @php
-                    $razonesSociales = \App\Models\RazonSocial::all();
-                @endphp
-                @foreach($razonesSociales as $razon)
-                    <option value="{{ $razon->id }}" {{ old('razon_social_id') == $razon->id ? 'selected' : '' }}>
-                        {{ $razon->acronimo }}
-                    </option>
-                @endforeach
-            </select>
-            <x-input-error :messages="$errors->get('razon_social_id')" class="mt-2" />
+        {{-- ===== Información de contacto ===== --}}
+        <div class="space-y-6 border-t pt-8">
+
+            <div>
+                <x-input-label for="telefono" value="Teléfono" />
+
+                <x-text-input
+                    id="telefono"
+                    name="telefono"
+                    type="text"
+                    :value="old('telefono')"
+                    maxlength="9"
+                    pattern="[0-9]{9}"
+                    placeholder="9 dígitos"
+                    class="block w-full rounded-xl px-4 py-3 text-sm
+                           border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                />
+
+                <x-input-error :messages="$errors->get('telefono')" />
+            </div>
+
+            {{-- Ubigeo --}}
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <x-input-label for="departamento" value="Departamento" />
+                    <select id="departamento" name="departamento"
+                            class="block w-full rounded-xl px-4 py-3 text-sm
+                               border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                        <option value="">Seleccione</option>
+                    </select>
+                </div>
+
+                <div>
+                    <x-input-label for="provincia" value="Provincia" />
+                    <select id="provincia" name="provincia" disabled
+                            class="block w-full rounded-xl px-4 py-3 text-sm
+                               border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                        <option value="">Seleccione</option>
+                    </select>
+                </div>
+
+                <div>
+                    <x-input-label for="distrito" value="Distrito" />
+                    <select id="distrito" name="distrito" disabled
+                            class="block w-full rounded-xl px-4 py-3 text-sm
+                               border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                        <option value="">Seleccione</option>
+                    </select>
+                </div>
+            </div>
+
+            <div>
+                <x-input-label for="direccion" value="Dirección" />
+
+                <x-text-input
+                    id="direccion"
+                    name="direccion"
+                    type="text"
+                    :value="old('direccion')"
+                    class="block w-full rounded-xl px-4 py-3 text-sm
+                           border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                />
+            </div>
         </div>
 
-        <!-- Email -->
-        <div class="mt-4">
-            <x-input-label for="register-email" value="Email *" />
-            <x-text-input
-                id="register-email"
-                class="block mt-1 w-full"
-                type="email"
-                name="email"
-                :value="old('email')"
-                required />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
-        </div>
-
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="register-password" value="Contraseña *" />
-            <x-text-input
-                id="register-password"
-                class="block mt-1 w-full"
-                type="password"
-                name="password"
-                required
-                autocomplete="new-password" />
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
-
-        <!-- Confirm Password -->
-        <div class="mt-4">
-            <x-input-label for="password_confirmation" value="Confirmar Contraseña *" />
-            <x-text-input
-                id="password_confirmation"
-                class="block mt-1 w-full"
-                type="password"
-                name="password_confirmation"
-                required
-                autocomplete="new-password" />
-        </div>
-
-        <!-- Teléfono -->
-        <div class="mt-4">
-            <x-input-label for="telefono" value="Teléfono" />
-            <x-text-input
-                id="telefono"
-                class="block mt-1 w-full"
-                type="text"
-                name="telefono"
-                :value="old('telefono')"
-                maxlength="9"
-                pattern="[0-9]{9}"
-                placeholder="9 dígitos" />
-            <x-input-error :messages="$errors->get('telefono')" class="mt-2" />
-        </div>
-
-        <!-- Departamento -->
-        <div class="mt-4">
-            <x-input-label for="departamento" value="Departamento" />
-            <select
-                id="departamento"
-                name="departamento"
-                class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
-                <option value="">Seleccione</option>
-            </select>
-            <x-input-error :messages="$errors->get('departamento')" class="mt-2" />
-        </div>
-
-        <!-- Provincia -->
-        <div class="mt-4">
-            <x-input-label for="provincia" value="Provincia" />
-            <select
-                id="provincia"
-                name="provincia"
-                class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
-                disabled>
-                <option value="">Seleccione</option>
-            </select>
-            <x-input-error :messages="$errors->get('provincia')" class="mt-2" />
-        </div>
-
-        <!-- Distrito -->
-        <div class="mt-4">
-            <x-input-label for="distrito" value="Distrito" />
-            <select
-                id="distrito"
-                name="distrito"
-                class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
-                disabled>
-                <option value="">Seleccione</option>
-            </select>
-            <x-input-error :messages="$errors->get('distrito')" class="mt-2" />
-        </div>
-
-        <!-- Dirección -->
-        <div class="mt-4">
-            <x-input-label for="direccion" value="Dirección" />
-            <x-text-input
-                id="direccion"
-                class="block mt-1 w-full"
-                type="text"
-                name="direccion"
-                :value="old('direccion')" />
-            <x-input-error :messages="$errors->get('direccion')" class="mt-2" />
-        </div>
-
-        <div class="flex items-center justify-end mt-4">
-            <x-primary-button class="ms-4">
+        {{-- ===== Acción ===== --}}
+        <div class="pt-6">
+            <button
+                type="submit"
+                class="w-full rounded-xl px-6 py-3 text-sm font-semibold text-white
+                       bg-gradient-to-r from-blue-700 to-indigo-700
+                       hover:from-blue-800 hover:to-indigo-800
+                       shadow-lg transition focus:outline-none
+                       focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
                 Registrar Empresa
-            </x-primary-button>
+            </button>
         </div>
     </form>
+
 
     <script>
         document.addEventListener('DOMContentLoaded', async function() {

@@ -24,4 +24,5 @@ class Profesor extends Model
     public function aulas() {
         return $this->hasMany(Aula::class, 'profesor_id', 'id');
     }
+
 }

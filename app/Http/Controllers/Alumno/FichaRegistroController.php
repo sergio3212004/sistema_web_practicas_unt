@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Alumno;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\FichaRegistroRequest;
 use App\Mail\SolicitudFirmaEmpresaMail;
 use App\Mail\SolicitudFirmaProgramaMail;
 use App\Models\FichaRegistro;
-use App\Models\CodigoFicha;
 use App\Models\FichaRegistroHorario;
 use App\Models\RazonSocial;
 use App\Models\Semestre;
@@ -17,7 +17,10 @@ use Illuminate\Support\Facades\Mail;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
 use App\Models\FirmaToken;
+use App\Rules\Ruc;
 use Illuminate\Support\Facades\Storage;
+use Barryvdh\DomPDF\Facade\Pdf;
+
 
 class FichaRegistroController extends Controller
 {
@@ -51,36 +54,9 @@ class FichaRegistroController extends Controller
         ));
     }
 
-    public function store(Request $request)
+    public function store(FichaRegistroRequest $request)
     {
         $alumno = Auth::user()->alumno;
-
-        $request->validate([
-            'ciclo' => 'required|integer|min:1|max:10',
-            'semestre_id' => 'required|exists:semestres,id',
-            'razon_social_id' => 'required|exists:razones_sociales,id',
-            'ruc' => 'required|digits:11',
-            'correo_empresa' => 'required|email',
-            'nombre_empresa' => 'required|string|max:255', // ✅
-            'nombre_gerente' => 'required|string|max:255',
-            'nombre_jefe_rrhh' => 'required|string|max:255',
-            'direccion' => 'required|string|max:255',
-            'telefono_fijo' => 'required|string|max:20',
-            'telefono_movil' => 'required|string|max:20',
-            'departamento' => 'required|string|max:100',
-            'provincia' => 'required|string|max:100',
-            'distrito' => 'required|string|max:100',
-            'fecha_inicio' => 'required|date',
-            'fecha_termino' => 'required|date|after:fecha_inicio',
-            'descripcion' => 'required|string',
-            'area_practicas' => 'required|string|max:255',
-            'cargo' => 'required|string|max:255',
-            'nombre_jefe_directo' => 'required|string|max:255',
-            'telefono_jefe_directo' => 'required|string|max:20',
-            'correo_jefe_directo' => 'required|email',
-            'firma_practicante' => 'required|string',
-            'horarios' => 'required|array|min:1'
-        ]);
 
         DB::transaction(function () use ($request, $alumno) {
 
@@ -101,7 +77,7 @@ class FichaRegistroController extends Controller
             $firmaBase64 = str_replace(' ', '+', $firmaBase64);
 
             $nombreFirma = 'firma_alumno_' . $alumno->id . '_' . time() . '.png';
-            Storage::disk('public')->put('firmas/' . $nombreFirma, base64_decode($firmaBase64));
+            Storage::disk('public')->put('firmas/ficha-registro/' . $nombreFirma, base64_decode($firmaBase64));
 
             /** -------------------------
              * CREAR FICHA
@@ -183,7 +159,8 @@ class FichaRegistroController extends Controller
             ->with('success', 'Ficha registrada correctamente. Las firmas han sido solicitadas.');
     }
 
-    public function show(FichaRegistro $fichaRegistro) {
+    public function show(FichaRegistro $fichaRegistro)
+    {
         if ($fichaRegistro->alumno_id !== auth()->user()->alumno->id) {
             abort(403);
         }
@@ -195,6 +172,76 @@ class FichaRegistroController extends Controller
         ]);
 
         return view('alumno.ficha-registro.show', compact('fichaRegistro'));
+    }
+
+    public function destroy(FichaRegistro $fichaRegistro)
+    {
+        // Verificar que el alumno sea el dueño de la ficha
+        if ($fichaRegistro->alumno_id !== auth()->user()->alumno->id) {
+            abort(403);
+        }
+
+        // Verificar que la ficha no esté aceptada
+        if ($fichaRegistro->aceptado) {
+            return redirect()
+                ->route('alumno.ficha.show', $fichaRegistro)
+                ->with('error', 'No puedes eliminar una ficha que ya ha sido aceptada.');
+        }
+
+        DB::transaction(function () use ($fichaRegistro) {
+            // Eliminar firmas del storage si existen
+            if ($fichaRegistro->firma_practicante) {
+                Storage::disk('public')->delete('firmas/ficha-registro/' . $fichaRegistro->firma_practicante);
+            }
+            if ($fichaRegistro->firma_empresa) {
+                Storage::disk('public')->delete('firmas/ficha-registro/' . $fichaRegistro->firma_empresa);
+            }
+            if ($fichaRegistro->firma_programa) {
+                Storage::disk('public')->delete('firmas/ficha-registro/' . $fichaRegistro->firma_programa);
+            }
+
+            // Eliminar tokens de firma asociados
+            $fichaRegistro->firmaTokens()->delete();
+
+            // Eliminar horarios asociados
+            $fichaRegistro->horarios()->delete();
+
+            // Eliminar la ficha
+            $fichaRegistro->delete();
+        });
+
+        return redirect()
+            ->route('alumno.ficha.index')
+            ->with('success', 'Ficha de registro eliminada correctamente.');
+    }
+
+
+    public function downloadPdf(FichaRegistro $fichaRegistro)
+    {
+        // Verificar que el alumno sea el dueño de la ficha
+        if ($fichaRegistro->alumno_id !== auth()->user()->alumno->id) {
+            abort(403);
+        }
+
+        // Cargar relaciones necesarias
+        $fichaRegistro->load([
+            'alumno.user',
+            'alumno.aula',
+            'semestre',
+            'horarios',
+        ]);
+
+        // Generar PDF
+        $pdf = Pdf::loadView('alumno.ficha-registro.pdf', compact('fichaRegistro'));
+
+        // Configurar el PDF
+        $pdf->setPaper('a4', 'portrait');
+
+        // Nombre del archivo
+        $nombreArchivo = 'FichaDeRegistro_' . $fichaRegistro->alumno->codigo_matricula . '.pdf';
+
+        // Descargar el PDF
+        return $pdf->download($nombreArchivo);
     }
 
 }

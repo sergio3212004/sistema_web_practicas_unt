@@ -25,14 +25,42 @@ class DashboardController extends Controller
         }
 
 
+        // Lógica para el profesor
         if ($user->rol->nombre == 'profesor') {
             $profesor = $user->profesor;
 
-            // Cargar aulas con su semestre
+            // Cargar aulas con sus relaciones necesarias
+            $aulas = $profesor->aulas()
+                ->with([
+                    'semestre',
+                    'alumnos',
+                    'semanas',
+                    'actividades.entregas'
+                ])
+                ->get();
+
+            // Calcular total de entregas en todas las aulas
+            $totalEntregas = $aulas->sum(function ($aula) {
+                return $aula->actividades->sum(function ($actividad) {
+                    return $actividad->entregas->count();
+                });
+            });
+
+            // Calcular actividades activas (entre fecha_inicio y fecha_limite)
+            $actividadesActivas = $aulas->sum(function ($aula) {
+                return $aula->actividades->filter(function ($actividad) {
+                    return $actividad->estaActiva();
+                })->count();
+            });
+
             $data['profesor'] = $profesor;
-            $data['aulas'] = $profesor->aulas()->with('semestre')->get();
+            $data['aulas'] = $aulas;
+            $data['totalEntregas'] = $totalEntregas;
+            $data['actividadesActivas'] = $actividadesActivas;
+            $data['semestreActivo'] = Semestre::where('activo', true)->first();
         }
         // Puedes agregar lógica para otros roles aquí (profesor, alumno, etc.)
+
 
         return view('dashboard', $data);
     }

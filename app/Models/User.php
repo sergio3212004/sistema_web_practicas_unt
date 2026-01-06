@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Notifications\CustomResetPasswordNotification;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -65,4 +66,30 @@ class User extends Authenticatable
     public function profesor() {
         return $this->hasOne(Profesor::class, 'user_id', 'id');
     }
+
+    public function getNombreAttribute() {
+        if ($this->administrador) {
+            return trim($this->administrador->nombres . ' ' . $this->administrador->apellido_paterno);
+
+        }
+
+        if ($this->alumno) {
+            return trim($this->alumno->nombres . ' ' . $this->alumno->apellido_paterno);
+        }
+
+        if ($this->profesor) {
+            return trim($this->profesor->nombres . ' ' . $this->profesor->apellido_paterno);
+        }
+
+        if ($this->empresa) {
+            return trim($this->empresa->nombre . ' ' . $this->empresa->razonSocial->acronimo);
+        }
+        return null;
+    }
+
+    public function sendPasswordResetNotification($token): void
+    {
+        $this->notify(new CustomResetPasswordNotification($token));
+    }
+
 }

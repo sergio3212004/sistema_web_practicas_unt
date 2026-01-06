@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Empresa;
 use App\Http\Controllers\Controller;
 use App\Models\Publicacion;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class PublicacionController extends Controller
 {
@@ -13,8 +14,13 @@ class PublicacionController extends Controller
      */
     public function index()
     {
-        //
-        return view('empresa.publicaciones.index');
+        $empresa = auth()->user()->empresa;
+
+        $publicaciones = \App\Models\Publicacion::where('empresa_id', $empresa->id)
+            ->latest()
+            ->get();
+
+        return view('empresa.publicaciones.index', compact('publicaciones', 'empresa'));
     }
 
     /**
@@ -31,27 +37,37 @@ class PublicacionController extends Controller
      */
     public function store(Request $request)
     {
-        //
         $request->validate([
             'nombre' => 'required|string|max:70',
+            'cargo' => 'required|string|max:50',
             'descripcion' => 'required',
-            'fecha' => 'required|date',
-            'imagen' => 'required|image|max:2048'
+            'estado' => 'required|in:Disponible,Cubierta',
+            'imagen' => 'image|max:2048'
         ]);
 
-        $ruta = $request->file('imagen')->store('publicaciones', 'public');
+
+        $ruta = 'images/img.png';
+
+        if ($request->hasFile('imagen')) {
+            $ruta = $request->file('imagen')->store('publicaciones', 'public');
+
+        }
 
         Publicacion::create([
             'nombre' => $request->nombre,
+            'cargo' => $request->cargo,
             'empresa_id' => auth()->user()->empresa->id,
             'descripcion' => $request->descripcion,
-            'fecha' => $request->fecha,
+            'estado' => $request->estado,
             'imagen' => $ruta,
         ]);
 
         return redirect()->route('empresa.publicaciones.index')
             ->with('success', 'Publicación creada correctamente.');
     }
+
+
+
 
     /**
      * Display the specified resource.
@@ -82,40 +98,40 @@ class PublicacionController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $publicacion = \App\Models\Publicacion::findOrFail($id);
+        $publicacion = Publicacion::findOrFail($id);
 
+        // Seguridad: verificar empresa
         if ($publicacion->empresa_id !== auth()->user()->empresa->id) {
             abort(403, 'No autorizado.');
         }
 
         $request->validate([
             'nombre' => 'required|string|max:70',
+            'cargo' => 'required|string|max:50',
             'descripcion' => 'required',
-            'fecha' => 'required|date',
+            'estado' => 'required|in:Disponible,Cubierta',
             'imagen' => 'nullable|image|max:2048',
         ]);
 
-        // Guardar ruta actual por si hay que borrar
-        $imagenAnterior = $publicacion->imagen;
-
-        // Si se subió una nueva imagen
+        // Si hay nueva imagen → borrar la anterior
         if ($request->hasFile('imagen')) {
-
-            // Borrar la imagen anterior del storage
-            if ($imagenAnterior && \Storage::disk('public')->exists($imagenAnterior)) {
-                \Storage::disk('public')->delete($imagenAnterior);
+            if ($publicacion->imagen && Storage::disk('public')->exists($publicacion->imagen)) {
+                Storage::disk('public')->delete($publicacion->imagen);
             }
 
-            // Subir la nueva
-            $publicacion->imagen = $request->file('imagen')->store('publicaciones', 'public');
+            $publicacion->imagen = $request->file('imagen')
+                ->store('publicaciones', 'public');
         }
 
-        // Actualizar campos restantes
-        $publicacion->nombre = $request->nombre;
-        $publicacion->descripcion = $request->descripcion;
-        $publicacion->fecha = $request->fecha;
+        // Actualizar campos
+        $publicacion->fill([
+            'nombre' => $request->nombre,
+            'cargo' => $request->cargo,
+            'descripcion' => $request->descripcion,
+            'estado' => $request->estado,
+        ]);
 
-        // Guardar cambios
+        // Guarda y actualiza updated_at automáticamente
         $publicacion->save();
 
         return redirect()

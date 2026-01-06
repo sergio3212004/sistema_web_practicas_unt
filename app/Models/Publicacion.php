@@ -10,13 +10,20 @@ class Publicacion extends Model
     protected $table = 'publicaciones';
     protected $fillable = [
         'nombre',
+        'cargo',
         'empresa_id',
         'descripcion',
-        'fecha',
-        'imagen'
+        'estado',
+        'imagen',
+        'created_at',
+        'updated_at'
     ];
 
     public function empresa() {
         return $this->belongsTo(Empresa::class, 'empresa_id', 'id');
+    }
+
+    public function postulaciones() {
+        return $this->hasMany(Postulacion::class, 'publicacion_id', 'id');
     }
 }

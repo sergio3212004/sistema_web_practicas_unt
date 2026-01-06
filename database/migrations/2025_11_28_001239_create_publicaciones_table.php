@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('publicaciones', function (Blueprint $table) {
             $table->id();
             $table->string('nombre', 70);
+            $table->string('cargo')->nullable();
             $table->unsignedBigInteger('empresa_id');
             $table->foreign('empresa_id')
                 ->references('id')
@@ -21,7 +22,7 @@ return new class extends Migration
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
             $table->text('descripcion');
-            $table->date('fecha');
+            $table->enum('estado', ['Disponible', 'Cubierta'])->after('descripcion')->default('Disponible');
             $table->string('imagen');
             $table->timestamps();
         });

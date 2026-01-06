@@ -26,17 +26,15 @@ class RolSeeder extends Seeder
                 'updated_at'=>now()
             ],
             [
-                'nombre' => 'director',
-                'created_at'=>now(),
-                'updated_at'=>now()],
-            [
                 'nombre' => 'empresa',
                 'created_at'=>now(),
-                'updated_at'=>now()],
+                'updated_at'=>now()
+            ],
             [
                 'nombre' => 'administrador',
                 'created_at'=>now(),
-                'updated_at'=>now()]
+                'updated_at'=>now()
+            ]
         ]);
     }
 }

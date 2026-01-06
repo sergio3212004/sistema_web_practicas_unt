@@ -25,6 +25,8 @@ class DatabaseSeeder extends Seeder
             ProfesorSeeder::class,
             AulaSeeder::class,
             AlumnoSeeder::class,
+            EmpresaSeeder::class,
+            TipoActividadSeeder::class
 
         ]);
     }

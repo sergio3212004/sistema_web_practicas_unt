@@ -389,6 +389,7 @@
             </div>
         </form>
     </div>
+
     <script>
         const canvas = document.getElementById('canvasFirma');
         const ctx = canvas.getContext('2d');

@@ -17,6 +17,7 @@ class Alumno extends Model
         'apellido_paterno',
         'apellido_materno',
         'telefono',
+        'cv'
     ];
 
     public function user()
@@ -53,7 +54,11 @@ class Alumno extends Model
 
     public function entregas()
     {
-        return $this->hasMany(EntregaAlumno::class);
+        return $this->hasMany(Entrega::class);
+    }
+
+    public function postualaciones() {
+        return $this->hasMany(Postulacion::class);
     }
 
 }

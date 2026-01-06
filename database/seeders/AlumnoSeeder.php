@@ -21,6 +21,7 @@ class AlumnoSeeder extends Seeder
             'apellido_paterno' => 'Monge',
             'apellido_materno' => 'Muñoz',
             'telefono' => '968891526',
+            'cv' => 'https://drive.google.com/file/d/1dhq67AC51Flag_DlsgxS7YKmDedaDDV4/view?usp=drive_link',
             'aula_id' => '1',
             'created_at' => now(),
             'updated_at' => now()

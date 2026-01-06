@@ -16,7 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('ficha_registro_id');
             $table->foreign('ficha_registro_id')->on('fichas_registro')->references('id')->cascadeOnDelete();
             $table->string('email');
-            $table->enum('tipo', ['empresa', 'jefe_directo', 'profesor']);
+            $table->enum('tipo', ['empresa', 'jefe_directo']);
             $table->string('token')->unique();
             $table->timestamp('expires_at');
             $table->timestamp('signed_at')->nullable();

@@ -5,16 +5,30 @@ use App\Http\Controllers\Admin\SemestreController;
 use App\Http\Controllers\Admin\UserController;
 
 use App\Http\Controllers\Alumno\CronogramaController;
+use App\Http\Controllers\Alumno\EntregaController;
 use App\Http\Controllers\Alumno\FichaRegistroController;
 use App\Http\Controllers\Alumno\FirmaCronogramaController;
 use App\Http\Controllers\Alumno\FirmaTokenController;
-use App\Http\Controllers\Profesor\EntregaController;
+use App\Http\Controllers\GoogleDriveController;
+use App\Http\Controllers\Profesor\ActividadesController;
+use App\Http\Controllers\Profesor\EntregasController;
+use App\Http\Controllers\Profesor\SemanaController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    return auth()->check()
+        ? redirect('/dashboard')
+        : redirect('/login');
 });
+
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+});
+
+Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
+
 
 // Ruta pública para registro de empresas
 Route::get('/empresa/register', [\App\Http\Controllers\Empresa\EmpresaRegisterController::class, 'create'])
@@ -27,14 +41,6 @@ Route::get('/empresa/verify', [\App\Http\Controllers\Empresa\EmpresaRegisterCont
     ->name('empresa.verify.form');
 Route::post('/empresa/verify', [\App\Http\Controllers\Empresa\EmpresaRegisterController::class, 'verifyCode'])
     ->name('empresa.verify.code');
-
-Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
-
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-});
 
 // Rutas de Administrador
 Route::middleware(['auth', 'rol:administrador'])
@@ -50,7 +56,7 @@ Route::middleware(['auth', 'rol:administrador'])
         Route::resource('usuarios', UserController::class);
 
         // Aulas
-        Route::resource('aulas', \App\Http\Controllers\Admin\AulaController::class);
+        Route::resource('aulas', AulaController::class);
 
         // Mostrar formulario para agregar alumnos
         Route::get('aulas/{aula}/agregar-alumnos', [AulaController::class, 'agregarAlumnos'])
@@ -71,13 +77,6 @@ Route::middleware(['auth', 'rol:administrador'])
         Route::delete('aprobaciones/{id}/rechazar', [\App\Http\Controllers\Admin\AprobacionController::class, 'rechazar'])
             ->name('aprobaciones.rechazar');
 
-        // Perfiles - Ver detalles
-        Route::get('perfil/empresa/{id}', [\App\Http\Controllers\Admin\PerfilController::class, 'empresa'])
-            ->name('perfil.empresa');
-
-        Route::get('perfil/solicitud/{id}', [\App\Http\Controllers\Admin\PerfilController::class, 'solicitudEmpresa'])
-            ->name('perfil.solicitud');
-
         // Informes Finales
         Route::get('informes-finales', [\App\Http\Controllers\Admin\InformeFinalController::class, 'index'])
             ->name('informes-finales.index');
@@ -95,44 +94,39 @@ Route::middleware(['auth', 'rol:profesor'])
     ->as('profesor.')
     ->group(function () {
 
-        // Entregas
-        Route::get('entregas', [\App\Http\Controllers\Profesor\EntregaController::class, 'index'])
-            ->name('entregas.index');
-        Route::get('entregas/crear', [\App\Http\Controllers\Profesor\EntregaController::class, 'create'])
-            ->name('entregas.create');
-        Route::post('entregas', [\App\Http\Controllers\Profesor\EntregaController::class, 'store'])
-            ->name('entregas.store');
-        Route::post(
-            'profesor/entregas/{entrega}/calificar/{alumno}',
-            [EntregaController::class, 'calificar']
-        )->name('entregas.calificar');
+        // Si necesitas un índice general de todas las semanas (opcional)
+        Route::get('semanas', [SemanaController::class, 'index'])->name('semanas.index');
 
-        // Ver entrega de un alumno
-        Route::get(
-            'profesor/entregas/{entrega}/alumno/{alumno}',
-            [EntregaController::class, 'verEntregaAlumno']
-        )->name('entregas.ver-alumno');
 
-        // Guardar calificación
-        Route::post(
-            'profesor/entregas/{entrega}/alumno/{alumno}/calificar',
-            [EntregaController::class, 'guardarCalificacion']
-        )->name('entregas.guardar-calificacion');
-
+        // Ruta para ver el aula
+        Route::get('/aula/{aula}', [AulaController::class, 'index'])
+            ->name('aula.index');
 
         // Aulas del profesor
-        Route::get('aulas', [\App\Http\Controllers\Profesor\AulaController::class, 'index'])
-            ->name('aulas.index');
 
         Route::get('aulas/{aula}', [\App\Http\Controllers\Profesor\AulaController::class, 'show'])
             ->name('aulas.show');
 
 
+        // Rutas de Semanas
+        Route::get('aulas/{aula}/semanas/create', [SemanaController::class, 'create'])->name('semanas.create');
+        Route::post('aulas/{aula}/semanas', [SemanaController::class, 'store'])->name('semanas.store');
+        Route::get('semanas/{semana}', [SemanaController::class, 'show'])->name('semanas.show');
+        Route::get('semanas/{semana}/edit', [SemanaController::class, 'edit'])->name('semanas.edit');
+        Route::put('semanas/{semana}', [SemanaController::class, 'update'])->name('semanas.update');
+        Route::delete('semanas/{semana}', [SemanaController::class, 'destroy'])->name('semanas.destroy');
+
+        // Actividades
+        Route::get('/aulas/{aula}/actividades/create', [ActividadesController::class, 'create'])->name('actividades.create');
+        Route::post('/aulas/{aula}/actividades', [ActividadesController::class, 'store'])->name('actividades.store');
+        Route::get('/actividades/{actividad}', [ActividadesController::class, 'show'])->name('actividades.show');
+        Route::delete('/actividades/{actividad}/destroy', [ActividadesController::class, 'destroy'])->name('actividades.destroy');
+
         // routes/web.php (grupo profesor)
 
-        Route::get('entregas/{entrega}',
-            [\App\Http\Controllers\Profesor\EntregaController::class, 'show']
-        )->name('entregas.show');
+        Route::patch('/profesor/entregas/{entrega}/calificar', [EntregasController::class, 'calificar'])
+            ->name('profesor.entregas.calificar')
+            ->middleware('auth');
 
 
         // Fichas de registro (profesor)
@@ -171,6 +165,16 @@ Route::middleware(['auth', 'rol:empresa'])
 
         // Publicaciones
         Route::resource('publicaciones', \App\Http\Controllers\Empresa\PublicacionController::class);
+        // Postulaciones
+        Route::get('postulaciones', [\App\Http\Controllers\Empresa\PostulacionController::class, 'index'])
+        ->name('postulaciones.index');
+        Route::get('postulaciones/{publicacion}', [\App\Http\Controllers\Empresa\PostulacionController::class, 'show'])
+            ->name('postulaciones.show');
+        Route::patch('postulaciones/{postulacion}/aprobar', [\App\Http\Controllers\Empresa\PostulacionController::class, 'aprobar'])
+            ->name('postulaciones.aprobar');
+
+        Route::patch('postulaciones/{postulacion}/rechazar', [\App\Http\Controllers\Empresa\PostulacionController::class, 'rechazar'])
+            ->name('postulaciones.rechazar');
     });
 
 
@@ -188,6 +192,16 @@ Route::middleware(['auth', 'rol:alumno'])
         Route::get('practicas/{id}', [\App\Http\Controllers\Alumno\VerPracticaController::class, 'show'])
             ->name('practicas.show');
 
+        // Postular
+        Route::get('practicas/{practica}/postular', [\App\Http\Controllers\Alumno\PostulacionController::class, 'store'])
+            ->name('practicas.postular');
+
+
+        // Google Drive Connection
+        Route::get('/drive/conectar', [EntregaController::class, 'conectarDrive'])
+            ->name('drive.conectar');
+        Route::get('/drive/callback', [EntregaController::class, 'callbackDrive'])
+            ->name('drive.callback');
 
         // Ficha Registro
         // Listado
@@ -201,9 +215,18 @@ Route::middleware(['auth', 'rol:alumno'])
 
         Route::post('fichas/store', [FichaRegistroController::class, 'store'])->name('ficha-registro.store');
 
+
         Route::get('fichas/{fichaRegistro}',
             [FichaRegistroController::class, 'show']
         )->name('ficha.show');
+
+        Route::delete('fichas/{fichaRegistro}', [FichaRegistroController::class, 'destroy'])
+            ->name('ficha.destroy');
+
+        Route::get(
+            'fichas/{fichaRegistro}/download-pdf',
+            [FichaRegistroController::class, 'downloadPdf']
+        )->name('ficha.download-pdf');
 
         // Cronograma
         Route::get('cronograma/create/{fichaRegistro}',
@@ -218,14 +241,42 @@ Route::middleware(['auth', 'rol:alumno'])
             [CronogramaController::class, 'show']
         )->name('cronograma.show');
 
+        Route::delete('/cronograma/{cronograma}', [CronogramaController::class, 'destroy'])
+            ->name('cronograma.destroy');
 
-        // Mis entregas y calificaciones
+        Route::get(
+            'cronograma/{cronograma}/download-pdf',
+            [CronogramaController::class, 'downloadPdf']
+        )->name('cronograma.download-pdf');
+
+
+        // Gestión del Aula
+        Route::get('/aula/{aula}', [\App\Http\Controllers\Alumno\AulaController::class, 'index'])
+            ->name('aula.index');
+
+        // Gestión de Entregas
+        Route::get('/entregas/crear/{actividad}', [\App\Http\Controllers\Alumno\EntregaController::class, 'create'])
+            ->name('entregas.create');
+        Route::post('/entregas/guardar/{actividad}', [\App\Http\Controllers\Alumno\EntregaController::class, 'store'])
+            ->name('entregas.store');
+        Route::get('/entregas/{entrega}', [\App\Http\Controllers\Alumno\EntregaController::class, 'show'])
+            ->name('entregas.show');
+        Route::get('/entregas/{entrega}/editar', [\App\Http\Controllers\Alumno\EntregaController::class, 'edit'])
+            ->name('entregas.edit');
+        Route::put('/entregas/{entrega}', [\App\Http\Controllers\Alumno\EntregaController::class, 'update'])
+            ->name('entregas.update');
+        Route::get('/entregas/{entrega}/descargar', [\App\Http\Controllers\Alumno\EntregaController::class, 'download'])
+            ->name('entregas.download');
+        Route::delete('/entregas/{entrega}', [\App\Http\Controllers\Alumno\EntregaController::class, 'destroy'])
+            ->name('entregas.destroy');
+
+/*        // Mis entregas y calificaciones
         Route::get('mis-entregas', [\App\Http\Controllers\Alumno\MisEntregasController::class, 'index'])
             ->name('entregas.mis-entregas');
         Route::get('mis-entregas/{entrega}', [\App\Http\Controllers\Alumno\MisEntregasController::class, 'show'])
             ->name('entregas.detalle');
         Route::post('mis-entregas/{entrega}/guardar-link', [\App\Http\Controllers\Alumno\MisEntregasController::class, 'guardarLink'])
-            ->name('entregas.guardar-link');
+            ->name('entregas.guardar-link');*/
 
         // Informe Final
         Route::get('informe-final', [\App\Http\Controllers\Alumno\InformeFinalController::class, 'index'])
@@ -236,11 +287,11 @@ Route::middleware(['auth', 'rol:alumno'])
             ->name('informe-final.download');
     });
 
-Route::get('/firmar/{token}', [FirmaTokenController::class, 'show'])
-    ->name('firmas.show');
+Route::get('/firmas/ficha-registro/{token}', [FirmaTokenController::class, 'show'])
+    ->name('firmas.ficha-registro.show');
 
 Route::post('/firmar/{token}', [FirmaTokenController::class, 'store'])
-    ->name('firmas.store');
+    ->name('firmas.ficha-registro.store');
 
 
 // Mostrar formulario de firma
@@ -254,4 +305,11 @@ Route::post(
     'firmas/cronograma/jefe/{token}',
     [FirmaCronogramaController::class, 'guardarFirmaJefe']
 )->name('firma.cronograma.jefe.guardar');
+
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/google/auth', [GoogleDriveController::class, 'redirectToGoogle'])->name('google.auth');
+    Route::get('/google/callback', [GoogleDriveController::class, 'handleGoogleCallback'])->name('google.callback');
+});
+
 require __DIR__.'/auth.php';

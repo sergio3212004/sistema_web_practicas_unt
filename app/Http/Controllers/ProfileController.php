@@ -26,35 +26,41 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
-
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
-        }
-
-        $request->user()->save();
-
-        return Redirect::route('profile.edit')->with('status', 'profile-updated');
-    }
-
-    /**
-     * Delete the user's account.
-     */
-    public function destroy(Request $request): RedirectResponse
-    {
-        $request->validateWithBag('userDeletion', [
-            'password' => ['required', 'current_password'],
-        ]);
-
         $user = $request->user();
 
-        Auth::logout();
+        // Debug
+        \Log::info('Profile Update Request', $request->all());
 
-        $user->delete();
+        // ===== ALUMNO =====
+        if ($user->alumno) {
+            $updateData = [];
 
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+            if ($request->filled('telefono')) {
+                $updateData['telefono'] = $request->telefono;
+            }
 
-        return Redirect::to('/');
+            if ($request->filled('cv_link')) {
+                $updateData['cv'] = $request->cv_link;
+            }
+
+            if (!empty($updateData)) {
+                $user->alumno->update($updateData);
+                \Log::info('Alumno actualizado', $updateData);
+            }
+        }
+
+        // ===== USUARIO =====
+        $user->fill($request->validated());
+
+        if ($user->isDirty('email')) {
+            $user->email_verified_at = null;
+        }
+
+        $user->save();
+
+        return Redirect::route('profile.edit')
+            ->with('status', 'alumno-updated');
     }
+
+
 }

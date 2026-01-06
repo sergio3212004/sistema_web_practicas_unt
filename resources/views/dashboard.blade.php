@@ -20,10 +20,14 @@
                     @endif
                     @if (isset($profesor))
                             <x-dashboard.profesor
+                                :semestre-activo="$semestreActivo"
                                 :profesor="$profesor"
                                 :aulas="$aulas"
+                                :total-entregas="$totalEntregas"
+                                :actividades-activas="$actividadesActivas"
                             />
                     @endif
+
 
                 </div>
             </div>

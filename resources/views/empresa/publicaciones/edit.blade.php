@@ -1,88 +1,141 @@
 <x-app-layout>
-    <div class="max-w-4xl mx-auto bg-white p-8 rounded-xl shadow-md">
+    <div class="max-w-5xl mx-auto px-4 py-8">
 
-        <h1 class="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
-            <x-heroicon-o-pencil-square class="h-7 w-7 text-indigo-600"/>
-            Editar Publicación
-        </h1>
+        {{-- Header --}}
+        <div class="mb-8 flex items-center justify-between">
+            <h1 class="text-3xl font-bold text-gray-800 flex items-center gap-3">
+                <x-heroicon-o-document-text class="h-8 w-8 text-indigo-600"/>
+                Editar Publicación
+            </h1>
 
-        <!-- MENSAJES DE ERROR -->
-        @if ($errors->any())
-            <div class="mb-4 p-4 bg-red-100 text-red-700 rounded-lg">
-                <ul class="list-disc list-inside">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
+            <a href="{{ route('empresa.publicaciones.index') }}"
+               class="px-4 py-2 bg-gray-200 rounded-lg text-gray-700 hover:bg-gray-300 transition">
+                Volver
+            </a>
+        </div>
+
+        {{-- Card --}}
+        <div class="relative">
+            <!-- Glow -->
+            <div class="absolute -inset-1 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-2xl blur opacity-20"></div>
+
+            <div class="relative bg-white rounded-2xl shadow-xl overflow-hidden">
+
+                {{-- Header card --}}
+                <div class="bg-gradient-to-br from-blue-800 to-indigo-900 px-8 py-6">
+                    <h2 class="text-xl font-semibold text-white">
+                        Información de la vacante
+                    </h2>
+                    <p class="text-blue-100 text-sm">
+                        Actualiza los datos de la publicación
+                    </p>
+                </div>
+
+                {{-- Form --}}
+                <form action="{{ route('empresa.publicaciones.update', $publicacion) }}"
+                      method="POST"
+                      enctype="multipart/form-data"
+                      class="p-8 space-y-6">
+                    @csrf
+                    @method('PUT')
+
+                    {{-- Título --}}
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">
+                            Título de la publicación
+                        </label>
+                        <input type="text"
+                               name="nombre"
+                               value="{{ old('nombre', $publicacion->nombre) }}"
+                               required
+                               class="w-full rounded-xl border-gray-300 focus:border-indigo-500 focus:ring-indigo-500">
+                    </div>
+
+                    {{-- Cargo --}}
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">
+                            Cargo solicitado
+                        </label>
+                        <input type="text"
+                               name="cargo"
+                               value="{{ old('cargo', $publicacion->cargo) }}"
+                               required
+                               class="w-full rounded-xl border-gray-300 focus:border-indigo-500 focus:ring-indigo-500">
+                    </div>
+
+                    {{-- Descripción --}}
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">
+                            Descripción de la vacante
+                        </label>
+                        <textarea name="descripcion"
+                                  rows="5"
+                                  required
+                                  class="w-full rounded-xl border-gray-300 focus:border-indigo-500 focus:ring-indigo-500">{{ old('descripcion', $publicacion->descripcion) }}</textarea>
+                    </div>
+
+                    {{-- Estado --}}
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">
+                            Estado de la vacante
+                        </label>
+                        <select name="estado"
+                                required
+                                class="w-full rounded-xl border-gray-300 focus:border-indigo-500 focus:ring-indigo-500">
+                            <option value="Disponible" @selected(old('estado', $publicacion->estado) === 'Disponible')>
+                                Disponible
+                            </option>
+                            <option value="Cubierta" @selected(old('estado', $publicacion->estado) === 'Cubierta')>
+                                Cubierta
+                            </option>
+                        </select>
+                    </div>
+
+                    {{-- Imagen actual --}}
+                    @if($publicacion->imagen)
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                Imagen actual
+                            </label>
+                            <div class="rounded-xl overflow-hidden border">
+                                <img src="{{ asset('storage/' . $publicacion->imagen) }}"
+                                     alt="Imagen actual"
+                                     class="w-full max-h-64 object-cover">
+                            </div>
+                        </div>
+                    @endif
+
+                    {{-- Nueva imagen --}}
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            Reemplazar imagen (opcional)
+                        </label>
+                        <div class="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-indigo-400 transition">
+                            <input type="file"
+                                   name="imagen"
+                                   accept="image/*"
+                                   class="w-full text-sm text-gray-600">
+                            <p class="mt-2 text-xs text-gray-500">
+                                PNG o JPG — Máx. 2MB
+                            </p>
+                        </div>
+                    </div>
+
+                    {{-- Actions --}}
+                    <div class="pt-6 flex justify-end gap-4">
+                        <a href="{{ route('empresa.publicaciones.index') }}"
+                           class="px-5 py-2 bg-gray-300 rounded-lg hover:bg-gray-400 transition">
+                            Cancelar
+                        </a>
+
+                        <button type="submit"
+                                class="px-6 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-lg shadow hover:from-blue-700 hover:to-indigo-700 transition">
+                            Actualizar
+                        </button>
+                    </div>
+
+                </form>
             </div>
-        @endif
-
-        <form action="{{ route('empresa.publicaciones.update', $publicacion->id) }}"
-              method="POST"
-              enctype="multipart/form-data">
-
-            @csrf
-            @method('PUT')
-
-            <!-- Nombre -->
-            <div class="mb-4">
-                <label class="block font-medium text-gray-700">Título</label>
-                <input type="text" name="nombre"
-                       class="w-full mt-1 rounded-lg border-gray-300"
-                       value="{{ old('nombre', $publicacion->nombre) }}" required>
-            </div>
-
-            <!-- Descripción -->
-            <div class="mb-4">
-                <label class="block font-medium text-gray-700">Descripción</label>
-                <textarea name="descripcion" rows="5"
-                          class="w-full mt-1 rounded-lg border-gray-300"
-                          required>{{ old('descripcion', $publicacion->descripcion) }}</textarea>
-            </div>
-
-            <!-- Fecha -->
-            <div class="mb-4">
-                <label class="block font-medium text-gray-700">Fecha</label>
-                <input type="date" name="fecha"
-                       class="w-full mt-1 rounded-lg border-gray-300"
-                       value="{{ old('fecha', $publicacion->fecha) }}" required>
-            </div>
-
-            <!-- Imagen actual -->
-            <div class="mb-4">
-                <label class="block font-medium text-gray-700">Imagen actual</label>
-
-                @if($publicacion->imagen && Storage::disk('public')->exists($publicacion->imagen))
-                    <img src="{{ asset('storage/' . $publicacion->imagen) }}"
-                         class="h-40 rounded shadow mt-2">
-                @else
-                    <p class="text-gray-500 mt-1">No hay imagen.</p>
-                @endif
-            </div>
-
-            <!-- Cambiar imagen -->
-            <div class="mb-6">
-                <label class="block font-medium text-gray-700">Subir nueva imagen</label>
-                <input type="file" name="imagen"
-                       class="mt-2"
-                       accept="image/*">
-                <p class="text-sm text-gray-500">Déjalo vacío si no deseas cambiar la imagen.</p>
-            </div>
-
-            <!-- Botones -->
-            <div class="flex justify-end gap-4">
-                <a href="{{ route('empresa.publicaciones.index') }}"
-                   class="px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400">
-                    Cancelar
-                </a>
-
-                <button type="submit"
-                        class="px-5 py-2 bg-indigo-600 text-white rounded-lg shadow hover:bg-indigo-700">
-                    Actualizar
-                </button>
-            </div>
-
-        </form>
-
+        </div>
     </div>
 </x-app-layout>

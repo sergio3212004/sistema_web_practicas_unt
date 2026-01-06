@@ -1,158 +1,400 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Firma de Ficha de Registro</title>
 
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+    <!-- Tailwind CSS -->
 
-    <!-- Tailwind / Vite -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    <!-- Estilos personalizados -->
+    <style>
+        .signature-canvas {
+            border: 2px dashed #9ca3af;
+            border-radius: 0.5rem;
+            background-color: #f3f4f6;
+            cursor: crosshair;
+        }
+    </style>
 </head>
-<body class="bg-gray-100 py-10">
+<body class="bg-gray-50">
 
-<div class="max-w-5xl mx-auto bg-white shadow-lg rounded-lg p-8">
-
-    <!-- ENCABEZADO -->
-    <div class="text-center border-b pb-6 mb-6">
-        <h1 class="text-xl font-bold text-gray-800">
-            FACULTAD DE CIENCIAS FÍSICAS Y MATEMÁTICAS
-        </h1>
-        <h2 class="text-lg font-semibold text-gray-700">
-            PROGRAMA DE INFORMÁTICA
-        </h2>
-        <p class="text-sm text-gray-500 mt-2">
-            FICHA DE REGISTRO DE PRÁCTICAS PRE PROFESIONALES
-        </p>
-
-        <span class="inline-block mt-3 px-4 py-1 rounded-full text-sm
-            {{ $firmaToken->tipo === 'empresa'
-                ? 'bg-blue-100 text-blue-700'
-                : 'bg-green-100 text-green-700' }}">
-            {{ $firmaToken->tipo === 'empresa'
-                ? 'V°B° EMPRESA'
-                : 'V°B° PROGRAMA' }}
-        </span>
-    </div>
-
-    <!-- DATOS DEL ESTUDIANTE -->
-    <section class="mb-6">
-        <h3 class="font-semibold text-gray-800 mb-2">1. Datos del Estudiante</h3>
-        <div class="grid grid-cols-2 gap-4 text-sm">
-            <p><strong>Alumno:</strong> {{ $firmaToken->ficha->alumno->nombre_completo }}</p>
-            <p><strong>Matrícula:</strong> {{ $firmaToken->ficha->alumno->codigo_matricula }}</p>
-            <p><strong>Ciclo:</strong> {{ $firmaToken->ficha->ciclo }}</p>
-            <p><strong>Semestre:</strong> {{ $firmaToken->ficha->semestre->nombre }}</p>
-            <p><strong>Correo:</strong> {{ $firmaToken->ficha->alumno->user->email }}</p>
-        </div>
-    </section>
-
-    <!-- DATOS DE LA EMPRESA -->
-    <section class="mb-6">
-        <h3 class="font-semibold text-gray-800 mb-2">2. Empresa o Institución</h3>
-        <div class="grid grid-cols-2 gap-4 text-sm">
-            <p><strong>Razón Social:</strong> {{ $firmaToken->ficha->razon_social }}</p>
-            <p><strong>RUC:</strong> {{ $firmaToken->ficha->ruc }}</p>
-            <p><strong>Correo Empresa:</strong> {{ $firmaToken->ficha->correo_empresa }}</p>
-            <p><strong>Gerente:</strong> {{ $firmaToken->ficha->nombre_gerente }}</p>
-            <p><strong>Jefe RRHH:</strong> {{ $firmaToken->ficha->nombre_jefe_rrhh }}</p>
-            <p class="col-span-2"><strong>Dirección:</strong> {{ $firmaToken->ficha->direccion }}</p>
-            <p><strong>Tel. Fijo:</strong> {{ $firmaToken->ficha->telefono_fijo }}</p>
-            <p><strong>Tel. Móvil:</strong> {{ $firmaToken->ficha->telefono_movil }}</p>
-            <p><strong>Ubicación:</strong>
-                {{ $firmaToken->ficha->departamento }},
-                {{ $firmaToken->ficha->provincia }},
-                {{ $firmaToken->ficha->distrito }}
-            </p>
-        </div>
-    </section>
-
-    <!-- DATOS DE LA PRÁCTICA -->
-    <section class="mb-6">
-        <h3 class="font-semibold text-gray-800 mb-2">3. Características de la Práctica</h3>
-        <div class="grid grid-cols-2 gap-4 text-sm">
-            <p><strong>Fecha Inicio:</strong> {{ $firmaToken->ficha->fecha_inicio->format('d/m/Y') }}</p>
-            <p><strong>Fecha Término:</strong> {{ $firmaToken->ficha->fecha_termino->format('d/m/Y') }}</p>
-            <p><strong>Área:</strong> {{ $firmaToken->ficha->area_practicas }}</p>
-            <p><strong>Cargo:</strong> {{ $firmaToken->ficha->cargo }}</p>
-            <p><strong>Jefe Directo:</strong> {{ $firmaToken->ficha->nombre_jefe_directo }}</p>
-            <p><strong>Correo Jefe:</strong> {{ $firmaToken->ficha->correo_jefe_directo }}</p>
-        </div>
-
-        <div class="mt-3 text-sm">
-            <strong>Descripción:</strong>
-            <p class="mt-1 text-gray-700">
-                {{ $firmaToken->ficha->descripcion }}
-            </p>
-        </div>
-    </section>
-
-    <!-- HORARIOS -->
-    <section class="mb-6">
-        <h3 class="font-semibold text-gray-800 mb-2">4. Horarios</h3>
-
-        <table class="w-full text-sm border border-gray-300">
-            <thead class="bg-gray-50">
-            <tr>
-                <th class="border px-2 py-1">Día</th>
-                <th class="border px-2 py-1">Hora Inicio</th>
-                <th class="border px-2 py-1">Hora Fin</th>
-            </tr>
-            </thead>
-            <tbody>
-            @foreach($firmaToken->ficha->horarios as $horario)
-                <tr>
-                    <td class="border px-2 py-1">{{ $horario->nombre_dia }}</td>
-                    <td class="border px-2 py-1">{{ $horario->hora_inicio }}</td>
-                    <td class="border px-2 py-1">{{ $horario->hora_fin }}</td>
-                </tr>
-            @endforeach
-            </tbody>
-        </table>
-    </section>
-
-    <!-- FIRMA -->
-    <section class="border-t pt-6">
-        <h3 class="font-semibold text-gray-800 mb-3 text-center">
-            Firma Digital
-        </h3>
-
-        <form method="POST" class="max-w-md mx-auto">
-            @csrf
-
-            <canvas id="canvasFirma"
-                    class="border-2 border-dashed border-gray-400 rounded mx-auto block bg-gray-50"
-                    width="360"
-                    height="140"></canvas>
-
-            <input type="hidden" name="firma" id="firma">
-
-            <div class="text-center mt-3">
-                <button type="button"
-                        onclick="limpiarFirma()"
-                        class="text-sm text-blue-600 hover:underline">
-                    Limpiar firma
-                </button>
+<!-- Header Personalizado -->
+<div class="bg-white shadow-sm border-b">
+    <div class="max-w-6xl mx-auto px-4 py-4">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="p-2 bg-gradient-to-br from-blue-800 to-blue-900 rounded-lg">
+                    @svg('heroicon-o-pencil-square', 'w-6 h-6 text-white')
+                </div>
+                <div>
+                    <h2 class="font-bold text-2xl text-gray-800 leading-tight">
+                        Firma de Ficha de Registro
+                    </h2>
+                    <p class="text-sm text-gray-500 mt-0.5">Formato 01: Ficha de Registro de Prácticas Pre Profesionales</p>
+                </div>
             </div>
 
-            <button type="submit"
-                    class="mt-6 w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700">
-                Firmar Documento
-            </button>
-        </form>
-    </section>
+            <div>
+                    <span class="inline-flex items-center px-4 py-2
+                        {{ $firmaToken->tipo === 'empresa'
+                            ? 'bg-blue-500 text-white'
+                            : 'bg-purple-500 text-white' }}
+                        text-sm font-semibold rounded-full shadow-lg">
+                        @svg('heroicon-o-user-circle', 'w-5 h-5 mr-2')
+                        {{ $firmaToken->tipo === 'empresa' ? 'Representante Empresa' : 'Jefe Directo' }}
+                    </span>
+            </div>
+        </div>
+    </div>
+</div>
 
+<!-- Contenido Principal -->
+<div class="py-8">
+    <div class="max-w-6xl mx-auto sm:px-6 lg:px-8">
+
+        <!-- Contenedor principal -->
+        <div class="bg-white rounded-2xl shadow-lg overflow-hidden border-2 border-gray-200">
+
+            <!-- Encabezado oficial -->
+            <div class="bg-gradient-to-r from-blue-800 to-blue-900 px-8 py-8">
+                <div class="text-center">
+                    <div class="flex justify-center mb-4">
+                        <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-xl">
+                            @svg('heroicon-o-academic-cap', 'w-12 h-12 text-blue-800')
+                        </div>
+                    </div>
+                    <h1 class="text-2xl font-bold text-white mb-2">
+                        FACULTAD DE CIENCIAS FÍSICAS Y MATEMÁTICAS
+                    </h1>
+                    <h2 class="text-xl font-semibold text-blue-100 mb-2">
+                        PROGRAMA DE INFORMÁTICA
+                    </h2>
+                    <h3 class="text-lg font-medium text-blue-200 mb-1">
+                        MONITOREO DE PRÁCTICAS PRE PROFESIONALES
+                    </h3>
+                    <div class="inline-block bg-yellow-400 text-gray-900 px-6 py-2 rounded-lg font-bold text-sm mt-3 shadow-lg">
+                        FORMATO 01: FICHA DE REGISTRO
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-8">
+
+                <!-- Saludo personalizado -->
+                <div class="mb-8 bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-500 rounded-lg p-6">
+                    <p class="text-gray-800 text-lg leading-relaxed">
+                        @if($firmaToken->tipo === 'empresa')
+                            Estimado/a <strong>{{ $firmaToken->ficha->nombre_gerente }}</strong>, Representante Legal de la empresa
+                            <strong>{{ $firmaToken->ficha->razon_social }}</strong>,
+                        @else
+                            Estimado/a Jefe/a Directo(a)
+                            <strong>{{ $firmaToken->ficha->nombre_jefe_directo }}</strong>,
+                        @endif
+                    </p>
+                    <p class="mt-2 text-gray-700">
+                        Agradecemos su valiosa colaboración en el proceso formativo de nuestro estudiante. Por favor,
+                        revise los datos proporcionados y firme digitalmente esta ficha de registro para validar su participación.
+                    </p>
+                </div>
+
+                <!-- SECCIÓN: DATOS DEL ESTUDIANTE -->
+                <div class="mb-8 border-2 border-blue-200 rounded-xl overflow-hidden">
+                    <div class="bg-gradient-to-r from-blue-800 to-blue-900 px-6 py-3">
+                        <h3 class="text-lg font-bold text-white flex items-center">
+                            @svg('heroicon-o-user', 'w-5 h-5 mr-2')
+                            1. ESTUDIANTE
+                        </h3>
+                    </div>
+                    <div class="p-6 bg-blue-50">
+                        <div class="mb-4">
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Apellidos y Nombres</label>
+                            <div class="bg-white border-2 border-blue-200 rounded-lg px-4 py-3 text-gray-800 font-medium">
+                                {{ $firmaToken->ficha->alumno->nombre_completo }}
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Nro. Matrícula</label>
+                                <div class="bg-white border-2 border-blue-200 rounded-lg px-4 py-3 text-gray-800">
+                                    {{ $firmaToken->ficha->alumno->codigo_matricula }}
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Ciclo</label>
+                                <div class="bg-white border-2 border-blue-200 rounded-lg px-4 py-3 text-gray-800">
+                                    {{ $firmaToken->ficha->ciclo }}
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Año y Semestre</label>
+                                <div class="bg-white border-2 border-blue-200 rounded-lg px-4 py-3 text-gray-800">
+                                    {{ $firmaToken->ficha->semestre->nombre }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Teléfono Móvil</label>
+                                <div class="bg-white border-2 border-blue-200 rounded-lg px-4 py-3 text-gray-800 flex items-center">
+                                    @svg('heroicon-o-envelope', 'w-5 h-5 text-blue-800 mr-2')
+                                    {{ $firmaToken->ficha->alumno->telefono }}
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Correo Electrónico</label>
+                                <div class="bg-white border-2 border-blue-200 rounded-lg px-4 py-3 text-gray-800 flex items-center">
+                                    @svg('heroicon-o-envelope', 'w-5 h-5 text-blue-800 mr-2')
+                                    {{ $firmaToken->ficha->alumno->user->email }}
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECCIÓN: EMPRESA O INSTITUCIÓN -->
+                <div class="mb-8 border-2 border-blue-200 rounded-xl overflow-hidden">
+                    <div class="bg-gradient-to-r from-blue-800 to-blue-900 px-6 py-3">
+                        <h3 class="text-lg font-bold text-white flex items-center">
+                            @svg('heroicon-o-building-office', 'w-5 h-5 mr-2')
+                            2. EMPRESA O INSTITUCIÓN
+                        </h3>
+                    </div>
+                    <div class="p-6 bg-blue-50">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Razón Social</label>
+                                <div class="bg-white border-2 border-blue-200 rounded-lg px-4 py-3 text-gray-800 font-medium">
+                                    {{ $firmaToken->ficha->razon_social }}
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">RUC</label>
+                                <div class="bg-white border-2 border-blue-200 rounded-lg px-4 py-3 text-gray-800">
+                                    {{ $firmaToken->ficha->ruc }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Gerente General</label>
+                                <div class="bg-white border-2 border-blue-200 rounded-lg px-4 py-3 text-gray-800">
+                                    {{ $firmaToken->ficha->nombre_gerente }}
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Jefe de RRHH</label>
+                                <div class="bg-white border-2 border-blue-200 rounded-lg px-4 py-3 text-gray-800">
+                                    {{ $firmaToken->ficha->nombre_jefe_rrhh }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Dirección</label>
+                            <div class="bg-white border-2 border-blue-200 rounded-lg px-4 py-3 text-gray-800 flex items-center">
+                                @svg('heroicon-o-map-pin', 'w-5 h-5 text-blue-800 mr-2')
+                                {{ $firmaToken->ficha->direccion }}
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Teléfono Fijo</label>
+                                <div class="bg-white border-2 border-blue-200 rounded-lg px-4 py-3 text-gray-800">
+                                    {{ $firmaToken->ficha->telefono_fijo ?? 'No especificado' }}
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Teléfono Móvil</label>
+                                <div class="bg-white border-2 border-blue-200 rounded-lg px-4 py-3 text-gray-800">
+                                    {{ $firmaToken->ficha->telefono_movil ?? 'No especificado' }}
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Correo Empresa</label>
+                                <div class="bg-white border-2 border-blue-200 rounded-lg px-4 py-3 text-gray-800 text-sm">
+                                    {{ $firmaToken->ficha->correo_empresa ?? 'No especificado' }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Departamento</label>
+                                <div class="bg-white border-2 border-blue-200 rounded-lg px-4 py-3 text-gray-800">
+                                    {{ $firmaToken->ficha->departamento }}
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Provincia</label>
+                                <div class="bg-white border-2 border-blue-200 rounded-lg px-4 py-3 text-gray-800">
+                                    {{ $firmaToken->ficha->provincia }}
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Distrito</label>
+                                <div class="bg-white border-2 border-blue-200 rounded-lg px-4 py-3 text-gray-800">
+                                    {{ $firmaToken->ficha->distrito }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECCIÓN: CARACTERÍSTICAS DE LA PRÁCTICA -->
+                <div class="mb-8 border-2 border-blue-200 rounded-xl overflow-hidden">
+                    <div class="bg-gradient-to-r from-blue-800 to-blue-900 px-6 py-3">
+                        <h3 class="text-lg font-bold text-white flex items-center">
+                            @svg('heroicon-o-clipboard-document-list', 'w-5 h-5 mr-2')
+                            3. CARACTERÍSTICAS DE LA PRÁCTICA
+                        </h3>
+                    </div>
+                    <div class="p-6 bg-blue-50">
+                        <!-- Días y Horarios en Tabla -->
+                        <div class="mb-4">
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Días y Horarios</label>
+
+                                <table class="w-full border-collapse">
+                                    <thead>
+                                    <tr class="bg-blue-100">
+                                        <th class="border border-blue-300 p-2 text-center font-semibold">HORA</th>
+                                        <th class="border border-blue-300 p-2 text-center font-semibold">LUNES</th>
+                                        <th class="border border-blue-300 p-2 text-center font-semibold">MARTES</th>
+                                        <th class="border border-blue-300 p-2 text-center font-semibold">MIÉRCOLES</th>
+                                        <th class="border border-blue-300 p-2 text-center font-semibold">JUEVES</th>
+                                        <th class="border border-blue-300 p-2 text-center font-semibold">VIERNES</th>
+                                        <th class="border border-blue-300 p-2 text-center font-semibold">SÁBADO</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td class="border border-blue-300 p-2 text-center font-semibold">De:</td>
+                                        @for ($dia = 1; $dia <= 6; $dia++)
+                                            <td class="border border-blue-300 p-2 text-center">
+                                                @php
+                                                    $horario = $firmaToken->ficha->horarios->firstWhere('dia_semana', $dia);
+                                                @endphp
+                                                {{ $horario ? $horario->hora_inicio : '____' }}
+                                            </td>
+                                        @endfor
+                                    </tr>
+                                    <tr>
+                                        <td class="border border-blue-300 p-2 text-center font-semibold">A:</td>
+                                        @for ($dia = 1; $dia <= 6; $dia++)
+                                            <td class="border border-blue-300 p-2 text-center">
+                                                @php
+                                                    $horario = $firmaToken->ficha->horarios->firstWhere('dia_semana', $dia);
+                                                @endphp
+                                                {{ $horario ? $horario->hora_fin : '____' }}
+                                            </td>
+                                        @endfor
+                                    </tr>
+                                    </tbody>
+                                </table>
+
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Fecha de Inicio</label>
+                                <div class="bg-white border-2 border-blue-200 rounded-lg px-4 py-3 text-gray-800 flex items-center">
+                                    @svg('heroicon-o-calendar', 'w-5 h-5 text-blue-800 mr-2')
+                                    {{ $firmaToken->ficha->fecha_inicio->format('d/m/Y') }}
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Fecha de Término</label>
+                                <div class="bg-white border-2 border-blue-200 rounded-lg px-4 py-3 text-gray-800 flex items-center">
+                                    @svg('heroicon-o-calendar', 'w-5 h-5 text-blue-800 mr-2')
+                                    {{ $firmaToken->ficha->fecha_termino->format('d/m/Y') }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Área de Prácticas</label>
+                            <div class="bg-white border-2 border-blue-200 rounded-lg px-4 py-3 text-gray-800">
+                                {{ $firmaToken->ficha->area_practicas }}
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Cargo</label>
+                            <div class="bg-white border-2 border-blue-200 rounded-lg px-4 py-3 text-gray-800">
+                                {{ $firmaToken->ficha->cargo }}
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Jefe Directo</label>
+                            <div class="bg-white border-2 border-blue-200 rounded-lg px-4 py-3 text-gray-800">
+                                {{ $firmaToken->ficha->nombre_jefe_directo }}
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Correo del Jefe Directo</label>
+                            <div class="bg-white border-2 border-blue-200 rounded-lg px-4 py-3 text-gray-800 text-sm">
+                                {{ $firmaToken->ficha->correo_jefe_directo }}
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Descripción de la Práctica</label>
+                            <div class="bg-white border-2 border-blue-200 rounded-lg px-4 py-3 text-gray-800 min-h-[80px]">
+                                {{ $firmaToken->ficha->descripcion }}
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+
+                <!-- SECCIÓN: FIRMA DIGITAL -->
+                <div class="border-2 border-blue-200 rounded-xl overflow-hidden">
+                    <div class="bg-gradient-to-r from-blue-800 to-blue-900 px-6 py-3">
+                        <h3 class="text-lg font-bold text-white flex items-center">
+                            @svg('heroicon-o-pencil-square', 'w-5 h-5 mr-2')
+                            4. FIRMA DIGITAL
+                        </h3>
+                    </div>
+                    <div class="p-6 bg-blue-50">
+                        <form method="POST" action="{{ route('firmas.ficha-registro.store', $firmaToken->token) }}" class="max-w-2xl mx-auto">
+                            @csrf
+
+                            <canvas id="canvasFirma"
+                                    class="signature-canvas mx-auto block w-full max-w-md"
+                                    width="360"
+                                    height="140"></canvas>
+
+                            <input type="hidden" name="firma" id="firma">
+
+                            <div class="text-center mt-4">
+                                <button type="button"
+                                        onclick="limpiarFirma()"
+                                        class="text-sm text-blue-600 hover:underline font-medium">
+                                    Limpiar firma
+                                </button>
+                            </div>
+
+                            <button type="submit"
+                                    class="mt-6 w-full bg-gradient-to-r from-blue-800 to-blue-900 text-white py-3 rounded-xl font-bold hover:shadow-lg hover:scale-[1.02] transition-all duration-200">
+                                Confirmar y Enviar Firma
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
 </div>
 
 <script>
     const canvas = document.getElementById('canvasFirma');
     const ctx = canvas.getContext('2d');
     let dibujando = false;
+
+    ctx.lineWidth = 2;
+    ctx.lineCap = 'round';
+    ctx.strokeStyle = '#000000';
 
     function pos(e) {
         const r = canvas.getBoundingClientRect();
@@ -178,6 +420,33 @@
 
     canvas.addEventListener('mouseup', () => dibujando = false);
     canvas.addEventListener('mouseleave', () => dibujando = false);
+
+    // Soporte táctil (opcional)
+    canvas.addEventListener('touchstart', e => {
+        e.preventDefault();
+        const touch = e.touches[0];
+        const mouseEvent = new MouseEvent('mousedown', {
+            clientX: touch.clientX,
+            clientY: touch.clientY
+        });
+        canvas.dispatchEvent(mouseEvent);
+    });
+
+    canvas.addEventListener('touchmove', e => {
+        e.preventDefault();
+        const touch = e.touches[0];
+        const mouseEvent = new MouseEvent('mousemove', {
+            clientX: touch.clientX,
+            clientY: touch.clientY
+        });
+        canvas.dispatchEvent(mouseEvent);
+    });
+
+    canvas.addEventListener('touchend', e => {
+        e.preventDefault();
+        const mouseEvent = new MouseEvent('mouseup', {});
+        canvas.dispatchEvent(mouseEvent);
+    });
 
     function limpiarFirma() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);

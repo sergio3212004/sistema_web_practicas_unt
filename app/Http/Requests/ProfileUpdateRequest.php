@@ -16,7 +16,6 @@ class ProfileUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:255'],
             'email' => [
                 'required',
                 'string',
@@ -25,6 +24,16 @@ class ProfileUpdateRequest extends FormRequest
                 'max:255',
                 Rule::unique(User::class)->ignore($this->user()->id),
             ],
+            'telefono' => ['nullable', 'string', 'max:9'], // Cambiado a nullable
+            'cv_link' => ['nullable', 'url', 'max:500'],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'telefono.max' => 'El teléfono no puede tener más de 9 caracteres.',
+            'cv_link.url' => 'El enlace del CV debe ser una URL válida.',
         ];
     }
 }

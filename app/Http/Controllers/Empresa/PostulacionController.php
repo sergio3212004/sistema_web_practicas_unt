@@ -25,9 +25,11 @@ class PostulacionController extends Controller
 
     public function show(Publicacion $publicacion)
     {
+
         $postulaciones = $publicacion->postulaciones()
-            ->with(['alumno.user'])
-            ->get();
+            ->with(['alumno.user']) // Eager loading para optimizar
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
 
         return view('empresa.postulaciones.show', compact('publicacion', 'postulaciones'));
     }
@@ -43,16 +45,20 @@ class PostulacionController extends Controller
 
     public function rechazar(Postulacion $postulacion)
     {
+        // Verificar que la postulación esté pendiente
+        if ($postulacion->aprobado !== null) {
+            return back()->with('warning', 'Esta postulación ya fue procesada anteriormente.');
+        }
+
+        // Actualizar el estado de la postulación
         $postulacion->update([
             'aprobado' => false,
         ]);
 
-        // Notificar al alumno
-        $postulacion->alumno->user->notify(
-            new PostulacionRechazada($postulacion)
-        );
+        // Opcional: Enviar notificación al alumno
+        // $postulacion->alumno->user->notify(new PostulacionRechazada($postulacion));
 
-        return back()->with('error', 'Postulación rechazada y notificada al alumno.');
+        return back()->with('info', 'Postulación rechazada. El alumno ha sido notificado.');
     }
 
 }

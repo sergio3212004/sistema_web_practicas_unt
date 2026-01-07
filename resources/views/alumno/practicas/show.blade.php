@@ -28,7 +28,7 @@
 
                 {{-- Imagen --}}
                 @if($practica->imagen)
-                    <img src="{{ asset('storage/' . $practica->imagen) }}"
+                    <img src="{{ asset('storage/' . $practica->imagen) }}" alt="Imagen referencial"
                          class="w-full max-h-96 object-cover">
                 @endif
 
@@ -114,12 +114,104 @@
 
         {{-- CTA --}}
         <div class="mt-10 text-center">
-            <a href="{{route('alumno.practicas.postular', $practica)}}"
-               class="inline-flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-lg font-semibold rounded-xl shadow-lg hover:from-blue-700 hover:to-indigo-700 transition">
-                <x-heroicon-o-paper-airplane class="h-6 w-6"/>
-                Postular a esta práctica
-            </a>
+            @auth
+                @if(auth()->user()->alumno)
+                    @php
+                        $alumno = auth()->user()->alumno;
+                    @endphp
 
+                    @if($practica->estado === 'Cubierta')
+                        {{-- Práctica cubierta --}}
+                        <div class="inline-flex items-center gap-2 px-8 py-3 bg-gray-100 text-gray-600 text-lg font-semibold rounded-xl">
+                            <x-heroicon-o-x-circle class="h-6 w-6"/>
+                            Esta práctica ya está cubierta
+                        </div>
+
+                    @elseif(!$alumno->cv)
+                        {{-- Sin CV --}}
+                        <div class="space-y-4">
+                            <div class="inline-flex items-center gap-2 px-8 py-3 bg-yellow-100 text-yellow-800 text-lg font-semibold rounded-xl">
+                                <x-heroicon-o-exclamation-triangle class="h-6 w-6"/>
+                                Debes subir tu CV antes de postular
+                            </div>
+                            <div>
+                                <a href="{{ route('profile.edit') }}"
+                                   class="text-indigo-600 hover:text-indigo-800 underline">
+                                    Ir a mi perfil para subir CV
+                                </a>
+                            </div>
+                        </div>
+
+                    @elseif($postulacion)
+                        {{-- Ya postulado - Mostrar estado --}}
+                        @if($postulacion->aprobado === null)
+                            {{-- En revisión --}}
+                            <div class="inline-flex items-center gap-2 px-8 py-3 bg-blue-100 text-blue-800 text-lg font-semibold rounded-xl">
+                                <x-heroicon-o-clock class="h-6 w-6"/>
+                                Postulación en revisión
+                            </div>
+                            <p class="text-gray-600 mt-3">
+                                La empresa revisará tu postulación pronto
+                            </p>
+
+                        @elseif($postulacion->aprobado === 1)
+                            {{-- Aceptada --}}
+                            <div class="space-y-4">
+                                <div class="inline-flex items-center gap-2 px-8 py-3 bg-green-100 text-green-800 text-lg font-semibold rounded-xl">
+                                    <x-heroicon-o-check-circle class="h-6 w-6"/>
+                                    ¡Felicitaciones! Tu postulación fue aceptada
+                                </div>
+                                <p class="text-gray-700 font-medium">
+                                    La empresa se pondrá en contacto contigo pronto
+                                </p>
+                                <div class="bg-green-50 border border-green-200 rounded-lg p-4 max-w-md mx-auto">
+                                    <p class="text-sm text-gray-700">
+                                        <strong>Próximos pasos:</strong><br>
+                                        Espera el contacto de {{ $practica->empresa->nombre }}
+                                        al correo: <strong>{{ auth()->user()->email }}</strong>
+                                    </p>
+                                </div>
+                            </div>
+
+                        @else
+                            {{-- Rechazada --}}
+                            <div class="space-y-4">
+                                <div class="inline-flex items-center gap-2 px-8 py-3 bg-red-100 text-red-800 text-lg font-semibold rounded-xl">
+                                    <x-heroicon-o-x-circle class="h-6 w-6"/>
+                                    Tu postulación no fue seleccionada
+                                </div>
+                                <p class="text-gray-600">
+                                    No te desanimes, sigue buscando otras oportunidades
+                                </p>
+                                <a href="{{ route('alumno.practicas.index') }}"
+                                   class="inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-800 font-medium">
+                                    <x-heroicon-o-magnifying-glass class="h-5 w-5"/>
+                                    Ver otras prácticas disponibles
+                                </a>
+                            </div>
+                        @endif
+
+                    @else
+                        {{-- Puede postular --}}
+                        <a href="{{ route('alumno.practicas.postular', $practica) }}"
+                           class="inline-flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-lg font-semibold rounded-xl shadow-lg hover:from-blue-700 hover:to-indigo-700 transition transform hover:scale-105">
+                            <x-heroicon-o-paper-airplane class="h-6 w-6"/>
+                            Postular a esta práctica
+                        </a>
+                    @endif
+                @endif
+            @else
+                {{-- No autenticado --}}
+                <div class="space-y-4">
+                    <p class="text-gray-600">
+                        Debes iniciar sesión para postular a esta práctica
+                    </p>
+                    <a href="{{ route('login') }}"
+                       class="inline-flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-lg font-semibold rounded-xl shadow-lg hover:from-blue-700 hover:to-indigo-700 transition">
+                        Iniciar sesión
+                    </a>
+                </div>
+            @endauth
         </div>
 
     </div>

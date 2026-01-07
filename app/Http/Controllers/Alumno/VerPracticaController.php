@@ -13,13 +13,19 @@ class VerPracticaController extends Controller
     public function index()
     {
         $practicas = Publicacion::with('empresa.user')->get();
+
         return view('alumno.practicas.index', compact('practicas'));
     }
 
     // Mostrar detalle de una práctica
     public function show($id)
     {
+        $alumno = auth()->user()->alumno;
+
         $practica = Publicacion::with('empresa.user')->findOrFail($id);
-        return view('alumno.practicas.show', compact('practica'));
+        $postulacion = $practica->postulaciones()
+            ->where('alumno_id', $alumno->id)
+            ->first();
+        return view('alumno.practicas.show', compact('practica', 'postulacion'));
     }
 }

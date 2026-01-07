@@ -124,9 +124,8 @@ Route::middleware(['auth', 'rol:profesor'])
 
         // routes/web.php (grupo profesor)
 
-        Route::patch('/profesor/entregas/{entrega}/calificar', [EntregasController::class, 'calificar'])
-            ->name('profesor.entregas.calificar')
-            ->middleware('auth');
+        Route::patch('entregas/{entrega}/calificar', [EntregasController::class, 'calificar'])
+            ->name('entregas.calificar');
 
 
         // Fichas de registro (profesor)

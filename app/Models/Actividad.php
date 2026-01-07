@@ -42,6 +42,7 @@ class Actividad extends Model
     public function estaActiva(): bool
     {
         $now = Carbon::now();
+
         $inicio = Carbon::parse($this->fecha_inicio);
         $limite = Carbon::parse($this->fecha_limite);
 

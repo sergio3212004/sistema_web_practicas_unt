@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Profesor;
 
 use App\Http\Controllers\Controller;
 use App\Models\Aula;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 

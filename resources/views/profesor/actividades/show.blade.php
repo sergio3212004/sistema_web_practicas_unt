@@ -90,6 +90,7 @@
                             <thead class="bg-gray-50">
                             <tr>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Alumno</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nota</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Entregado</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
@@ -101,39 +102,62 @@
                                     $estado = $entrega->obtenerEstadoVisual();
                                 @endphp
                                 <tr class="hover:bg-gray-50 transition">
+                                    <!-- Alumno -->
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="font-medium text-gray-900">{{ $entrega->alumno->user->name }}</div>
+                                        <div class="font-medium text-gray-900">
+                                            {{ $entrega->alumno->user->nombre }} ({{ $entrega->alumno->codigo_matricula }})
+                                        </div>
                                         <div class="text-sm text-gray-500">{{ $entrega->alumno->matricula }}</div>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $estado['clase'] }}">
-                                                {{ $estado['texto'] }}
-                                            </span>
+
+                                    <!-- Nota -->
+                                    <td class="px-6 py-4 whitespace-nowrap text-center">
+                                        @if($entrega->estaCalificada())
+                                            <span class="font-bold text-green-700">{{ number_format($entrega->nota, 1) }}</span>
+                                        @else
+                                            <span class="text-gray-400">—</span>
+                                        @endif
                                     </td>
+
+                                    <!-- Estado -->
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $estado['clase'] }}">
+                    {{ $estado['texto'] }}
+                </span>
+                                    </td>
+
+                                    <!-- Entregado (fecha) -->
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                                         @if($entrega->fecha_entrega)
                                             {{ $entrega->fecha_entrega->format('d/m H:i') }}
                                             @if(!$entrega->fueEntregadaATiempo())
                                                 <span class="ml-2 inline-flex items-center text-xs text-red-600">
-                                                        ⏰ Fuera de plazo
-                                                    </span>
+                            ⏰ Fuera de plazo
+                        </span>
                                             @endif
                                         @else
                                             <span class="text-gray-400">—</span>
                                         @endif
                                     </td>
+
+                                    <!-- Acciones -->
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                         <!-- Ver archivo -->
-                                        @if($entrega->ruta)
+                                        @if($entrega->actividad->tipoActividad->modo_entrega === "pdf")
                                             <a href="{{ asset('storage/' . $entrega->ruta) }}" target="_blank"
+                                               class="text-blue-600 hover:text-blue-900 mr-3">
+                                                Ver archivo
+                                            </a>
+                                        @elseif($entrega->actividad->tipoActividad->modo_entrega === "drive")
+                                            <a href="{{ $entrega->ruta }}" target="_blank"
                                                class="text-blue-600 hover:text-blue-900 mr-3">
                                                 Ver archivo
                                             </a>
                                         @endif
 
-                                        <!-- Calificar (modal básico o enlace a otra vista) -->
+                                        <!-- Calificar -->
                                         <button type="button"
-                                                onclick="openCalificarModal({{ $entrega->id }}, '{{ $entrega->alumno->user->name }}')"
+                                                onclick="openCalificarModal({{ $entrega->id }}, '{{ $entrega->alumno->user->nombre }}')"
                                                 class="text-indigo-600 hover:text-indigo-900">
                                             {{ $entrega->estaCalificada() ? 'Editar nota' : 'Calificar' }}
                                         </button>

@@ -165,14 +165,15 @@ class EntregaController extends Controller
                     'fields' => 'id, name, mimeType, webViewLink'
                 ]);
 
-                // Guardar la información del archivo de Drive
-                $ruta = json_encode([
-                    'type' => 'drive',
-                    'file_id' => $request->drive_file_id,
-                    'file_name' => $request->drive_file_name,
-                    'web_view_link' => $file->webViewLink ?? null,
-                    'mime_type' => $file->mimeType ?? null
-                ]);
+                // Guardar solo el enlace público del archivo de Drive
+                $ruta = $file->webViewLink ?? null;
+
+                // Validar que el enlace exista (opcional pero recomendado)
+                if (!$ruta) {
+                    return redirect()->back()
+                        ->with('error', 'El archivo de Google Drive no tiene un enlace público accesible.')
+                        ->withInput();
+                }
 
             } catch (\Exception $e) {
                 return redirect()->back()

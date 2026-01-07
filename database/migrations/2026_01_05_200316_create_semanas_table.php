@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('aula_id')->constrained('aulas')->onDelete('cascade');
             $table->unsignedBigInteger('numero'); // 1 a 15
-            $table->string('nombre'); // Semana 1, Semana 2, Informe Unidad I, Informe Final
+            $table->string('nombre')->nullable(); // Semana 1, Semana 2, Informe Unidad I, Informe Final
 /*            $table->boolean('es_informe')->default(false);
             $table->boolean('es_final')->default(false);*/
             $table->timestamps();

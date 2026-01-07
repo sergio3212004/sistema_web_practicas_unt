@@ -9,7 +9,7 @@
         </p>
     </header>
 
-    <form method="post" action="{{ route('profile.update') }}" class="mt-6 space-y-6">
+    <div class="mt-6 space-y-6">
         @csrf
         @method('patch')
 
@@ -18,17 +18,14 @@
             @include('profile.partials.alumno-information')
         @endif
 
-        {{-- ================== BOTÓN ================== --}}
-       {{-- <div class="flex items-center gap-4 pt-4">
-            <x-primary-button>
-                Guardar cambios
-            </x-primary-button>
+        {{-- ================== PROFESOR ================== --}}
+        @if(auth()->user()->profesor)
+            @include('profile.partials.profesor-information')
+        @endif
 
-            @if (session('status') === 'alumno-updated')
-                <p class="text-sm text-green-600">
-                    Teléfono actualizado correctamente.
-                </p>
-            @endif
-        </div>--}}
-    </form>
+        {{-- ================== EMPRESA ================== --}}
+        @if(auth()->user()->empresa)
+            @include('profile.partials.empresa-information')
+        @endif
+    </div>
 </section>

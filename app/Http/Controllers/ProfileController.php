@@ -47,6 +47,26 @@ class ProfileController extends Controller
                 $user->alumno->update($updateData);
                 \Log::info('Alumno actualizado', $updateData);
             }
+
+            return Redirect::route('profile.edit')->with('status', 'alumno-updated');
+        }
+
+        // ===== PROFESOR =====
+        if ($user->profesor) {
+            if ($request->filled('telefono')) {
+                $user->profesor->update(['telefono' => $request->telefono]);
+                return Redirect::route('profile.edit')->with('status', 'profesor-updated');
+            }
+        }
+
+        // ===== EMPRESA =====
+        if ($user->empresa) {
+            $empresaData = $request->only(['telefono', 'direccion', 'departamento', 'provincia', 'distrito']);
+            // Filtrar nulos si se desea, o permitir borrar datos. Aquí usaremos array_filter para quitar nulos si es que el request no los trae, pero filled() es mejor check.
+            // Simplified: Update whatever comes in request that is not null presumably? Or just update all matching fields.
+            // Since we validated them as nullable, we can update.
+            $user->empresa->update($empresaData);
+            return Redirect::route('profile.edit')->with('status', 'empresa-updated');
         }
 
         // ===== USUARIO =====
@@ -58,8 +78,7 @@ class ProfileController extends Controller
 
         $user->save();
 
-        return Redirect::route('profile.edit')
-            ->with('status', 'alumno-updated');
+        return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }
 
 

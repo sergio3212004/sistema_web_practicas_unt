@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FASS - Plan de Prácticas</title>
+    <title>Ficha de Registro</title>
     <style>
         * {
             margin: 0;
@@ -14,16 +14,48 @@
 
         body {
             font-family: Arial, sans-serif;
-            font-size: 11px;
-            line-height: 1.4;
+            font-size: 10px;
+            line-height: 1.3;
             color: #333;
-            padding: 72px;
+            padding: 2.54cm;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 10px;
+            /* Reduced */
+            border-bottom: 2px solid #000;
+            padding-bottom: 5px;
+        }
+
+        .header h1 {
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 2px;
+        }
+
+        .header h2 {
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 2px;
+        }
+
+        .header h3 {
+            font-size: 11px;
+            font-weight: normal;
+            margin-bottom: 2px;
+            text-decoration: underline;
+        }
+
+        .header p {
+            font-size: 9px;
+            color: #666;
         }
 
         .header-with-logo {
             position: relative;
             text-align: center;
-            margin-bottom: 2px;
+            margin-bottom: 5px;
             padding-bottom: 5px;
             padding-top: 0;
             min-height: 40px;
@@ -31,47 +63,53 @@
 
         .logo {
             position: absolute;
-            left: 11px;
-            top: -58px;
-            width: 145px;
+            left: 0;
+            top: -20px;
+            width: 100px;
+            /* Reduced from 145px */
             height: auto;
         }
 
         .header-text {
             text-align: center;
-            padding-top: 10px;
+            padding-top: 5px;
         }
 
+
         .section {
-            margin-bottom: 4px;
-            padding: 5px 0;
+            margin-bottom: 3px;
+            /* Reduced */
+            padding: 2px 0;
+            /* Reduced */
         }
 
         .section-title {
             font-size: 11px;
             font-weight: bold;
-            margin-bottom: 5px;
+            margin-bottom: 3px;
             color: #000;
-            padding: 4px 10px;
+            padding: 4px 8px;
             background-color: #e8e8e8;
             border: 1px solid #999;
         }
 
         .field {
-            margin-bottom: 5px;
+            margin-bottom: 3px;
+            /* Requested "3p" */
         }
 
         .field-label {
-            font-size: 10px;
+            font-size: 9px;
             font-weight: bold;
             color: #555;
-            margin-bottom: 2px;
+            margin-bottom: 1px;
         }
 
         .field-value {
-            font-size: 11px;
+            font-size: 10px;
             color: #000;
-            padding: 4px 8px;
+            padding: 2px 5px;
+            /* Reduced padding */
             background-color: #f5f5f5;
             border: 1px solid #ddd;
             border-radius: 3px;
@@ -80,13 +118,14 @@
         .grid-2 {
             display: table;
             width: 100%;
-            margin-bottom: 8px;
+            margin-bottom: 3px;
         }
 
         .grid-2>div {
             display: table-cell;
             width: 50%;
-            padding-right: 10px;
+            padding-right: 5px;
+            /* Reduced gap */
         }
 
         .grid-2>div:last-child {
@@ -96,51 +135,21 @@
         .grid-3 {
             display: table;
             width: 100%;
-            margin-bottom: 8px;
+            margin-bottom: 3px;
         }
 
         .grid-3>div {
             display: table-cell;
             width: 33.33%;
-            padding-right: 10px;
+            padding-right: 5px;
         }
 
         .grid-3>div:last-child {
             padding-right: 0;
         }
 
-        /* Tabla de Actividades */
-        .actividades-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 10px;
-        }
-
-        .actividades-table th,
-        .actividades-table td {
-            border: 1px solid #999;
-            padding: 4px;
-            text-align: center;
-            font-size: 9px;
-        }
-
-        .actividades-table th {
-            background-color: #f0f0f0;
-            font-weight: bold;
-        }
-
-        .actividades-table td.left-align {
-            text-align: left;
-        }
-
-        .check-mark {
-            color: green;
-            font-weight: bold;
-            font-size: 10px;
-        }
-
         .firmas-section {
-            margin-top: 20px;
+            margin-top: 10px;
             padding: 5px 0;
         }
 
@@ -153,28 +162,62 @@
         .firma-col {
             display: table-cell;
             width: 33.33%;
-            padding: 10px;
-            vertical-align: top;
+            padding: 5px;
         }
 
         .firma-box {
-            height: 60px;
+            height: 40px;
             border-bottom: 1px solid #000;
-            margin-bottom: 5px;
+            margin-bottom: 2px;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
         .firma-box img {
-            max-height: 55px;
+            max-height: 35px;
+            /* Reduced from 40px */
             max-width: 100%;
         }
 
         .firma-title {
-            font-size: 10px;
+            font-size: 9px;
+            font-weight: bold;
+            margin-bottom: 2px;
+        }
+
+        .firma-subtitle {
+            font-size: 8px;
+            color: #666;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 9px;
             font-weight: bold;
             margin-bottom: 5px;
+        }
+
+        .horarios-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 5px;
+        }
+
+        .horarios-table th,
+        .horarios-table td {
+            border: 1px solid #ddd;
+            padding: 4px;
+            /* Reduced */
+            text-align: left;
+            font-size: 9px;
+        }
+
+        .horarios-table th {
+            background-color: #f0f0f0;
+            font-weight: bold;
         }
     </style>
 </head>
@@ -186,32 +229,43 @@
     <img src="{{ public_path('images/UNT.png') }}" alt="Logo UNT" class="logo">
     <div class="header-text">
         <h1>FACULTAD DE CIENCIAS FÍSICAS Y MATEMÁTICAS</h1>
-        <h3 style="text-decoration: underline;">PLAN DE PRÁCTICAS PRE PROFESIONALES</h3>
-        <p>FORMATO 02: PLAN DE PRÁCTICAS</p>
+        <h3 style="text-decoration: underline;">MONITOREO DE PRÁCTICAS PRE PROFESIONALES</h3>
+        <p>FORMATO 01: FICHA DE REGISTRO</p>
     </div>
 </div>
 
 {{-- 1. ESTUDIANTE --}}
 <div class="section">
     <div class="section-title">1. ESTUDIANTE</div>
-    <div class="grid-2">
-        <div>
-            <div class="field-label">Apellidos y Nombres</div>
-            <div class="field-value">{{ $cronograma->fichaRegistro->alumno->nombre_completo }}</div>
-        </div>
+
+    <div class="field">
+        <div class="field-label">Apellidos y Nombres</div>
+        <div class="field-value">{{ $fichaRegistro->alumno->nombre_completo }}</div>
+    </div>
+
+    <div class="grid-3">
         <div>
             <div class="field-label">Nro. Matrícula</div>
-            <div class="field-value">{{ $cronograma->fichaRegistro->alumno->codigo_matricula }}</div>
+            <div class="field-value">{{ $fichaRegistro->alumno->codigo_matricula }}</div>
         </div>
-    </div>
-    <div class="grid-2">
         <div>
             <div class="field-label">Ciclo</div>
-            <div class="field-value">{{ $cronograma->fichaRegistro->ciclo }}</div>
+            <div class="field-value">{{ $fichaRegistro->ciclo }}</div>
         </div>
         <div>
             <div class="field-label">Semestre</div>
-            <div class="field-value">{{ $cronograma->fichaRegistro->semestre->nombre ?? '-' }}</div>
+            <div class="field-value">{{ $fichaRegistro->semestre->nombre }}</div>
+        </div>
+    </div>
+
+    <div class="grid-2">
+        <div>
+            <div class="field-label">Teléfono</div>
+            <div class="field-value">{{ $fichaRegistro->alumno->telefono }}</div>
+        </div>
+        <div>
+            <div class="field-label">Correo</div>
+            <div class="field-value">{{ $fichaRegistro->alumno->user->email }}</div>
         </div>
     </div>
 </div>
@@ -219,131 +273,223 @@
 {{-- 2. EMPRESA --}}
 <div class="section">
     <div class="section-title">2. EMPRESA O INSTITUCIÓN</div>
+
     <div class="grid-2">
         <div>
             <div class="field-label">Razón Social</div>
-            <div class="field-value">{{ $cronograma->fichaRegistro->razon_social }}</div>
+            <div class="field-value">{{ $fichaRegistro->razon_social }}</div>
         </div>
         <div>
             <div class="field-label">RUC</div>
-            <div class="field-value">{{ $cronograma->fichaRegistro->ruc }}</div>
+            <div class="field-value">{{ $fichaRegistro->ruc }}</div>
         </div>
     </div>
+
+    <div class="grid-2">
+        <div>
+            <div class="field-label">Gerente General</div>
+            <div class="field-value">{{ $fichaRegistro->nombre_gerente }}</div>
+        </div>
+        <div>
+            <div class="field-label">Jefe RRHH</div>
+            <div class="field-value">{{ $fichaRegistro->nombre_jefe_rrhh }}</div>
+        </div>
+    </div>
+
     <div class="field">
         <div class="field-label">Dirección</div>
-        <div class="field-value">{{ $cronograma->fichaRegistro->direccion }}</div>
+        <div class="field-value">{{ $fichaRegistro->direccion }}</div>
+    </div>
+
+    <div class="grid-2">
+        <div>
+            <div class="field-label">Telf Fijo</div>
+            <div class="field-value">{{ $fichaRegistro->telefono_fijo }}</div>
+        </div>
+        <div>
+            <div class="field-label">Telf. Celular</div>
+            <div class="field-value">{{ $fichaRegistro->telefono_movil }}</div>
+        </div>
+    </div>
+
+    <div class="grid-2">
+        <div>
+            <div class="field-label">Distrito</div>
+            <div class="field-value">{{ $fichaRegistro->distrito }}</div>
+        </div>
+        <div>
+            <div class="field-label">Provincia</div>
+            <div class="field-value">{{ $fichaRegistro->provincia }}</div>
+        </div>
     </div>
 </div>
 
-{{-- 3. CARACTERÍSTICAS --}}
+{{-- 3. PRÁCTICA --}}
 <div class="section">
     <div class="section-title">3. CARACTERÍSTICAS DE LA PRÁCTICA</div>
+
     <div class="grid-2">
         <div>
             <div class="field-label">Fecha de Inicio</div>
-            <div class="field-value">{{ $cronograma->fichaRegistro->fecha_inicio->format('d/m/Y') }}</div>
+            <div class="field-value">{{ $fichaRegistro->fecha_inicio->format('d/m/Y') }}</div>
         </div>
         <div>
             <div class="field-label">Fecha de Término</div>
-            <div class="field-value">{{ $cronograma->fichaRegistro->fecha_termino->format('d/m/Y') }}</div>
+            <div class="field-value">{{ $fichaRegistro->fecha_termino->format('d/m/Y') }}</div>
         </div>
     </div>
+
     <div class="field">
-        <div class="field-label">Área de Prácticas</div>
-        <div class="field-value">{{ $cronograma->fichaRegistro->area_practicas }}</div>
+        <div class="field-label">Descripción</div>
+        <div class="field-value">{{ $fichaRegistro->descripcion }}</div>
     </div>
-</div>
 
-{{-- 4. ACTIVIDADES --}}
-<div class="section">
-    <div class="section-title">4. ACTIVIDADES PRINCIPALES (Cronograma)</div>
+    <div class="grid-2">
+        <div>
+            <div class="field-label">Área de Prácticas</div>
+            <div class="field-value">{{ $fichaRegistro->area_practicas }}</div>
+        </div>
+        <div>
+            <div class="field-label">Cargo</div>
+            <div class="field-value">{{ $fichaRegistro->cargo }}</div>
+        </div>
+    </div>
 
-    <table class="actividades-table">
-        <thead>
-        <tr>
-            <th rowspan="2" style="width: 40%">ACTIVIDAD</th>
-            <th colspan="4">MES 1</th>
-            <th colspan="4">MES 2</th>
-            <th colspan="4">MES 3</th>
-            <th colspan="4">MES 4</th>
-        </tr>
-        <tr>
-            @for($i = 1; $i <= 4; $i++)
-                @for($j = 1; $j <= 4; $j++)
-                    <th>S{{$j}}</th>
-                @endfor
-            @endfor
-        </tr>
-        </thead>
-        <tbody>
-        @foreach($cronograma->actividades as $act)
-            <tr>
-                <td class="left-align">{{ $act->actividad }}</td>
-                @for($mes = 1; $mes <= 4; $mes++)
-                    @for($sem = 1; $sem <= 4; $sem++)
-                        @php
-                            $col = "m{$mes}_s{$sem}";
-                        @endphp
-                        <td>
-                            @if($act->$col)
-                                <span class="check-mark">x</span>
+    <div class="field">
+        <div class="field-label">Jefe Directo</div>
+        <div class="field-value">{{ $fichaRegistro->nombre_jefe_directo }}</div>
+    </div>
+
+    <div class="grid-2">
+        <div>
+            <div class="field-label">Celular de Jefe Directo</div>
+            <div class="field-value">{{ $fichaRegistro->telefono_jefe_directo }}</div>
+        </div>
+        <div>
+            <div class="field-label">Correo de Jefe Directo</div>
+            <div class="field-value">{{ $fichaRegistro->correo_jefe_directo }}</div>
+        </div>
+    </div>
+
+    @if($fichaRegistro->horarios && $fichaRegistro->horarios->count() > 0)
+        <div class="field" style="margin-top: 10px;">
+            <div class="field-label">Días y Horario:</div>
+            <table class="horarios-table">
+                @php
+                    $diasNombres = ['LUNES', 'MARTES', 'MIÉRCOLES', 'JUEVES', 'VIERNES', 'SÁBADO'];
+                    $horariosMap = array_fill(0, 6, null);
+
+                    foreach ($fichaRegistro->horarios as $h) {
+                        $diaNum = (int) trim($h->dia_semana);
+                        if ($diaNum >= 1 && $diaNum <= 6) {
+                            $indice = $diaNum - 1;
+
+                            // Parsear horas
+                            $horaInicio = $h->hora_inicio;
+                            $horaFin = $h->hora_fin;
+
+                            if (strlen($horaInicio) > 5) {
+                                try {
+                                    $horaInicio = \Carbon\Carbon::parse($horaInicio)->format('H:i');
+                                } catch (\Exception $e) {
+                                    $horaInicio = substr($horaInicio, 11, 5);
+                                }
+                            }
+
+                            if (strlen($horaFin) > 5) {
+                                try {
+                                    $horaFin = \Carbon\Carbon::parse($horaFin)->format('H:i');
+                                } catch (\Exception $e) {
+                                    $horaFin = substr($horaFin, 11, 5);
+                                }
+                            }
+
+                            $horariosMap[$indice] = [
+                                'inicio' => $horaInicio,
+                                'fin' => $horaFin
+                            ];
+                        }
+                    }
+                @endphp
+                <thead>
+                <tr>
+                    <th style="width: 60px; text-align: center;">HORA</th>
+                    @foreach($diasNombres as $dia)
+                        <th style="text-align: center;">{{ $dia }}</th>
+                    @endforeach
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td style="text-align: center; font-weight: bold;">De/A</td>
+                    @foreach($horariosMap as $horario)
+                        <td style="text-align: center; font-size: 9px;">
+                            @if($horario)
+                                De: {{ $horario['inicio'] }}<br>
+                                A: {{ $horario['fin'] }}
+                            @else
+                                -
                             @endif
                         </td>
-                    @endfor
-                @endfor
-            </tr>
-        @endforeach
-        </tbody>
-    </table>
+                    @endforeach
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    @endif
 </div>
 
-{{-- FIRMAS --}}
+{{-- 4. FIRMAS --}}
 <div class="firmas-section">
-    <div class="section-title">FIRMAS</div>
+    <div class="section-title">4. FIRMAS</div>
+
     <div class="firmas-grid">
-        {{-- JEFE DIRECTO --}}
+        {{-- FIRMA EMPRESA --}}
         <div class="firma-col">
-            <div class="firma-title">Jefe Inmediato</div>
+            <div class="firma-title">Empresa</div>
             <div class="firma-box">
-                @if($cronograma->firma_jefe_directo)
-                    <img src="{{ storage_path('app/public/' . $cronograma->firma_jefe_directo) }}" alt="Firma Jefe">
+                @if($fichaRegistro->firma_empresa)
+                    <img src="{{ storage_path('app/public/firmas/ficha-registro/' . $fichaRegistro->firma_empresa) }}"
+                         alt="Firma Empresa">
                 @else
-                    <span style="color:#999; font-size:9px;">No firmada</span>
+                    <span style="color: #999; font-size: 10px;">No firmada</span>
                 @endif
             </div>
-            <p style="font-size:9px;">(Firma y Sello)</p>
+            <div class="firma-subtitle">Representante Legal</div>
         </div>
 
-        {{-- PRACTICANTE --}}
+        {{-- FIRMA PRACTICANTE (CENTRO) --}}
         <div class="firma-col">
             <div class="firma-title">Practicante</div>
             <div class="firma-box">
-                @if($cronograma->firma_practicante)
-                    <img src="{{ storage_path('app/public/' . $cronograma->firma_practicante) }}"
+                @if($fichaRegistro->firma_practicante)
+                    <img src="{{ storage_path('app/public/firmas/ficha-registro/' . $fichaRegistro->firma_practicante) }}"
                          alt="Firma Practicante">
                 @else
-                    <span style="color:#999; font-size:9px;">No firmada</span>
+                    <span style="color: #999; font-size: 10px;">No firmada</span>
                 @endif
             </div>
-            <p style="font-size:9px;">(Firma)</p>
+            <div class="firma-subtitle">Alumno</div>
         </div>
 
-        {{-- PROFESOR --}}
+        {{-- FIRMA PROGRAMA (DERECHA) --}}
         <div class="firma-col">
-            <div class="firma-title">Profesor Supervisor</div>
+            <div class="firma-title">Programa</div>
             <div class="firma-box">
-                @if($cronograma->firma_profesor)
-                    <img src="{{ storage_path('app/public/' . $cronograma->firma_profesor) }}" alt="Firma Profesor">
+                @if($fichaRegistro->firma_programa)
+                    <img src="{{ storage_path('app/public/firmas/ficha-registro/' . $fichaRegistro->firma_programa) }}"
+                         alt="Firma Programa">
                 @else
-                    <span style="color:#999; font-size:9px;">No firmada</span>
+                    <span style="color: #999; font-size: 10px;">No firmada</span>
                 @endif
             </div>
-            <p style="font-size:9px;">(Firma)</p>
+            <div class="firma-subtitle">Coordinador de Prácticas</div>
         </div>
     </div>
 </div>
 
-<div style="text-align: right; margin-top: 40px; margin-right: 40px; font-size: 10px; color: #333;">
+{{-- FECHA DE EMISIÓN --}}
+<div style="position: fixed; bottom: 40px; right: 40px; font-size: 10px; color: #333;">
     <strong>Fecha de emisión:</strong> {{ now()->format('d/m/Y') }}
 </div>
 

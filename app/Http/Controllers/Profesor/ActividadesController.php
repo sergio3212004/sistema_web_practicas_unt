@@ -103,7 +103,7 @@ class ActividadesController extends Controller
     }
     public function destroy(Actividad $actividad): RedirectResponse
     {
-        // ✅ Verifica permisos (¡importante!)
+        //  Verifica permisos (¡importante!)
         $profesor = auth()->user()->profesor;
         if ($actividad->aula->profesor_id !== $profesor->id) {
             abort(403, 'No tienes permiso para eliminar esta actividad.');

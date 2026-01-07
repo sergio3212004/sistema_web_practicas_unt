@@ -21,8 +21,8 @@ return new class extends Migration
             $table->string('titulo');
             $table->text('descripcion')->nullable();
 
-            $table->date('fecha_inicio');
-            $table->date('fecha_limite');
+            $table->timestamp('fecha_inicio');
+            $table->timestamp('fecha_limite');
 
 
             $table->timestamps();

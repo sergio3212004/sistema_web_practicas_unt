@@ -24,8 +24,12 @@ class ProfileUpdateRequest extends FormRequest
                 'max:255',
                 Rule::unique(User::class)->ignore($this->user()->id),
             ],
-            'telefono' => ['nullable', 'string', 'max:9'], // Cambiado a nullable
+            'telefono' => ['nullable', 'string', 'max:15'], // Aumentado a 15 para empresas
             'cv_link' => ['nullable', 'url', 'max:500'],
+            'direccion' => ['nullable', 'string', 'max:255'],
+            'departamento' => ['nullable', 'string', 'max:50'],
+            'provincia' => ['nullable', 'string', 'max:50'],
+            'distrito' => ['nullable', 'string', 'max:50'],
         ];
     }
 

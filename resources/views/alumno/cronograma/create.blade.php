@@ -341,7 +341,7 @@
                                         class="mt-4 inline-flex items-center px-4 py-2 bg-green-600 text-white text-sm font-semibold rounded-lg hover:bg-green-700 transition-all">
                                     @svg('heroicon-o-plus', 'w-4 h-4 mr-1') Agregar Actividad
                                 </button>
-                                <p class="text-xs text-gray-600 mt-2">Máximo 5 actividades</p>
+                                <p class="text-xs text-gray-600 mt-2">Máximo 20 actividades</p>
                             </div>
                         </div>
 
@@ -471,7 +471,7 @@
     @push('scripts')
         <script>
             let contadorActividades = 1;
-            const maxActividades = 5;
+            const maxActividades = 20;
 
             // === Firma digital ===
             const canvas = document.getElementById('canvasFirma');

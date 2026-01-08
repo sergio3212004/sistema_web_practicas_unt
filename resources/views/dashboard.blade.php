@@ -27,6 +27,9 @@
                                 :actividades-activas="$actividadesActivas"
                             />
                     @endif
+                    @if (isset($empresa))
+                        <x-dashboard.empresa :empresa="$empresa"/>
+                    @endif
 
 
                 </div>

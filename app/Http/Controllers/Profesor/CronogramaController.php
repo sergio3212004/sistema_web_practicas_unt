@@ -59,4 +59,39 @@ class CronogramaController extends Controller
             ->with('success', 'Cronograma firmado correctamente.');
     }
 
+    public function calificar(Request $request, Cronograma $cronograma)
+    {
+        // Seguridad: verificar que pertenece al aula del profesor
+        $profesor = Auth::user()->profesor;
+
+        abort_if(
+            $cronograma->fichaRegistro->alumno->aula->profesor_id !== $profesor->id,
+            403
+        );
+
+        // Validar calificación
+        $request->validate([
+            'calificacion' => 'required|numeric|min:0|max:20'
+        ], [
+            'calificacion.required' => 'La calificación es obligatoria.',
+            'calificacion.numeric' => 'La calificación debe ser un número.',
+            'calificacion.min' => 'La calificación mínima es 0.',
+            'calificacion.max' => 'La calificación máxima es 20.'
+        ]);
+
+        // Verificar que el cronograma esté completamente firmado
+        if (!$cronograma->estaFirmadoCompleto()) {
+            return back()->with('error', 'El cronograma debe estar completamente firmado antes de calificarlo.');
+        }
+
+        // Guardar calificación
+        $cronograma->update([
+            'calificacion' => $request->calificacion
+        ]);
+
+        return redirect()
+            ->route('profesor.cronogramas.show', $cronograma)
+            ->with('success', 'Calificación registrada correctamente.');
+    }
+
 }

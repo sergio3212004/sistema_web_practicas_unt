@@ -59,7 +59,10 @@ class DashboardController extends Controller
             $data['actividadesActivas'] = $actividadesActivas;
             $data['semestreActivo'] = Semestre::where('activo', true)->first();
         }
-        // Puedes agregar lógica para otros roles aquí (profesor, alumno, etc.)
+
+        if ($user->rol->nombre == 'empresa') {
+            $data['empresa'] = $user->empresa->load('razonSocial', 'publicacion.postulaciones');
+        }
 
 
         return view('dashboard', $data);

@@ -60,7 +60,7 @@
                 Recordarme
             </label>
 
-            @if (Route::has('password.request'))
+            @if (\Illuminate\Support\Facades\Route::has('password.request'))
                 <a
                     href="{{ route('password.request') }}"
                     class="text-blue-600 hover:text-blue-800 font-medium transition"

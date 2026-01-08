@@ -148,12 +148,49 @@ Route::middleware(['auth', 'rol:profesor'])
             [\App\Http\Controllers\Profesor\CronogramaController::class, 'firmar']
         )->name('cronogramas.firmar');
 
+        Route::patch('cronogramas/{cronograma}/calificar',
+            [\App\Http\Controllers\Profesor\CronogramaController::class, 'calificar']
+        )->name('cronogramas.calificar');
+
         // Informes Finales
         Route::get('informes-finales', [\App\Http\Controllers\Profesor\InformeFinalController::class, 'index'])
             ->name('informes-finales.index');
         Route::get('informes-finales/{informe}/download', [\App\Http\Controllers\Profesor\InformeFinalController::class, 'download'])
             ->name('informes-finales.download');
 
+        // Formato 11
+
+        // Ruta para listar todos los formatos once del profesor
+        Route::get('/formato-once', [\App\Http\Controllers\Profesor\FormatoOnceController::class, 'index'])
+            ->name('formato-once.index');
+
+        // Ruta para crear un nuevo formato once para un aula específica
+        Route::get('/formato-once/create/{aula}', [\App\Http\Controllers\Profesor\FormatoOnceController::class, 'create'])
+            ->name('formato-once.create');
+
+        // Ruta para guardar el nuevo formato once
+        Route::post('/formato-once/store/{aula}', [\App\Http\Controllers\Profesor\FormatoOnceController::class, 'store'])
+            ->name('formato-once.store');
+
+        // Ruta para ver un formato once específico
+        Route::get('/formato-once/{formatoOnce}', [\App\Http\Controllers\Profesor\FormatoOnceController::class, 'show'])
+            ->name('formato-once.show');
+
+        // Ruta para editar un formato once
+        Route::get('/formato-once/{formatoOnce}/edit', [\App\Http\Controllers\Profesor\FormatoOnceController::class, 'edit'])
+            ->name('formato-once.edit');
+
+        // Ruta para actualizar un formato once
+        Route::put('/formato-once/{formatoOnce}', [\App\Http\Controllers\Profesor\FormatoOnceController::class, 'update'])
+            ->name('formato-once.update');
+
+        // Ruta para eliminar un formato once
+        Route::delete('/formato-once/{formatoOnce}', [\App\Http\Controllers\Profesor\FormatoOnceController::class, 'destroy'])
+            ->name('formato-once.destroy');
+
+        // Ruta para generar PDF del formato once
+        Route::get('/formato-once/{formatoOnce}/pdf', [\App\Http\Controllers\Profesor\FormatoOnceController::class, 'generatePdf'])
+            ->name('formato-once.pdf');
     });
 
 // Rutas de la empresa

@@ -318,31 +318,6 @@
                                 </table>
 
                             </div>
-                            <!-- Días y Horarios -->
-                            <div class="mb-4">
-                                <label class="block text-sm font-semibold text-gray-700 mb-3">
-                                    Días y Horarios
-                                </label>
-                                <div class="bg-white border-2 border-blue-200 rounded-lg p-4">
-                                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                                        @forelse($fichaRegistro->horarios as $horario)
-                                            <div class="bg-blue-50 border border-blue-200 rounded-lg px-4 py-3">
-                                                <div class="flex items-center justify-between">
-                                                    <span class="font-semibold text-blue-800 text-sm">
-                                                        {{ strtoupper($horario->dia_semana) }}
-                                                    </span>
-                                                    <div class="text-xs text-gray-700 font-medium">
-                                                        {{ \Carbon\Carbon::parse($horario->hora_inicio)->format('H:i') }} -
-                                                        {{ \Carbon\Carbon::parse($horario->hora_fin)->format('H:i') }}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        @empty
-                                            <p class="text-gray-500 text-sm col-span-3">No hay horarios registrados</p>
-                                        @endforelse
-                                    </div>
-                                </div>
-                            </div>
 
                             <div class="mb-4">
                                 <label class="block text-sm font-semibold text-gray-700 mb-2">

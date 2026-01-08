@@ -153,6 +153,58 @@
                                 </div>
                             @endif
 
+                            <!-- Mostrar calificación si existe -->
+                            @if($ficha->cronograma && $ficha->cronograma->estaCalificado())
+                                <div class="bg-gradient-to-br from-purple-50 to-indigo-50 border-2 border-purple-200 rounded-xl p-6 mb-6">
+                                    <div class="flex items-center justify-between flex-wrap gap-4">
+                                        <div class="flex items-center space-x-4">
+                                            <div class="w-16 h-16 bg-gradient-to-br from-purple-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+                                                @svg('heroicon-o-academic-cap', 'w-8 h-8 text-white')
+                                            </div>
+                                            <div>
+                                                <h4 class="text-lg font-bold text-gray-800 mb-1">Calificación Final</h4>
+                                                <p class="text-sm text-gray-600">Tu cronograma ha sido evaluado</p>
+                                            </div>
+                                        </div>
+                                        <div class="text-center">
+                                            <div class="inline-flex items-center justify-center w-20 h-20 bg-white rounded-full shadow-lg border-4 border-purple-600">
+                                                <span class="text-3xl font-bold text-purple-600">
+                                                    {{ number_format($ficha->cronograma->calificacion, 0) }}
+                                                </span>
+                                            </div>
+                                            <p class="text-xs text-gray-500 mt-2 font-medium">de 20</p>
+                                        </div>
+                                    </div>
+
+                                    @php
+                                        $calificacion = $ficha->cronograma->calificacion;
+                                        if ($calificacion >= 17) {
+                                            $mensaje = '¡Excelente desempeño!';
+                                            $color = 'text-green-700';
+                                            $bgColor = 'bg-green-100';
+                                        } elseif ($calificacion >= 14) {
+                                            $mensaje = 'Buen trabajo';
+                                            $color = 'text-blue-700';
+                                            $bgColor = 'bg-blue-100';
+                                        } elseif ($calificacion >= 11) {
+                                            $mensaje = 'Desempeño regular';
+                                            $color = 'text-yellow-700';
+                                            $bgColor = 'bg-yellow-100';
+                                        } else {
+                                            $mensaje = 'Necesitas mejorar';
+                                            $color = 'text-red-700';
+                                            $bgColor = 'bg-red-100';
+                                        }
+                                    @endphp
+
+                                    <div class="mt-4 {{ $bgColor }} rounded-lg px-4 py-3">
+                                        <p class="text-sm font-semibold {{ $color }} text-center">
+                                            {{ $mensaje }}
+                                        </p>
+                                    </div>
+                                </div>
+                            @endif
+
                             <!-- Grid de acciones -->
                             <div class="grid md:grid-cols-2 gap-4">
 

@@ -11,9 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('monitoreo_practicas', function (Blueprint $table) {
+        Schema::create('formatos_once', function (Blueprint $table) {
             $table->id();
-
+            $table->foreignId('aula_id')->constrained('profesores')->cascadeOnDelete();
+            $table->string('firma_coordinador');
             $table->timestamps();
         });
     }
@@ -23,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('monitoreo_practicas');
+        Schema::dropIfExists('formatos_once');
     }
 };

@@ -68,7 +68,8 @@
                                name="numero"
                                id="numero"
                                value="{{ old('numero', $siguienteNumero) }}"
-                               min="1"
+                               min="5"
+                               max="15"
                                required
                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors @error('numero') border-red-500 @enderror">
                         @error('numero')

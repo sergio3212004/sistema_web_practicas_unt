@@ -12,6 +12,7 @@ class Cronograma extends Model
         'firma_practicante',
         'firma_jefe_directo',
         'firma_profesor',
+        'calificacion'
     ];
 
     public function fichaRegistro()
@@ -43,15 +44,24 @@ class Cronograma extends Model
         return empty($this->firma_profesor);
     }
 
-    public function tokenJefeDirecto()
+    public function tokensFirma()
     {
-        return $this->hasOne(FirmaTokenCronograma::class)
-            ->where('rol', 'jefe_directo');
+        return $this->hasOne(FirmaTokenCronograma::class);
     }
 
     public function tokenProfesor()
     {
         return $this->hasOne(FirmaTokenCronograma::class)
             ->where('rol', 'profesor');
+    }
+
+    public function estaCalificado(): bool
+    {
+        return $this->calificacion !== null;
+    }
+
+    public function puedeSerCalificado(): bool
+    {
+        return $this->estaFirmadoCompleto() && !$this->estaCalificado();
     }
 }

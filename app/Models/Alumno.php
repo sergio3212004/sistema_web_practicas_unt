@@ -40,7 +40,7 @@ class Alumno extends Model
     {
         return "{$this->nombres} {$this->apellido_paterno} {$this->apellido_materno}";
     }
-    
+
     public function fichaActual()
     {
         return $this->hasOne(\App\Models\FichaRegistro::class, 'alumno_id')
@@ -54,6 +54,10 @@ class Alumno extends Model
 
     public function postualaciones() {
         return $this->hasMany(Postulacion::class);
+    }
+
+    public function formatoOnceAlumnos() {
+        return $this->hasMany(FormatoOnceAlumno::class, 'alumno_id', 'id');
     }
 
 }

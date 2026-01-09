@@ -58,8 +58,6 @@ class AprobacionController extends Controller
                 'provincia' => $solicitud->provincia,
                 'distrito' => $solicitud->distrito,
                 'direccion' => $solicitud->direccion,
-                'email_verificado' => true,
-                'aprobado' => true, // Ya está aprobado
             ]);
 
             // Marcar solicitud como aprobada

@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Str;
 
 class FormatoOnceController extends Controller
@@ -26,12 +27,33 @@ class FormatoOnceController extends Controller
             return redirect()->back()->with('error', 'No tiene permisos para acceder a esta sección');
         }
 
-        // Obtener aulas del profesor con sus formatos
+        // Obtener aulas del profesor con sus formatos (hasMany)
         $aulas = Aula::where('profesor_id', $profesor->id)
-            ->with(['semestre', 'alumnos', 'formatoOnce'])
+            ->with(['semestre', 'alumnos', 'formatosOnce'])
             ->get();
 
         return view('profesor.formato-once.index', compact('aulas'));
+    }
+
+    /**
+     * Mostrar lista de formatos de un aula
+     */
+    public function list($aulaId)
+    {
+        $profesor = Auth::user()->profesor;
+
+        if (!$profesor) {
+            return redirect()->back()->with('error', 'No tiene permisos para acceder a esta sección');
+        }
+
+        $aula = Aula::with(['semestre', 'formatosOnce' => function($query) {
+            $query->orderBy('created_at', 'desc');
+        }])
+            ->where('id', $aulaId)
+            ->where('profesor_id', $profesor->id)
+            ->firstOrFail();
+
+        return view('profesor.formato-once.list', compact('aula'));
     }
 
     /**
@@ -45,16 +67,10 @@ class FormatoOnceController extends Controller
             return redirect()->back()->with('error', 'No tiene permisos para acceder a esta sección');
         }
 
-        $aula = Aula::with(['semestre', 'alumnos', 'formatoOnce'])
+        $aula = Aula::with(['semestre', 'alumnos'])
             ->where('id', $aulaId)
             ->where('profesor_id', $profesor->id)
             ->firstOrFail();
-
-        // Verificar si ya existe un formato para esta aula
-        if ($aula->formatoOnce) {
-            return redirect()->route('profesor.formato-once.edit', $aula->formatoOnce->id)
-                ->with('info', 'Ya existe un formato para esta aula. Puede editarlo.');
-        }
 
         // Verificar que el aula tenga alumnos
         if ($aula->alumnos->count() === 0) {
@@ -80,16 +96,22 @@ class FormatoOnceController extends Controller
             ->where('profesor_id', $profesor->id)
             ->firstOrFail();
 
-        // Validar que no exista ya un formato para esta aula
-        if ($aula->formatoOnce) {
-            return redirect()->route('profesor.formato-once.index')
-                ->with('error', 'Ya existe un formato para esta aula');
-        }
-
+        // Validación personalizada para ciclo_nivel
         $request->validate([
             'firma_coordinador' => 'required|string',
             'alumnos' => 'required|array',
             'alumnos.*.alumno_id' => 'required|exists:alumnos,id',
+            'alumnos.*.sede_practicas' => 'required|string',
+            'alumnos.*.ciclo_nivel' => [
+                'required',
+                'string',
+                function ($attribute, $value, $fail) {
+                    // Expresión regular: número seguido de / y luego inicial|intermedio|final
+                    if (!preg_match('/^\d+\/(inicial|intermedio|final)$/i', $value)) {
+                        $fail('El formato de ' . $attribute . ' debe ser "número/nivel", donde nivel es "inicial", "intermedio" o "final". Ej: "8/inicial".');
+                    }
+                }
+            ],
             'alumnos.*.competencias' => 'nullable|string',
             'alumnos.*.capacidades' => 'nullable|string',
             'alumnos.*.actividades' => 'nullable|string',
@@ -98,20 +120,19 @@ class FormatoOnceController extends Controller
             'alumnos.*.comentarios' => 'nullable|string',
         ]);
 
-        // Procesar y guardar la firma
         $firmaPath = $this->guardarFirma($request->firma_coordinador);
 
-        // Crear el formato principal
         $formatoOnce = FormatoOnce::create([
             'aula_id' => $aula->id,
             'firma_coordinador' => $firmaPath,
         ]);
 
-        // Crear los registros de alumnos
         foreach ($request->alumnos as $alumnoData) {
             FormatoOnceAlumno::create([
                 'formato_once_id' => $formatoOnce->id,
                 'alumno_id' => $alumnoData['alumno_id'],
+                'sede_practicas' => $alumnoData['sede_practicas'],
+                'ciclo_nivel' => $alumnoData['ciclo_nivel'],
                 'competencias' => $alumnoData['competencias'] ?? null,
                 'capacidades' => $alumnoData['capacidades'] ?? null,
                 'actividades' => $alumnoData['actividades'] ?? null,
@@ -121,7 +142,7 @@ class FormatoOnceController extends Controller
             ]);
         }
 
-        return redirect()->route('profesor.formato-once.index')
+        return redirect()->route('profesor.formato-once.list', $aula->id)
             ->with('success', 'Formato Once creado exitosamente');
     }
 
@@ -173,6 +194,16 @@ class FormatoOnceController extends Controller
             'firma_coordinador' => 'nullable|string',
             'alumnos' => 'required|array',
             'alumnos.*.alumno_id' => 'required|exists:alumnos,id',
+            'alumnos.*.sede_practicas' => 'required|string',
+            'alumnos.*.ciclo_nivel' => [
+                'required',
+                'string',
+                function ($attribute, $value, $fail) {
+                    if (!preg_match('/^\d+\/(inicial|intermedio|final)$/i', $value)) {
+                        $fail('El formato de ' . $attribute . ' debe ser "número/nivel", donde nivel es "inicial", "intermedio" o "final". Ej: "8/inicial".');
+                    }
+                }
+            ],
             'alumnos.*.competencias' => 'nullable|string',
             'alumnos.*.capacidades' => 'nullable|string',
             'alumnos.*.actividades' => 'nullable|string',
@@ -181,25 +212,22 @@ class FormatoOnceController extends Controller
             'alumnos.*.comentarios' => 'nullable|string',
         ]);
 
-        // Si hay nueva firma, eliminar la anterior y guardar la nueva
         if ($request->filled('firma_coordinador')) {
-            // Eliminar firma anterior
             if ($formatoOnce->firma_coordinador && Storage::disk('public')->exists($formatoOnce->firma_coordinador)) {
                 Storage::disk('public')->delete($formatoOnce->firma_coordinador);
             }
-
             $firmaPath = $this->guardarFirma($request->firma_coordinador);
             $formatoOnce->update(['firma_coordinador' => $firmaPath]);
         }
 
-        // Eliminar registros anteriores de alumnos
         $formatoOnce->formatoOnceAlumnos()->delete();
 
-        // Crear los nuevos registros de alumnos
         foreach ($request->alumnos as $alumnoData) {
             FormatoOnceAlumno::create([
                 'formato_once_id' => $formatoOnce->id,
                 'alumno_id' => $alumnoData['alumno_id'],
+                'sede_practicas' => $alumnoData['sede_practicas'],
+                'ciclo_nivel' => $alumnoData['ciclo_nivel'],
                 'competencias' => $alumnoData['competencias'] ?? null,
                 'capacidades' => $alumnoData['capacidades'] ?? null,
                 'actividades' => $alumnoData['actividades'] ?? null,
@@ -209,7 +237,7 @@ class FormatoOnceController extends Controller
             ]);
         }
 
-        return redirect()->route('profesor.formato-once.index')
+        return redirect()->route('profesor.formato-once.list', $formatoOnce->aula_id)
             ->with('success', 'Formato Once actualizado exitosamente');
     }
 
@@ -224,6 +252,8 @@ class FormatoOnceController extends Controller
             return redirect()->back()->with('error', 'No tiene permisos para eliminar este formato');
         }
 
+        $aulaId = $formatoOnce->aula_id;
+
         // Eliminar la firma del storage
         if ($formatoOnce->firma_coordinador && Storage::disk('public')->exists($formatoOnce->firma_coordinador)) {
             Storage::disk('public')->delete($formatoOnce->firma_coordinador);
@@ -232,7 +262,7 @@ class FormatoOnceController extends Controller
         // Eliminar el formato (los alumnos se eliminan en cascada si está configurado)
         $formatoOnce->delete();
 
-        return redirect()->route('profesor.formato-once.index')
+        return redirect()->route('profesor.formato-once.list', $aulaId)
             ->with('success', 'Formato Once eliminado exitosamente');
     }
 
@@ -281,4 +311,5 @@ class FormatoOnceController extends Controller
         // Descargar el PDF
         return $pdf->download($fileName);
     }
+
 }

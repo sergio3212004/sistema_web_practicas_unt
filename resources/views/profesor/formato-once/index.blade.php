@@ -5,7 +5,7 @@
             <p class="text-gray-600 mt-2">Gestione los formatos de conformidad para sus aulas asignadas</p>
         </div>
 
-{{--        @if(session('success'))
+        @if(session('success'))
             <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
                 <span class="block sm:inline">{{ session('success') }}</span>
             </div>
@@ -21,7 +21,7 @@
             <div class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded relative mb-4" role="alert">
                 <span class="block sm:inline">{{ session('info') }}</span>
             </div>
-        @endif--}}
+        @endif
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             @forelse($aulas as $aula)
@@ -40,46 +40,42 @@
                                 <span class="font-medium">{{ $aula->alumnos->count() }}</span> alumnos
                             </div>
 
-                            @if($aula->formatoOnce)
+                            @if($aula->formatosOnce->count() > 0)
                                 <div class="flex items-center text-sm text-green-600">
                                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                     </svg>
-                                    Formato completado
+                                    {{ $aula->formatosOnce->count() }} formato(s) creado(s)
                                 </div>
                             @else
                                 <div class="flex items-center text-sm text-orange-600">
                                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
                                     </svg>
-                                    Formato pendiente
+                                    Sin formatos
                                 </div>
                             @endif
                         </div>
 
                         <div class="flex gap-2 mt-4">
-                            @if($aula->formatoOnce)
-                                <a href="{{ route('formato-once.show', $aula->formatoOnce) }}"
+                            @if($aula->formatosOnce->count() > 0)
+                                <a href="{{ route('profesor.formato-once.list', $aula->id) }}"
                                    class="flex-1 bg-blue-500 hover:bg-blue-600 text-white text-center py-2 px-4 rounded transition-colors duration-200 text-sm font-medium">
-                                    Ver Formato
+                                    Ver Formatos ({{ $aula->formatosOnce->count() }})
                                 </a>
-                                <a href="{{ route('formato-once.edit', $aula->formatoOnce) }}"
-                                   class="flex-1 bg-yellow-500 hover:bg-yellow-600 text-white text-center py-2 px-4 rounded transition-colors duration-200 text-sm font-medium">
-                                    Editar
+                            @endif
+
+                            @if($aula->alumnos->count() > 0)
+                                <a href="{{ route('profesor.formato-once.create', $aula->id) }}"
+                                   class="flex-1 bg-green-500 hover:bg-green-600 text-white text-center py-2 px-4 rounded transition-colors duration-200 text-sm font-medium">
+                                    Crear Formato
                                 </a>
                             @else
-                                @if($aula->alumnos->count() > 0)
-                                    <a href="{{ route('formato-once.create', $aula->id) }}"
-                                       class="flex-1 bg-green-500 hover:bg-green-600 text-white text-center py-2 px-4 rounded transition-colors duration-200 text-sm font-medium">
-                                        Crear Formato
-                                    </a>
-                                @else
-                                    <button disabled
-                                            class="flex-1 bg-gray-300 text-gray-500 text-center py-2 px-4 rounded cursor-not-allowed text-sm font-medium"
-                                            title="El aula no tiene alumnos asignados">
-                                        Sin Alumnos
-                                    </button>
-                                @endif
+                                <button disabled
+                                        class="flex-1 bg-gray-300 text-gray-500 text-center py-2 px-4 rounded cursor-not-allowed text-sm font-medium"
+                                        title="El aula no tiene alumnos asignados">
+                                    Sin Alumnos
+                                </button>
                             @endif
                         </div>
                     </div>

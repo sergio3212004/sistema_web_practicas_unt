@@ -50,7 +50,7 @@ class Aula extends Model
         return $this->hasMany(Actividad::class);
     }
 
-    public function formatoOnce() {
-        return $this->hasOne(FormatoOnce::class, 'aula_id', 'id');
+    public function formatosOnce() {
+        return $this->hasMany(FormatoOnce::class, 'aula_id', 'id');
     }
 }

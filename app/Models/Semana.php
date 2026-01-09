@@ -25,4 +25,8 @@ class Semana extends Model
     {
         return $this->hasMany(Actividad::class);
     }
+
+    public function monitoreosPracticas() {
+        return $this->hasMany(MonitoreoPractica::class, 'semana_id', 'id');
+    }
 }

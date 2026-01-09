@@ -76,6 +76,12 @@ Route::middleware(['auth', 'rol:administrador'])
             ->name('aprobaciones.aprobar');
         Route::delete('aprobaciones/{id}/rechazar', [\App\Http\Controllers\Admin\AprobacionController::class, 'rechazar'])
             ->name('aprobaciones.rechazar');
+        // Perfiles - Ver detalles
+        Route::get('perfil/empresa/{id}', [\App\Http\Controllers\Admin\PerfilController::class, 'empresa'])
+            ->name('perfil.empresa');
+
+        Route::get('perfil/solicitud/{id}', [\App\Http\Controllers\Admin\PerfilController::class, 'solicitudEmpresa'])
+            ->name('perfil.solicitud');
 
         // Informes Finales
         Route::get('informes-finales', [\App\Http\Controllers\Admin\InformeFinalController::class, 'index'])
@@ -180,13 +186,16 @@ Route::middleware(['auth', 'rol:profesor'])
         Route::get('/formato-once/{formatoOnce}/edit', [\App\Http\Controllers\Profesor\FormatoOnceController::class, 'edit'])
             ->name('formato-once.edit');
 
+        Route::get('/formato-once/{formatoOnce}/destroy', [\App\Http\Controllers\Profesor\FormatoOnceController::class, 'destroy'])
+            ->name('formato-once.destroy');
+
+        Route::get('/aula/{aula}/list', [\App\Http\Controllers\Profesor\FormatoOnceController::class, 'list'])->name('formato-once.list');
+
+
         // Ruta para actualizar un formato once
-        Route::put('/formato-once/{formatoOnce}', [\App\Http\Controllers\Profesor\FormatoOnceController::class, 'update'])
+        Route::put('/formato-once/list/{formatoOnce}', [\App\Http\Controllers\Profesor\FormatoOnceController::class, 'update'])
             ->name('formato-once.update');
 
-        // Ruta para eliminar un formato once
-        Route::delete('/formato-once/{formatoOnce}', [\App\Http\Controllers\Profesor\FormatoOnceController::class, 'destroy'])
-            ->name('formato-once.destroy');
 
         // Ruta para generar PDF del formato once
         Route::get('/formato-once/{formatoOnce}/pdf', [\App\Http\Controllers\Profesor\FormatoOnceController::class, 'generatePdf'])
@@ -234,10 +243,12 @@ Route::middleware(['auth', 'rol:alumno'])
 
 
         // Google Drive Connection
-        Route::get('/drive/conectar', [EntregaController::class, 'conectarDrive'])
-            ->name('drive.conectar');
-        Route::get('/drive/callback', [EntregaController::class, 'callbackDrive'])
-            ->name('drive.callback');
+        Route::middleware(['web'])->group(function () {
+            Route::get('/drive/conectar', [EntregaController::class, 'conectarDrive'])
+                ->name('drive.conectar');
+            Route::get('/drive/callback', [EntregaController::class, 'callbackDrive'])
+                ->name('drive.callback');
+        });
 
         // Ficha Registro
         // Listado
@@ -306,14 +317,6 @@ Route::middleware(['auth', 'rol:alumno'])
         Route::delete('/entregas/{entrega}', [\App\Http\Controllers\Alumno\EntregaController::class, 'destroy'])
             ->name('entregas.destroy');
 
-/*        // Mis entregas y calificaciones
-        Route::get('mis-entregas', [\App\Http\Controllers\Alumno\MisEntregasController::class, 'index'])
-            ->name('entregas.mis-entregas');
-        Route::get('mis-entregas/{entrega}', [\App\Http\Controllers\Alumno\MisEntregasController::class, 'show'])
-            ->name('entregas.detalle');
-        Route::post('mis-entregas/{entrega}/guardar-link', [\App\Http\Controllers\Alumno\MisEntregasController::class, 'guardarLink'])
-            ->name('entregas.guardar-link');*/
-
         // Informe Final
         Route::get('informe-final', [\App\Http\Controllers\Alumno\InformeFinalController::class, 'index'])
             ->name('informe-final.index');
@@ -343,7 +346,7 @@ Route::post(
 )->name('firma.cronograma.jefe.guardar');
 
 
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'web'])->group(function () {
     Route::get('/google/auth', [GoogleDriveController::class, 'redirectToGoogle'])->name('google.auth');
     Route::get('/google/callback', [GoogleDriveController::class, 'handleGoogleCallback'])->name('google.callback');
 });

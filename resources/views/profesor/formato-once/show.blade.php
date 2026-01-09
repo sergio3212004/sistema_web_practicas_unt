@@ -1,5 +1,5 @@
 <x-app-layout>
-    <div class="container mx-auto px-4 py-8 max-w-7xl">
+    <div class="container mx-auto px-4 py-8 max-w-full">
         <div class="mb-6">
             <a href="{{ route('profesor.formato-once.index') }}" class="text-blue-600 hover:text-blue-800 flex items-center mb-4">
                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -28,6 +28,20 @@
                         </svg>
                         Editar
                     </a>
+                    <form action="{{ route('profesor.formato-once.destroy', $formatoOnce->id) }}"
+                          method="POST"
+                          onsubmit="return confirm('¿Está seguro de eliminar este formato? Esta acción no se puede deshacer.');"
+                          class="inline">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit"
+                                class="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors duration-200 flex items-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                            </svg>
+                            Eliminar
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -70,7 +84,8 @@
                     <tr>
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Alumno</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ciclo/Nivel</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sede de Prácticas</th>
+                        <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Ciclo</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Competencias</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Capacidades</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actividades</th>
@@ -92,26 +107,32 @@
                                 <div class="text-sm text-gray-500">
                                     {{ $registro->alumno->codigo_matricula }}
                                 </div>
-                                @if($registro->alumno->fichaActual && $registro->alumno->fichaActual->empresa)
-                                    <div class="text-xs text-blue-600 mt-1">
-                                        Sede: {{ $registro->alumno->fichaActual->empresa }}
-                                    </div>
-                                @endif
-                            </td>
-                            <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                                {{ $formatoOnce->aula->semestre->nivel ?? 'N/A' }}
                             </td>
                             <td class="px-4 py-4 text-sm text-gray-900">
-                                {{ $registro->competencias ?? '-' }}
+                                {{ $registro->sede_practicas ?? '-' }}
+                            </td>
+                            <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
+                                {{ $registro->ciclo_nivel ?? '-' }}
                             </td>
                             <td class="px-4 py-4 text-sm text-gray-900">
-                                {{ $registro->capacidades ?? '-' }}
+                                <div class="max-w-xs">
+                                    {{ $registro->competencias ?? '-' }}
+                                </div>
                             </td>
                             <td class="px-4 py-4 text-sm text-gray-900">
-                                {{ $registro->actividades ?? '-' }}
+                                <div class="max-w-xs">
+                                    {{ $registro->capacidades ?? '-' }}
+                                </div>
                             </td>
                             <td class="px-4 py-4 text-sm text-gray-900">
-                                {{ $registro->producto ?? '-' }}
+                                <div class="max-w-xs">
+                                    {{ $registro->actividades ?? '-' }}
+                                </div>
+                            </td>
+                            <td class="px-4 py-4 text-sm text-gray-900">
+                                <div class="max-w-xs">
+                                    {{ $registro->producto ?? '-' }}
+                                </div>
                             </td>
                             <td class="px-4 py-4 whitespace-nowrap text-center">
                                 @if($registro->conformidad)
@@ -125,7 +146,9 @@
                                 @endif
                             </td>
                             <td class="px-4 py-4 text-sm text-gray-900">
-                                {{ $registro->comentarios ?? '-' }}
+                                <div class="max-w-xs">
+                                    {{ $registro->comentarios ?? '-' }}
+                                </div>
                             </td>
                         </tr>
                     @endforeach

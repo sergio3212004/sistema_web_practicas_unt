@@ -7,10 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 class FormatoOnceAlumno extends Model
 {
     //
-    protected $table = 'formatos_once_alumnos';
+    protected $table = 'formatos_once_alumno';
     protected $fillable = [
         'formato_once_id',
         'alumno_id',
+        'sede_practicas',
+        'ciclo_nivel',
         'competencias',
         'capacidades',
         'actividades',

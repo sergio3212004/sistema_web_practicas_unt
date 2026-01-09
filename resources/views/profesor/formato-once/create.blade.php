@@ -1,5 +1,5 @@
 <x-app-layout>
-    <div class="container mx-auto px-4 py-8 max-w-7xl">
+    <div class="container mx-auto px-4 py-8 max-w-full">
         <div class="mb-6">
             <a href="{{ route('profesor.formato-once.index') }}" class="text-blue-600 hover:text-blue-800 flex items-center mb-4">
                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -17,27 +17,46 @@
             <!-- Tabla de alumnos -->
             <div class="bg-white rounded-lg shadow-md overflow-hidden">
                 <div class="bg-gray-50 px-6 py-4 border-b border-gray-200">
-                    <h2 class="text-xl font-semibold text-gray-800">Alumnos del Aula</h2>
+                    <h2 class="text-xl font-semibold text-gray-800">Alumnos del Aula ({{ $aula->alumnos->count() }})</h2>
                 </div>
 
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
                         <tr>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Alumno</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sede de Prácticas</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Competencias</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Capacidades</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actividades</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Producto</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Conformidad</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Comentarios</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style="min-width: 180px;">
+                                Alumno
+                            </th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style="min-width: 200px;">
+                                Sede de Prácticas
+                            </th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style="min-width: 150px;">
+                                Ciclo/Nivel
+                            </th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style="min-width: 250px;">
+                                Competencias
+                            </th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style="min-width: 250px;">
+                                Capacidades
+                            </th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style="min-width: 250px;">
+                                Actividades
+                            </th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style="min-width: 200px;">
+                                Producto
+                            </th>
+                            <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider" style="min-width: 120px;">
+                                Conformidad
+                            </th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style="min-width: 250px;">
+                                Comentarios
+                            </th>
                         </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
                         @foreach($aula->alumnos as $index => $alumno)
                             <tr class="hover:bg-gray-50">
-                                <td class="px-4 py-4 whitespace-nowrap">
+                                <td class="px-4 py-4 whitespace-nowrap" style="min-width: 180px;">
                                     <div class="text-sm font-medium text-gray-900">
                                         {{ $alumno->nombre_completo }}
                                     </div>
@@ -46,49 +65,104 @@
                                     </div>
                                     <input type="hidden" name="alumnos[{{ $index }}][alumno_id]" value="{{ $alumno->id }}">
                                 </td>
-                                <td class="px-4 py-4">
+                                <td class="px-4 py-4" style="min-width: 200px;">
                                     <input type="text"
                                            name="alumnos[{{ $index }}][sede_practicas]"
+                                           value="{{ old("alumnos.$index.sede_practicas", $alumno->fichaActual->empresa ?? '') }}"
+                                           required
                                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm"
                                            placeholder="Sede de prácticas">
+                                    @error('alumnos.' . $index . '.sede_practicas')
+                                    <span class="text-red-500 text-xs">{{ $message }}</span>
+                                    @enderror
                                 </td>
-                                <td class="px-4 py-4">
+                                <td class="px-4 py-4" style="min-width: 150px;">
+                                    <div class="flex gap-2 items-center">
+                                        <input type="number"
+                                               name="alumnos[{{ $index }}][ciclo_numero]"
+                                               id="ciclo_numero_{{ $index }}"
+                                               min="6"
+                                               max="10"
+                                               value="{{ old("alumnos.$index.ciclo_numero", 6) }}"
+                                               required
+                                               class="w-16 px-2 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm text-center"
+                                               placeholder="6">
+                                        <span class="text-gray-500 font-bold">/</span>
+                                        <select name="alumnos[{{ $index }}][nivel]"
+                                                id="nivel_{{ $index }}"
+                                                required
+                                                class="flex-1 px-2 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm">
+                                            <option value="">Nivel</option>
+                                            <option value="inicial" {{ old("alumnos.$index.nivel") == 'inicial' ? 'selected' : '' }}>Inicial</option>
+                                            <option value="intermedio" {{ old("alumnos.$index.nivel") == 'intermedio' ? 'selected' : '' }}>Intermedio</option>
+                                            <option value="final" {{ old("alumnos.$index.nivel") == 'final' ? 'selected' : '' }}>Final</option>
+                                        </select>
+                                    </div>
+                                    <!-- Campo oculto que combinará ciclo_numero/nivel -->
+                                    <input type="hidden"
+                                           name="alumnos[{{ $index }}][ciclo_nivel]"
+                                           id="ciclo_nivel_{{ $index }}"
+                                           value="{{ old("alumnos.$index.ciclo_nivel", '6/inicial') }}">
+                                    @error('alumnos.' . $index . '.ciclo_nivel')
+                                    <span class="text-red-500 text-xs block mt-1">{{ $message }}</span>
+                                    @enderror
+                                </td>
+                                <td class="px-4 py-4" style="min-width: 250px;">
                                     <textarea name="alumnos[{{ $index }}][competencias]"
-                                              rows="2"
-                                              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm"
-                                              placeholder="Competencias..."></textarea>
+                                              rows="3"
+                                              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm resize-y"
+                                              placeholder="Ej: Competencia Genérica G1.1&#10;Competencia Específica E1.1">{{ old("alumnos.$index.competencias") }}</textarea>
+                                    @error('alumnos.' . $index . '.competencias')
+                                    <span class="text-red-500 text-xs">{{ $message }}</span>
+                                    @enderror
                                 </td>
-                                <td class="px-4 py-4">
+                                <td class="px-4 py-4" style="min-width: 250px;">
                                     <textarea name="alumnos[{{ $index }}][capacidades]"
-                                              rows="2"
-                                              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm"
-                                              placeholder="Capacidades..."></textarea>
+                                              rows="3"
+                                              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm resize-y"
+                                              placeholder="Capacidades de la competencia...">{{ old("alumnos.$index.capacidades") }}</textarea>
+                                    @error('alumnos.' . $index . '.capacidades')
+                                    <span class="text-red-500 text-xs">{{ $message }}</span>
+                                    @enderror
                                 </td>
-                                <td class="px-4 py-4">
+                                <td class="px-4 py-4" style="min-width: 250px;">
                                     <textarea name="alumnos[{{ $index }}][actividades]"
-                                              rows="2"
-                                              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm"
-                                              placeholder="Actividades..."></textarea>
+                                              rows="3"
+                                              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm resize-y"
+                                              placeholder="Actividades a desarrollar...">{{ old("alumnos.$index.actividades") }}</textarea>
+                                    @error('alumnos.' . $index . '.actividades')
+                                    <span class="text-red-500 text-xs">{{ $message }}</span>
+                                    @enderror
                                 </td>
-                                <td class="px-4 py-4">
+                                <td class="px-4 py-4" style="min-width: 200px;">
                                     <input type="text"
                                            name="alumnos[{{ $index }}][producto]"
+                                           value="{{ old("alumnos.$index.producto") }}"
                                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm"
-                                           placeholder="Producto">
+                                           placeholder="Ej: Informe, proyecto">
+                                    @error('alumnos.' . $index . '.producto')
+                                    <span class="text-red-500 text-xs">{{ $message }}</span>
+                                    @enderror
                                 </td>
-                                <td class="px-4 py-4 text-center">
+                                <td class="px-4 py-4 text-center" style="min-width: 120px;">
                                     <select name="alumnos[{{ $index }}][conformidad]"
                                             required
-                                            class="px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm">
-                                        <option value="1">Sí</option>
-                                        <option value="0">No</option>
+                                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm">
+                                        <option value="1" {{ old("alumnos.$index.conformidad", 1) == 1 ? 'selected' : '' }}>Sí</option>
+                                        <option value="0" {{ old("alumnos.$index.conformidad") == 0 ? 'selected' : '' }}>No</option>
                                     </select>
+                                    @error('alumnos.' . $index . '.conformidad')
+                                    <span class="text-red-500 text-xs">{{ $message }}</span>
+                                    @enderror
                                 </td>
-                                <td class="px-4 py-4">
+                                <td class="px-4 py-4" style="min-width: 250px;">
                                     <textarea name="alumnos[{{ $index }}][comentarios]"
-                                              rows="2"
-                                              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm"
-                                              placeholder="Comentarios adicionales..."></textarea>
+                                              rows="3"
+                                              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm resize-y"
+                                              placeholder="Comentarios adicionales...">{{ old("alumnos.$index.comentarios") }}</textarea>
+                                    @error('alumnos.' . $index . '.comentarios')
+                                    <span class="text-red-500 text-xs">{{ $message }}</span>
+                                    @enderror
                                 </td>
                             </tr>
                         @endforeach
@@ -98,7 +172,7 @@
             </div>
 
             <!-- Firma del coordinador -->
-            <div class="bg-white rounded-lg shadow-md p-6">
+            <div class="bg-white rounded-lg shadow-md p-6 max-w-4xl mx-auto">
                 <div class="mb-4">
                     <h2 class="text-xl font-semibold text-gray-800 mb-2">Firma del Coordinador</h2>
                     <p class="text-sm text-gray-600">Dibuje su firma en el área blanca usando el mouse o pantalla táctil</p>
@@ -107,11 +181,11 @@
                 <div class="space-y-4">
                     <!-- Canvas para la firma -->
                     <div class="border-2 border-gray-300 rounded-lg overflow-hidden bg-white">
-                        <canvas id="signatureCanvas" width="600" height="200" class="cursor-crosshair"></canvas>
+                        <canvas id="signatureCanvas" width="800" height="250" class="cursor-crosshair w-full"></canvas>
                     </div>
 
                     <!-- Controles de la firma -->
-                    <div class="flex gap-4 items-center">
+                    <div class="flex flex-wrap gap-4 items-center">
                         <button type="button" id="clearSignature"
                                 class="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors duration-200 flex items-center gap-2">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -121,10 +195,10 @@
                         </button>
 
                         <div class="flex items-center gap-2">
-                            <label for="brushSize" class="text-sm font-medium text-gray-700">Grosor del pincel:</label>
+                            <label for="brushSize" class="text-sm font-medium text-gray-700">Grosor:</label>
                             <input type="range" id="brushSize" min="1" max="10" value="2"
                                    class="w-32 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
-                            <span id="brushSizeValue" class="text-sm text-gray-600 font-medium">2px</span>
+                            <span id="brushSizeValue" class="text-sm text-gray-600 font-medium w-10">2px</span>
                         </div>
 
                         <div class="flex items-center gap-2">
@@ -136,16 +210,22 @@
 
                     <input type="hidden" name="firma_coordinador" id="firmaCoordinadorInput" required>
 
-                    <div id="signatureError" class="text-red-600 text-sm hidden">
+                    <div id="signatureError" class="text-red-600 text-sm font-medium hidden bg-red-50 border border-red-200 rounded-md p-3">
+                        <svg class="w-5 h-5 inline mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                        </svg>
                         Por favor, dibuje su firma antes de enviar el formulario.
                     </div>
                 </div>
             </div>
 
             <!-- Botones de acción -->
-            <div class="flex gap-4 justify-end">
+            <div class="flex gap-4 justify-end max-w-4xl mx-auto">
                 <a href="{{ route('profesor.formato-once.index') }}"
-                   class="px-6 py-3 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors duration-200">
+                   class="px-6 py-3 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors duration-200 flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
                     Cancelar
                 </a>
                 <button type="submit"
@@ -181,6 +261,35 @@
         ctx.lineWidth = brushSizeInput.value;
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
+
+        // Función para combinar ciclo y nivel
+        function updateCicloNivel(index) {
+            const cicloNumero = document.getElementById(`ciclo_numero_${index}`).value;
+            const nivel = document.getElementById(`nivel_${index}`).value;
+            const cicloNivelInput = document.getElementById(`ciclo_nivel_${index}`);
+
+            if (cicloNumero && nivel) {
+                cicloNivelInput.value = `${cicloNumero}/${nivel}`;
+            }
+        }
+
+        // Agregar event listeners a todos los campos de ciclo y nivel
+        document.addEventListener('DOMContentLoaded', function() {
+            const totalAlumnos = {{ $aula->alumnos->count() }};
+
+            for (let i = 0; i < totalAlumnos; i++) {
+                const cicloInput = document.getElementById(`ciclo_numero_${i}`);
+                const nivelSelect = document.getElementById(`nivel_${i}`);
+
+                if (cicloInput && nivelSelect) {
+                    cicloInput.addEventListener('input', () => updateCicloNivel(i));
+                    nivelSelect.addEventListener('change', () => updateCicloNivel(i));
+
+                    // Inicializar valores al cargar la página
+                    updateCicloNivel(i);
+                }
+            }
+        });
 
         // Función para obtener las coordenadas correctas
         function getMousePos(canvas, evt) {
@@ -292,10 +401,38 @@
     </script>
 
     <style>
+        /* Estilos para asegurar que el canvas sea responsive */
         #signatureCanvas {
-            width: 100%;
-            height: 200px;
             display: block;
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* Mejorar la apariencia del input range */
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #3b82f6;
+            cursor: pointer;
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #3b82f6;
+            cursor: pointer;
+            border: none;
+        }
+
+        /* Estilos para los textarea con resize */
+        textarea.resize-y {
+            min-height: 70px;
+            max-height: 200px;
         }
     </style>
+
 </x-app-layout>

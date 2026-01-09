@@ -25,14 +25,33 @@
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
                         <tr>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Alumno</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sede de Prácticas</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Competencias</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Capacidades</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actividades</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Producto</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Conformidad</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Comentarios</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style="min-width: 180px;">
+                                Alumno
+                            </th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style="min-width: 200px;">
+                                Sede de Prácticas
+                            </th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style="min-width: 150px;">
+                                Ciclo/Nivel
+                            </th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style="min-width: 250px;">
+                                Competencias
+                            </th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style="min-width: 250px;">
+                                Capacidades
+                            </th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style="min-width: 250px;">
+                                Actividades
+                            </th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style="min-width: 200px;">
+                                Producto
+                            </th>
+                            <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider" style="min-width: 120px;">
+                                Conformidad
+                            </th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style="min-width: 250px;">
+                                Comentarios
+                            </th>
                         </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
@@ -50,9 +69,40 @@
                                 <td class="px-4 py-4">
                                     <input type="text"
                                            name="alumnos[{{ $index }}][sede_practicas]"
-                                           value="{{ $registro->alumno->fichaActual->empresa ?? '' }}"
+                                           value="{{ $registro->sede_practicas ?? '' }}"
                                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm"
                                            placeholder="Sede de prácticas">
+                                </td>
+                                <td class="px-4 py-4" style="min-width: 150px;">
+                                    <div class="flex gap-2 items-center">
+                                        <input type="number"
+                                               name="alumnos[{{ $index }}][ciclo_numero]"
+                                               id="ciclo_numero_{{ $index }}"
+                                               min="6"
+                                               max="10"
+                                               value="{{ old("alumnos.$index.ciclo_numero", 6) }}"
+                                               required
+                                               class="w-16 px-2 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm text-center"
+                                               placeholder="6">
+                                        <span class="text-gray-500 font-bold">/</span>
+                                        <select name="alumnos[{{ $index }}][nivel]"
+                                                id="nivel_{{ $index }}"
+                                                required
+                                                class="flex-1 px-2 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm">
+                                            <option value="">Nivel</option>
+                                            <option value="inicial" {{ old("alumnos.$index.nivel") == 'inicial' ? 'selected' : '' }}>Inicial</option>
+                                            <option value="intermedio" {{ old("alumnos.$index.nivel") == 'intermedio' ? 'selected' : '' }}>Intermedio</option>
+                                            <option value="final" {{ old("alumnos.$index.nivel") == 'final' ? 'selected' : '' }}>Final</option>
+                                        </select>
+                                    </div>
+                                    <!-- Campo oculto que combinará ciclo_numero/nivel -->
+                                    <input type="hidden"
+                                           name="alumnos[{{ $index }}][ciclo_nivel]"
+                                           id="ciclo_nivel_{{ $index }}"
+                                           value="{{ old("alumnos.$index.ciclo_nivel", '6/inicial') }}">
+                                    @error('alumnos.' . $index . '.ciclo_nivel')
+                                    <span class="text-red-500 text-xs block mt-1">{{ $message }}</span>
+                                    @enderror
                                 </td>
                                 <td class="px-4 py-4">
                                     <textarea name="alumnos[{{ $index }}][competencias]"

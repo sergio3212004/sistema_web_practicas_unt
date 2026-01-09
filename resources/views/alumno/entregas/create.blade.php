@@ -224,22 +224,7 @@
                             @endif
                         @endif
 
-                        {{-- Observaciones --}}
-                        <div>
-                            <label for="observaciones" class="block text-sm font-medium text-gray-700 mb-2">
-                                Observaciones (opcional)
-                            </label>
-                            <textarea name="observaciones"
-                                      id="observaciones"
-                                      rows="4"
-                                      maxlength="500"
-                                      class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none"
-                                      placeholder="Agrega comentarios o notas sobre tu entrega...">{{ old('observaciones') }}</textarea>
-                            <p class="mt-1 text-xs text-gray-500">Máximo 500 caracteres</p>
-                            @error('observaciones')
-                            <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
+
 
                     </div>
 
@@ -293,7 +278,7 @@
                         .addView(new google.picker.DocsView()
                             .setMimeTypes('application/pdf')
                             .setMode(google.picker.DocsViewMode.LIST))
-                        .setOAuthToken('{{ Session::get("google_drive_token")["access_token"] ?? "" }}')
+                        .setOAuthToken('{{ session("google_drive_token")["access_token"] ?? "" }}')
                         .setDeveloperKey('{{ config("services.google.api_key") }}')
                         .setCallback(pickerCallback)
                         .setTitle('Selecciona un archivo PDF')

@@ -64,4 +64,8 @@ class Cronograma extends Model
     {
         return $this->estaFirmadoCompleto() && !$this->estaCalificado();
     }
+
+    public function monitoreosPracticas() {
+        return $this->hasMany(MonitoreoPractica::class, 'cronograma_id', 'id');
+    }
 }

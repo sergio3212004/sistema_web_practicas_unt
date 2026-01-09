@@ -119,65 +119,25 @@
                                 Archivo Entregado
                             </h3>
                         </div>
-
                         <div class="p-6">
-                            @if($entrega->actividad->tipoActividad->modo_entrega === 'drive' && $driveInfo)
-                                {{-- Entrega de Google Drive --}}
-                                <div class="flex items-center justify-between p-5 bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-xl hover:shadow-md transition-shadow">
-                                    <div class="flex items-center space-x-4">
-                                        <div class="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
-                                            <svg class="w-6 h-6 text-white" viewBox="0 0 24 24">
-                                                <path fill="currentColor" d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"/>
-                                            </svg>
-                                        </div>
-                                        <div>
-                                            <p class="text-sm font-semibold text-gray-900">{{ $driveInfo['file_name'] }}</p>
-                                            <p class="text-xs text-gray-500 mt-1 flex items-center">
-                                                @svg('heroicon-o-cloud', 'w-3.5 h-3.5 mr-1')
-                                                Google Drive
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <a href="{{ route('alumno.entregas.download', $entrega) }}"
-                                       target="_blank"
-                                       class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">
-                                        @svg('heroicon-o-arrow-top-right-on-square', 'w-4 h-4 mr-2')
-                                        Abrir
-                                    </a>
-                                </div>
+                            @if($entrega->actividad->tipoActividad->modo_entrega === 'drive')
+                                {{-- Enlace directo a Google Drive --}}
+                                <a href="{{ $entrega->ruta }}"
+                                   target="_blank"
+                                   rel="noopener noreferrer"
+                                   class="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium">
+                                    @svg('heroicon-o-arrow-top-right-on-square', 'w-4 h-4 mr-1.5')
+                                    Abrir en Google Drive
+                                </a>
                             @else
-                                {{-- Entrega de archivo PDF --}}
-                                @php
-                                    $extension = pathinfo($entrega->ruta, PATHINFO_EXTENSION);
-                                    $nombreArchivo = basename($entrega->ruta);
-                                @endphp
-                                <div class="flex items-center justify-between p-5 bg-gradient-to-r from-indigo-50 to-purple-50 border-2 border-indigo-200 rounded-xl hover:shadow-md transition-shadow">
-                                    <div class="flex items-center space-x-4">
-                                        <div class="w-12 h-12 bg-indigo-600 rounded-lg flex items-center justify-center flex-shrink-0">
-                                            @if($extension === 'pdf')
-                                                @svg('heroicon-o-document-text', 'w-6 h-6 text-white')
-                                            @elseif(in_array($extension, ['doc', 'docx']))
-                                                @svg('heroicon-o-document', 'w-6 h-6 text-white')
-                                            @elseif(in_array($extension, ['zip', 'rar']))
-                                                @svg('heroicon-o-archive-box', 'w-6 h-6 text-white')
-                                            @else
-                                                @svg('heroicon-o-document', 'w-6 h-6 text-white')
-                                            @endif
-                                        </div>
-                                        <div>
-                                            <p class="text-sm font-semibold text-gray-900">{{ $nombreArchivo }}</p>
-                                            <p class="text-xs text-gray-500 mt-1 flex items-center">
-                                                @svg('heroicon-o-folder', 'w-3.5 h-3.5 mr-1')
-                                                Archivo {{ strtoupper($extension) }}
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <a href="{{ route('alumno.entregas.download', $entrega) }}"
-                                       class="inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg transition-colors">
-                                        @svg('heroicon-o-arrow-down-tray', 'w-4 h-4 mr-2')
-                                        Descargar
-                                    </a>
-                                </div>
+                                {{-- Enlace directo al archivo en storage --}}
+                                <a href="{{ asset('storage/entregas/' . basename($entrega->ruta)) }}"
+                                   target="_blank"
+                                   rel="noopener noreferrer"
+                                   class="inline-flex items-center text-indigo-600 hover:text-indigo-800 font-medium">
+                                    @svg('heroicon-o-document-text', 'w-4 h-4 mr-1.5')
+                                    Ver archivo
+                                </a>
                             @endif
                         </div>
                     </div>

@@ -25,7 +25,7 @@
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
                 @php
                     $todasActividades = $aula->semanas->flatMap->actividades;
-                    $misEntregas = Auth::user()->alumno->entregas;
+                    $misEntregas = auth()->user()->alumno->entregas;
 
                     $actividadesActivas = $todasActividades->filter->estaActiva()->count();
                     $actividadesVencidas = $todasActividades->filter->estaVencida()->count();
@@ -101,7 +101,7 @@
                                         <h3 class="text-lg font-bold text-gray-900">{{ $semana->nombre }}</h3>
                                         <p class="text-xs text-gray-500">
                                             {{ $semana->actividades->count() }}
-                                            {{ Str::plural('actividad', $semana->actividades->count()) }}
+                                            {{ \Illuminate\Support\Str::plural('actividad', $semana->actividades->count()) }}
                                         </p>
                                     </div>
                                 </div>

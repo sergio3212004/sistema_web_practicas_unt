@@ -39,7 +39,7 @@
                 </x-responsive-nav-link>
 
                 @php
-                    $rol = Auth::user()->rol->nombre;
+                    $rol = auth()->user()->rol->nombre;
 
                     $menus = [
                         'administrador' => [
@@ -106,6 +106,12 @@
                                 'name' => 'Informes Finales',
                                 'icon' => 'heroicon-o-document-chart-bar',
                                 'color' => 'orange'
+                            ],
+                            [
+                                'route' => 'profesor.formato-once.index',
+                                'name' => 'Formato 11 - PPP',
+                                'icon' => 'heroicon-o-clipboard-document-check',
+                                'color' => 'green'
                             ]
                         ],
                         'empresa' => [
@@ -200,7 +206,7 @@
             <div class="ml-6 hidden md:block">
                 <div class="flex items-center text-sm text-gray-600">
                     @svg('heroicon-o-home', 'w-4 h-4 mr-2')
-                    <span class="font-medium text-blue-800">{{ ucfirst(Auth::user()->rol->nombre) ?? 'Usuario' }}</span>
+                    <span class="font-medium text-blue-800">{{ ucfirst(auth()->user()->rol->nombre) ?? 'Usuario' }}</span>
                 </div>
             </div>
 
@@ -209,11 +215,11 @@
             <!-- Info del usuario -->
             <div class="flex items-center space-x-3">
                 <div class="hidden md:block text-right">
-                    <p class="text-sm font-medium text-gray-700">{{ Auth::user()->nombre ?? 'Usuario' }}</p>
-                    <p class="text-xs text-gray-500">{{ Auth::user()->email ?? '' }}</p>
+                    <p class="text-sm font-medium text-gray-700">{{ auth()->user()->nombre ?? 'Usuario' }}</p>
+                    <p class="text-xs text-gray-500">{{ auth()->user()->email ?? '' }}</p>
                 </div>
                 <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center text-white font-semibold">
-                    {{ strtoupper(substr(Auth::user()->name ?? 'U', 0, 1)) }}
+                    {{ strtoupper(substr(auth()->user()->name ?? 'U', 0, 1)) }}
                 </div>
             </div>
         </header>

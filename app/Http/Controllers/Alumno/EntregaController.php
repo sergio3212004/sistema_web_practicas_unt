@@ -133,7 +133,6 @@ class EntregaController extends Controller
             // Validar archivo PDF
             $request->validate([
                 'archivo' => 'required|file|mimes:pdf,doc,docx,zip,rar|max:10240',
-                'observaciones' => 'nullable|string|max:500'
             ], [
                 'archivo.required' => 'Debes adjuntar un archivo para la entrega.',
                 'archivo.mimes' => 'El archivo debe ser PDF, DOC, DOCX, ZIP o RAR.',
@@ -150,7 +149,6 @@ class EntregaController extends Controller
             $request->validate([
                 'drive_file_id' => 'required|string',
                 'drive_file_name' => 'required|string',
-                'observaciones' => 'nullable|string|max:500'
             ], [
                 'drive_file_id.required' => 'Debes seleccionar un archivo de Google Drive.',
                 'drive_file_name.required' => 'El nombre del archivo es requerido.'
@@ -188,7 +186,7 @@ class EntregaController extends Controller
             'alumno_id' => $alumno->id,
             'ruta' => $ruta,
             'estado' => 'entregado',
-            'observaciones' => $request->observaciones,
+            'observaciones' => null,
             'fecha_entrega' => now(),
         ]);
 

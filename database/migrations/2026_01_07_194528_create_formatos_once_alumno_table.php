@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('formato_once_id')->constrained('formatos_once')->onDelete('cascade');
             $table->foreignId('alumno_id')->constrained('alumnos')->cascadeOnDelete();
+            $table->string('sede_practicas');
+            $table->string('ciclo_nivel');
             $table->string('competencias');
             $table->string('capacidades');
             $table->string('actividades');

@@ -139,17 +139,19 @@
             {{-- Ubigeo --}}
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                    <x-input-label for="departamento" value="Departamento" />
-                    <select id="departamento" name="departamento"
+                    <x-input-label for="departamento_display" value="Departamento" />
+                    <select id="departamento_display" disabled
                             class="block w-full rounded-xl px-4 py-3 text-sm
-                               border-gray-300 focus:border-blue-500 focus:ring-blue-500">
-                        <option value="">Seleccione</option>
+                               border-gray-300 bg-gray-100 cursor-not-allowed">
+                        <option value="La Libertad">La Libertad</option>
                     </select>
+                    {{-- Campo oculto para enviar el valor al servidor --}}
+                    <input type="hidden" name="departamento" value="La Libertad">
                 </div>
 
                 <div>
                     <x-input-label for="provincia" value="Provincia" />
-                    <select id="provincia" name="provincia" disabled
+                    <select id="provincia" name="provincia"
                             class="block w-full rounded-xl px-4 py-3 text-sm
                                border-gray-300 focus:border-blue-500 focus:ring-blue-500">
                         <option value="">Seleccione</option>
@@ -199,7 +201,7 @@
         document.addEventListener('DOMContentLoaded', async function() {
 
             /* ============================================================
-               UBIGEO DINÁMICO (Departamento → Provincia → Distrito)
+               UBIGEO DINÁMICO - La Libertad fijo
                ============================================================ */
 
             const departamentoSelect = document.getElementById("departamento");
@@ -214,31 +216,20 @@
                 return;
             }
 
-            // Cargar departamentos
-            ubigeo.forEach(dep => {
+            // Buscar directamente el departamento de La Libertad
+            const laLibertad = ubigeo.find(d => d.nombre === "La Libertad");
+
+            if (!laLibertad) {
+                console.error("No se encontró La Libertad en ubigeo.json");
+                return;
+            }
+
+            // Cargar provincias de La Libertad automáticamente
+            laLibertad.provincias.forEach(prov => {
                 const option = document.createElement("option");
-                option.value = dep.nombre;
-                option.textContent = dep.nombre;
-                departamentoSelect.appendChild(option);
-            });
-
-            // Cambia provincias al seleccionar departamento
-            departamentoSelect.addEventListener("change", () => {
-                provinciaSelect.innerHTML = '<option value="">Seleccione</option>';
-                distritoSelect.innerHTML = '<option value="">Seleccione</option>';
-                provinciaSelect.disabled = true;
-                distritoSelect.disabled = true;
-
-                const dep = ubigeo.find(d => d.nombre === departamentoSelect.value);
-                if (!dep) return;
-
-                dep.provincias.forEach(prov => {
-                    const option = document.createElement("option");
-                    option.value = prov.nombre;
-                    option.textContent = prov.nombre;
-                    provinciaSelect.appendChild(option);
-                });
-                provinciaSelect.disabled = false;
+                option.value = prov.nombre;
+                option.textContent = prov.nombre;
+                provinciaSelect.appendChild(option);
             });
 
             // Cambia distritos al seleccionar provincia
@@ -246,10 +237,7 @@
                 distritoSelect.innerHTML = '<option value="">Seleccione</option>';
                 distritoSelect.disabled = true;
 
-                const dep = ubigeo.find(d => d.nombre === departamentoSelect.value);
-                if (!dep) return;
-
-                const prov = dep.provincias.find(p => p.nombre === provinciaSelect.value);
+                const prov = laLibertad.provincias.find(p => p.nombre === provinciaSelect.value);
                 if (!prov) return;
 
                 prov.distritos.forEach(dist => {

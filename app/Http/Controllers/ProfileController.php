@@ -28,9 +28,6 @@ class ProfileController extends Controller
     {
         $user = $request->user();
 
-        // Debug
-        \Log::info('Profile Update Request', $request->all());
-
         // ===== ALUMNO =====
         if ($user->alumno) {
             $updateData = [];
@@ -45,7 +42,6 @@ class ProfileController extends Controller
 
             if (!empty($updateData)) {
                 $user->alumno->update($updateData);
-                \Log::info('Alumno actualizado', $updateData);
             }
 
             return Redirect::route('profile.edit')->with('status', 'alumno-updated');

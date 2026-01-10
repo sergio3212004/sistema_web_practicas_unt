@@ -1,88 +1,105 @@
 <?php
 
-namespace App\Http\Controllers\Profesor;
+namespace App\Http\Controllers\Alumno;
 
 use App\Http\Controllers\Controller;
-use App\Models\Alumno;
 use App\Models\MonitoreoPractica;
 use App\Models\Semana;
+use Barryvdh\DomPDF\Facade\Pdf as PDF;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class MonitoreoPracticaController extends Controller
 {
     //
-    public function index(Alumno $alumno)
+    public function index(Semana $semana)
     {
-        // Verificar que el alumno tenga ficha de registro aprobada
-        if (!$alumno->fichaRegistro || $alumno->fichaRegistro->aceptado !== true) {
-            return redirect()->back()->with('error', 'El alumno no tiene una ficha de registro aprobada.');
-        }
+        $user = Auth::user();
+        $alumno = $user->alumno;
 
-        // Verificar que tenga cronograma
-        if (!$alumno->fichaRegistro->cronograma) {
-            return redirect()->back()->with('error', 'El alumno no tiene un cronograma asignado.');
-        }
+        $monitoreo = $alumno->monitoreosPracticas()
+            ->where('semana_id', $semana->id)
+            ->first();
 
-        // Obtener el aula del alumno
-        $aula = $alumno->aula;
-
-        if (!$aula) {
-            return redirect()->back()->with('error', 'El alumno no está asignado a ninguna aula.');
-        }
-
-        // Obtener todas las semanas del aula con sus monitoreos
-        $semanas = $aula->semanas()
-            ->orderBy('numero')
-            ->with(['monitoreosPracticas' => function ($query) use ($alumno) {
-                $query->where('alumno_id', $alumno->id)
-                    ->with(['monitoreosPracticasActividades.cronogramaActividad']);
-            }])
-            ->get();
-
-        $cronograma = $alumno->fichaRegistro->cronograma;
-
-        return view('profesor.monitoreos-practicas.index', compact('alumno', 'semanas', 'aula', 'cronograma'));
+        return view('alumno.monitoreo-practica.index', compact('semana', 'monitoreo'));
     }
 
     public function show(MonitoreoPractica $monitoreoPractica)
     {
+        $user = Auth::user();
+        $alumno = $user->alumno;
+
+        // Verificar que el monitoreo pertenezca al alumno autenticado
+        if ($monitoreoPractica->alumno_id !== $alumno->id) {
+            return redirect()->back()->with('error', 'No tienes permiso para ver este monitoreo.');
+        }
+
         $monitoreoPractica->load([
             'alumno.user',
+            'alumno.aula.profesor.user',
+            'alumno.fichaRegistro',
             'semana',
             'cronograma.fichaRegistro',
             'monitoreosPracticasActividades.cronogramaActividad'
         ]);
 
-        return view('profesor.monitoreos-practicas.show', compact('monitoreoPractica'));
+        return view('alumno.monitoreo-practica.show', compact('monitoreoPractica'));
+    }
+
+    public function downloadPdf(MonitoreoPractica $monitoreoPractica)
+    {
+        $user = Auth::user();
+        $alumno = $user->alumno;
+
+        // Verificar que el monitoreo pertenezca al alumno autenticado
+        if ($monitoreoPractica->alumno_id !== $alumno->id) {
+            abort(403, 'No tienes permiso para descargar este documento.');
+        }
+
+        $monitoreoPractica->load([
+            'alumno.user',
+            'alumno.aula.profesor.user',
+            'alumno.fichaRegistro',
+            'semana',
+            'cronograma.fichaRegistro',
+            'monitoreosPracticasActividades.cronogramaActividad'
+        ]);
+
+        $pdf = PDF::loadView('alumno.monitoreo-practica.pdf', compact('monitoreoPractica'));
+
+        $nombreArchivo = 'Monitoreo_Practicas_Semana_' . $monitoreoPractica->semana->numero . '_' .
+            str_replace(' ', '_', $monitoreoPractica->alumno->user->nombre) . '.pdf';
+
+        return $pdf->download($nombreArchivo);
     }
 
     public function create(Request $request)
     {
-        $alumnoId = $request->query('alumno_id');
+        $user = Auth::user();
+        $alumno = $user->alumno;
         $semanaId = $request->query('semana_id');
 
-        if (!$alumnoId || !$semanaId) {
-            return redirect()->back()->with('error', 'Parámetros faltantes.');
+        if (!$semanaId) {
+            return redirect()->back()->with('error', 'Parámetro semana_id faltante.');
         }
-
-        $alumno = Alumno::with([
-            'user',
-            'aula',
-            'fichaRegistro.cronograma.actividades'
-        ])->findOrFail($alumnoId);
 
         $semana = Semana::findOrFail($semanaId);
 
         // Verificar que el alumno tenga ficha de registro aprobada
         if (!$alumno->fichaRegistro || $alumno->fichaRegistro->aceptado !== true) {
-            return redirect()->back()->with('error', 'El alumno no tiene una ficha de registro aprobada.');
+            return redirect()->back()->with('error', 'No tienes una ficha de registro aprobada.');
         }
 
         // Verificar que tenga cronograma
         if (!$alumno->fichaRegistro->cronograma) {
-            return redirect()->back()->with('error', 'El alumno no tiene un cronograma asignado.');
+            return redirect()->back()->with('error', 'No tienes un cronograma asignado.');
+        }
+
+        // Verificar que esté asignado a un aula
+        if (!$alumno->aula) {
+            return redirect()->back()->with('error', 'No estás asignado a ninguna aula.');
         }
 
         // Verificar que no exista ya un monitoreo para esta semana
@@ -91,7 +108,7 @@ class MonitoreoPracticaController extends Controller
             ->first();
 
         if ($monitoreoExistente) {
-            return redirect()->route('profesor.monitoreos-practicas.show', $monitoreoExistente)
+            return redirect()->route('alumno.monitoreos-practicas.show', $monitoreoExistente)
                 ->with('info', 'Ya existe un monitoreo para esta semana.');
         }
 
@@ -105,7 +122,7 @@ class MonitoreoPracticaController extends Controller
             return redirect()->back()->with('error', 'No hay actividades programadas para esta semana.');
         }
 
-        return view('profesor.monitoreos-practicas.create', compact(
+        return view('alumno.monitoreo-practica.create', compact(
             'alumno',
             'semana',
             'cronograma',
@@ -115,16 +132,25 @@ class MonitoreoPracticaController extends Controller
 
     public function store(Request $request)
     {
+        $user = Auth::user();
+        $alumno = $user->alumno;
+
         $validated = $request->validate([
             'alumno_id' => 'required|exists:alumnos,id',
             'semana_id' => 'required|exists:semanas,id',
             'cronograma_id' => 'required|exists:cronogramas,id',
             'actividades' => 'required|array|min:1',
             'actividades.*.cronograma_actividad_id' => 'required|exists:cronograma_actividades,id',
+            'actividades.*.fecha' => 'required|date',
             'actividades.*.al_dia' => 'required|boolean',
             'actividades.*.observacion' => 'nullable|string|max:500',
-            'actividades.*.firma_supervisor' => 'required|string',
+            'actividades.*.firma_practicante' => 'required|string',
         ]);
+
+        // Verificar que el alumno_id coincida con el usuario autenticado
+        if ($validated['alumno_id'] != $alumno->id) {
+            return redirect()->back()->with('error', 'No tienes permiso para crear este monitoreo.');
+        }
 
         try {
             DB::beginTransaction();
@@ -151,28 +177,31 @@ class MonitoreoPracticaController extends Controller
 
             // Crear las actividades monitoreadas
             foreach ($validated['actividades'] as $index => $actividad) {
-                // Guardar firma del supervisor
-                $firmaSupervisorPath = null;
-                if (!empty($actividad['firma_supervisor'])) {
-                    $firmaSupervisorPath = $this->guardarFirma(
-                        $actividad['firma_supervisor'],
-                        "{$baseDir}/actividad-{$actividad['cronograma_actividad_id']}/supervisor.png"
+                // Guardar firma del practicante
+                $firmaPracticantePath = null;
+                if (!empty($actividad['firma_practicante'])) {
+                    $firmaPracticantePath = $this->guardarFirma(
+                        $actividad['firma_practicante'],
+                        "{$baseDir}/actividad-{$actividad['cronograma_actividad_id']}/practicante.png"
                     );
                 }
 
                 $monitoreo->monitoreosPracticasActividades()->create([
                     'cronograma_actividad_id' => $actividad['cronograma_actividad_id'],
+                    'fecha' => $actividad['fecha'],
                     'al_dia' => $actividad['al_dia'],
                     'observacion' => $actividad['observacion'] ?? null,
-                    'firma_practicante' => null, // Se llenará cuando el practicante firme
-                    'firma_supervisor' => $firmaSupervisorPath,
+                    'firma_practicante' => $firmaPracticantePath,
+                    'firma_supervisor' => null, // Se llenará cuando el profesor firme
                 ]);
             }
 
             DB::commit();
 
+            $semana = Semana::findOrFail($validated['semana_id']);
+
             return redirect()
-                ->route('profesor.monitoreos-practicas.index', $validated['alumno_id'])
+                ->route('alumno.monitoreos-practicas.index', $semana)
                 ->with('success', 'Monitoreo registrado exitosamente.');
 
         } catch (\Exception $e) {
@@ -222,5 +251,4 @@ class MonitoreoPracticaController extends Controller
             return $actividad->$campo == true || $actividad->$campo == 1;
         });
     }
-
 }

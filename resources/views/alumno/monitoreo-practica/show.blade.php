@@ -10,22 +10,24 @@
                 </div>
                 <div>
                     <h2 class="font-bold text-2xl text-gray-800 leading-tight">
-                        Detalle del Monitoreo de Prácticas
+                        Monitoreo de Prácticas
                     </h2>
                     <p class="text-sm text-gray-500 mt-0.5">
                         Semana {{ $monitoreoPractica->semana->numero }} {{ $monitoreoPractica->semana->nombre ? '- ' . $monitoreoPractica->semana->nombre : '' }}
                     </p>
                 </div>
             </div>
-            <div class="flex gap-3">
-                <button onclick="window.print()"
-                        class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors duration-200">
-                    @svg('heroicon-o-printer', 'w-5 h-5 mr-2')
-                    Imprimir
-                </button>
-                <a href="{{ route('profesor.monitoreos-practicas.index', $monitoreoPractica->alumno) }}"
+            <div class="flex items-center space-x-3">
+                <a href="{{ route('alumno.monitoreos-practicas.download-pdf', $monitoreoPractica) }}"
+                   class="inline-flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors duration-200">
+                    @svg('heroicon-o-arrow-down-tray', 'w-5 h-5 mr-2')
+                    Descargar PDF
+                </a>
+                <a href="{{ route('alumno.monitoreos-practicas.index', $monitoreoPractica->semana) }}"
                    class="inline-flex items-center px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-lg transition-colors duration-200">
-                    @svg('heroicon-o-arrow-left', 'w-5 h-5 mr-2')
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                    </svg>
                     Volver
                 </a>
             </div>
@@ -36,7 +38,7 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
             <!-- Contenedor principal -->
-            <div class="bg-white rounded-2xl shadow-lg overflow-hidden border-2 border-gray-200" id="contenido-imprimible">
+            <div class="bg-white rounded-2xl shadow-lg overflow-hidden border-2 border-gray-200">
 
                 <!-- Encabezado oficial -->
                 <div class="bg-gradient-to-r from-blue-800 to-blue-900 px-8 py-8">
@@ -62,20 +64,6 @@
                 </div>
 
                 <div class="p-8">
-
-                    <!-- Información de fecha de registro -->
-                    <div class="mb-6 bg-blue-50 border-l-4 border-blue-400 rounded-lg p-4">
-                        <div class="flex items-center">
-                            <div class="flex-shrink-0">
-                                @svg('heroicon-o-calendar', 'w-5 h-5 text-blue-600')
-                            </div>
-                            <div class="ml-3">
-                                <p class="text-sm text-blue-800">
-                                    <strong>Fecha de registro:</strong> {{ $monitoreoPractica->created_at->format('d/m/Y H:i') }}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
 
                     <!-- Sección 1: DEL ESTUDIANTE -->
                     <div class="mb-8 border-2 border-blue-200 rounded-xl overflow-hidden">
@@ -140,7 +128,7 @@
                                         Razón Social
                                     </label>
                                     <div class="w-full px-4 py-3 border-2 border-blue-200 rounded-lg bg-white text-gray-900">
-                                        {{ $monitoreoPractica->cronograma->fichaRegistro->razon_social }}
+                                        {{ $monitoreoPractica->alumno->fichaRegistro->razon_social }}
                                     </div>
                                 </div>
                                 <div>
@@ -148,7 +136,7 @@
                                         Área o unidad donde se realizará la práctica
                                     </label>
                                     <div class="w-full px-4 py-3 border-2 border-blue-200 rounded-lg bg-white text-gray-900">
-                                        {{ $monitoreoPractica->cronograma->fichaRegistro->area_practicas }}
+                                        {{ $monitoreoPractica->alumno->fichaRegistro->area_practicas }}
                                     </div>
                                 </div>
                             </div>
@@ -171,7 +159,7 @@
                                         Nombre
                                     </label>
                                     <div class="w-full px-4 py-3 border-2 border-blue-200 rounded-lg bg-white text-gray-900">
-                                        {{ $monitoreoPractica->cronograma->fichaRegistro->nombre_jefe_directo }}
+                                        {{ $monitoreoPractica->alumno->fichaRegistro->nombre_jefe_directo }}
                                     </div>
                                 </div>
                                 <div>
@@ -179,7 +167,7 @@
                                         Cargo
                                     </label>
                                     <div class="w-full px-4 py-3 border-2 border-blue-200 rounded-lg bg-white text-gray-900">
-                                        {{ $monitoreoPractica->cronograma->fichaRegistro->cargo ?? 'No especificado' }}
+                                        {{ $monitoreoPractica->alumno->fichaRegistro->cargo ?? 'No especificado' }}
                                     </div>
                                 </div>
                                 <div>
@@ -187,7 +175,7 @@
                                         Celular
                                     </label>
                                     <div class="w-full px-4 py-3 border-2 border-blue-200 rounded-lg bg-white text-gray-900">
-                                        {{ $monitoreoPractica->cronograma->fichaRegistro->telefono_jefe_directo }}
+                                        {{ $monitoreoPractica->alumno->fichaRegistro->telefono_jefe_directo }}
                                     </div>
                                 </div>
                                 <div>
@@ -195,7 +183,7 @@
                                         Correo
                                     </label>
                                     <div class="w-full px-4 py-3 border-2 border-blue-200 rounded-lg bg-white text-gray-900">
-                                        {{ $monitoreoPractica->cronograma->fichaRegistro->correo_jefe_directo }}
+                                        {{ $monitoreoPractica->alumno->fichaRegistro->correo_jefe_directo }}
                                     </div>
                                 </div>
                             </div>
@@ -238,7 +226,7 @@
                         <div class="bg-gradient-to-r from-blue-800 to-blue-900 px-6 py-3">
                             <h3 class="text-lg font-bold text-white flex items-center">
                                 @svg('heroicon-o-clipboard-document-list', 'w-5 h-5 mr-2')
-                                ACTIVIDADES MONITOREADAS - SEMANA {{ $monitoreoPractica->semana->numero }}
+                                ACTIVIDADES DE LA SEMANA {{ $monitoreoPractica->semana->numero }}
                             </h3>
                         </div>
 
@@ -250,20 +238,23 @@
                                         <th class="border-2 border-blue-200 px-4 py-3 text-center text-xs font-bold text-white uppercase tracking-wider w-16">
                                             Nro
                                         </th>
+                                        <th class="border-2 border-blue-200 px-4 py-3 text-center text-xs font-bold text-white uppercase tracking-wider w-32">
+                                            Fecha
+                                        </th>
                                         <th class="border-2 border-blue-200 px-4 py-3 text-left text-xs font-bold text-white uppercase tracking-wider">
                                             Actividad
                                         </th>
                                         <th class="border-2 border-blue-200 px-4 py-3 text-center text-xs font-bold text-white uppercase tracking-wider w-32">
                                             Nivel de Avance
                                         </th>
-                                        <th class="border-2 border-blue-200 px-4 py-3 text-left text-xs font-bold text-white uppercase tracking-wider w-80">
+                                        <th class="border-2 border-blue-200 px-4 py-3 text-left text-xs font-bold text-white uppercase tracking-wider w-64">
                                             Observaciones
                                         </th>
-                                        <th class="border-2 border-blue-200 px-4 py-3 text-center text-xs font-bold text-white uppercase tracking-wider w-48">
+                                        <th class="border-2 border-blue-200 px-4 py-3 text-center text-xs font-bold text-white uppercase tracking-wider w-40">
                                             Firma Practicante
                                         </th>
-                                        <th class="border-2 border-blue-200 px-4 py-3 text-center text-xs font-bold text-white uppercase tracking-wider w-48">
-                                            Firma Profesor Supervisor
+                                        <th class="border-2 border-blue-200 px-4 py-3 text-center text-xs font-bold text-white uppercase tracking-wider w-40">
+                                            Firma Profesor
                                         </th>
                                     </tr>
                                     </thead>
@@ -273,81 +264,44 @@
                                             <td class="border-2 border-blue-200 px-4 py-4 text-center text-sm font-bold text-gray-900">
                                                 {{ $index + 1 }}
                                             </td>
+                                            <td class="border-2 border-blue-200 px-4 py-4 text-center text-sm text-gray-700">
+                                                {{ \Carbon\Carbon::parse($actividad->fecha)->format('d/m/Y') }}
+                                            </td>
                                             <td class="border-2 border-blue-200 px-4 py-4 text-sm text-gray-700">
                                                 {{ $actividad->cronogramaActividad->actividad }}
                                             </td>
                                             <td class="border-2 border-blue-200 px-4 py-4 text-center">
                                                 @if($actividad->al_dia)
-                                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-800 border-2 border-green-300">
+                                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-800">
                                                         @svg('heroicon-o-check-circle', 'w-4 h-4 mr-1')
                                                         Al día
                                                     </span>
                                                 @else
-                                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-red-100 text-red-800 border-2 border-red-300">
-                                                        @svg('heroicon-o-exclamation-circle', 'w-4 h-4 mr-1')
+                                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-red-100 text-red-800">
+                                                        @svg('heroicon-o-x-circle', 'w-4 h-4 mr-1')
                                                         Atrasado
                                                     </span>
                                                 @endif
                                             </td>
                                             <td class="border-2 border-blue-200 px-4 py-4 text-sm text-gray-700">
-                                                @if($actividad->observacion)
-                                                    <div class="bg-yellow-50 border-l-4 border-yellow-400 p-3 rounded">
-                                                        <p class="text-sm">{{ $actividad->observacion }}</p>
-                                                    </div>
-                                                @else
-                                                    <span class="text-gray-400 italic">Sin observaciones</span>
-                                                @endif
+                                                {{ $actividad->observacion ?? 'Sin observaciones' }}
                                             </td>
                                             <td class="border-2 border-blue-200 px-4 py-4 text-center">
                                                 @if($actividad->firma_practicante)
-                                                    <div class="flex flex-col items-center">
-                                                        <img src="{{ Storage::url($actividad->firma_practicante) }}"
-                                                             alt="Firma del practicante"
-                                                             class="border-2 border-blue-300 rounded-lg bg-white max-w-[180px] max-h-[80px]">
-                                                        <span class="text-xs text-green-600 font-medium mt-1 flex items-center">
-                                                            @svg('heroicon-o-check-badge', 'w-3 h-3 mr-1')
-                                                            Firmado
-                                                        </span>
-                                                    </div>
+                                                    <img src="{{ Storage::url($actividad->firma_practicante) }}"
+                                                         alt="Firma Practicante"
+                                                         class="max-w-full h-16 mx-auto border border-gray-300 rounded">
                                                 @else
-                                                    <div class="flex flex-col items-center">
-                                                        <div class="w-[180px] h-[80px] border-2 border-dashed border-gray-300 rounded-lg bg-gray-50 flex items-center justify-center">
-                                                            <div class="text-center">
-                                                                @svg('heroicon-o-clock', 'w-8 h-8 text-gray-400 mx-auto mb-1')
-                                                                <span class="text-gray-400 text-xs block">Pendiente</span>
-                                                            </div>
-                                                        </div>
-                                                        <span class="text-xs text-gray-500 font-medium mt-1 flex items-center">
-                                                            @svg('heroicon-o-exclamation-triangle', 'w-3 h-3 mr-1')
-                                                            Sin firmar
-                                                        </span>
-                                                    </div>
+                                                    <span class="text-xs text-gray-400 italic">Sin firma</span>
                                                 @endif
                                             </td>
                                             <td class="border-2 border-blue-200 px-4 py-4 text-center">
                                                 @if($actividad->firma_supervisor)
-                                                    <div class="flex flex-col items-center">
-                                                        <img src="{{ Storage::url($actividad->firma_supervisor) }}"
-                                                             alt="Firma del supervisor"
-                                                             class="border-2 border-blue-300 rounded-lg bg-white max-w-[180px] max-h-[80px]">
-                                                        <span class="text-xs text-green-600 font-medium mt-1 flex items-center">
-                                                            @svg('heroicon-o-check-badge', 'w-3 h-3 mr-1')
-                                                            Firmado
-                                                        </span>
-                                                    </div>
+                                                    <img src="{{ Storage::url($actividad->firma_supervisor) }}"
+                                                         alt="Firma Supervisor"
+                                                         class="max-w-full h-16 mx-auto border border-gray-300 rounded">
                                                 @else
-                                                    <div class="flex flex-col items-center">
-                                                        <div class="w-[180px] h-[80px] border-2 border-dashed border-gray-300 rounded-lg bg-gray-50 flex items-center justify-center">
-                                                            <div class="text-center">
-                                                                @svg('heroicon-o-clock', 'w-8 h-8 text-gray-400 mx-auto mb-1')
-                                                                <span class="text-gray-400 text-xs block">Pendiente</span>
-                                                            </div>
-                                                        </div>
-                                                        <span class="text-xs text-gray-500 font-medium mt-1 flex items-center">
-                                                            @svg('heroicon-o-exclamation-triangle', 'w-3 h-3 mr-1')
-                                                            Sin firmar
-                                                        </span>
-                                                    </div>
+                                                    <span class="text-xs text-gray-400 italic">Pendiente</span>
                                                 @endif
                                             </td>
                                         </tr>
@@ -355,94 +309,7 @@
                                     </tbody>
                                 </table>
                             </div>
-
-                            <!-- Resumen de estado -->
-                            <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <!-- Total de actividades -->
-                                <div class="bg-blue-100 border-2 border-blue-300 rounded-lg p-4 text-center">
-                                    <div class="flex items-center justify-center mb-2">
-                                        @svg('heroicon-o-clipboard-document-list', 'w-6 h-6 text-blue-700')
-                                    </div>
-                                    <p class="text-2xl font-bold text-blue-900">
-                                        {{ $monitoreoPractica->monitoreosPracticasActividades->count() }}
-                                    </p>
-                                    <p class="text-sm text-blue-700 font-medium">Total de Actividades</p>
-                                </div>
-
-                                <!-- Actividades al día -->
-                                <div class="bg-green-100 border-2 border-green-300 rounded-lg p-4 text-center">
-                                    <div class="flex items-center justify-center mb-2">
-                                        @svg('heroicon-o-check-circle', 'w-6 h-6 text-green-700')
-                                    </div>
-                                    <p class="text-2xl font-bold text-green-900">
-                                        {{ $monitoreoPractica->monitoreosPracticasActividades->where('al_dia', true)->count() }}
-                                    </p>
-                                    <p class="text-sm text-green-700 font-medium">Actividades al Día</p>
-                                </div>
-
-                                <!-- Actividades atrasadas -->
-                                <div class="bg-red-100 border-2 border-red-300 rounded-lg p-4 text-center">
-                                    <div class="flex items-center justify-center mb-2">
-                                        @svg('heroicon-o-exclamation-circle', 'w-6 h-6 text-red-700')
-                                    </div>
-                                    <p class="text-2xl font-bold text-red-900">
-                                        {{ $monitoreoPractica->monitoreosPracticasActividades->where('al_dia', false)->count() }}
-                                    </p>
-                                    <p class="text-sm text-red-700 font-medium">Actividades Atrasadas</p>
-                                </div>
-                            </div>
-
-                            <!-- Estado de firmas -->
-                            <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <!-- Firmas del practicante -->
-                                <div class="bg-white border-2 border-blue-200 rounded-lg p-4">
-                                    <h4 class="text-sm font-bold text-gray-800 mb-3 flex items-center">
-                                        @svg('heroicon-o-user', 'w-4 h-4 mr-2')
-                                        Estado de Firmas del Practicante
-                                    </h4>
-                                    @php
-                                        $firmasPracticante = $monitoreoPractica->monitoreosPracticasActividades->whereNotNull('firma_practicante')->count();
-                                        $totalActividades = $monitoreoPractica->monitoreosPracticasActividades->count();
-                                        $porcentajePracticante = $totalActividades > 0 ? ($firmasPracticante / $totalActividades) * 100 : 0;
-                                    @endphp
-                                    <div class="flex items-center justify-between mb-2">
-                                        <span class="text-sm text-gray-700">{{ $firmasPracticante }} de {{ $totalActividades }} firmadas</span>
-                                        <span class="text-sm font-bold text-gray-900">{{ number_format($porcentajePracticante, 1) }}%</span>
-                                    </div>
-                                    <div class="w-full bg-gray-200 rounded-full h-3">
-                                        <div class="bg-blue-600 h-3 rounded-full transition-all duration-300" style="width: {{ $porcentajePracticante }}%"></div>
-                                    </div>
-                                </div>
-
-                                <!-- Firmas del supervisor -->
-                                <div class="bg-white border-2 border-blue-200 rounded-lg p-4">
-                                    <h4 class="text-sm font-bold text-gray-800 mb-3 flex items-center">
-                                        @svg('heroicon-o-academic-cap', 'w-4 h-4 mr-2')
-                                        Estado de Firmas del Supervisor
-                                    </h4>
-                                    @php
-                                        $firmasSupervisor = $monitoreoPractica->monitoreosPracticasActividades->whereNotNull('firma_supervisor')->count();
-                                        $porcentajeSupervisor = $totalActividades > 0 ? ($firmasSupervisor / $totalActividades) * 100 : 0;
-                                    @endphp
-                                    <div class="flex items-center justify-between mb-2">
-                                        <span class="text-sm text-gray-700">{{ $firmasSupervisor }} de {{ $totalActividades }} firmadas</span>
-                                        <span class="text-sm font-bold text-gray-900">{{ number_format($porcentajeSupervisor, 1) }}%</span>
-                                    </div>
-                                    <div class="w-full bg-gray-200 rounded-full h-3">
-                                        <div class="bg-green-600 h-3 rounded-full transition-all duration-300" style="width: {{ $porcentajeSupervisor }}%"></div>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
-                    </div>
-
-                    <!-- Botón de volver (solo visible en pantalla) -->
-                    <div class="flex justify-center pt-6 border-t-2 border-gray-200 no-print">
-                        <a href="{{ route('profesor.monitoreos-practicas.index', $monitoreoPractica->alumno) }}"
-                           class="inline-flex items-center px-8 py-3 bg-gradient-to-r from-blue-800 to-blue-900 border-2 border-blue-800 rounded-xl text-white font-semibold hover:shadow-xl hover:scale-105 transition-all duration-200 group">
-                            @svg('heroicon-o-arrow-left', 'w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform')
-                            Volver al Listado
-                        </a>
                     </div>
 
                 </div>
@@ -450,39 +317,4 @@
 
         </div>
     </div>
-
-    @push('styles')
-        <style>
-            @media print {
-                body * {
-                    visibility: hidden;
-                }
-                #contenido-imprimible, #contenido-imprimible * {
-                    visibility: visible;
-                }
-                #contenido-imprimible {
-                    position: absolute;
-                    left: 0;
-                    top: 0;
-                    width: 100%;
-                }
-                .no-print {
-                    display: none !important;
-                }
-                /* Ajustes de impresión */
-                .bg-gradient-to-r {
-                    background: #1e3a8a !important;
-                    -webkit-print-color-adjust: exact;
-                    print-color-adjust: exact;
-                }
-                .bg-blue-50, .bg-blue-100 {
-                    -webkit-print-color-adjust: exact;
-                    print-color-adjust: exact;
-                }
-                .rounded-2xl {
-                    border-radius: 0.5rem;
-                }
-            }
-        </style>
-    @endpush
 </x-app-layout>

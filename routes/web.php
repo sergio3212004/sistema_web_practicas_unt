@@ -96,7 +96,7 @@ Route::middleware(['auth', 'rol:administrador'])
 
 // Rutas del profesor
 Route::middleware(['auth', 'rol:profesor'])
-    ->prefix('profesor')
+    ->prefix('profesor/')
     ->as('profesor.')
     ->group(function () {
 
@@ -105,7 +105,7 @@ Route::middleware(['auth', 'rol:profesor'])
 
 
         // Ruta para ver el aula
-        Route::get('/aula/{aula}', [AulaController::class, 'index'])
+        Route::get('aula/{aula}', [AulaController::class, 'index'])
             ->name('aula.index');
 
         // Aulas del profesor
@@ -123,10 +123,10 @@ Route::middleware(['auth', 'rol:profesor'])
         Route::delete('semanas/{semana}', [SemanaController::class, 'destroy'])->name('semanas.destroy');
 
         // Actividades
-        Route::get('/aulas/{aula}/actividades/create', [ActividadesController::class, 'create'])->name('actividades.create');
-        Route::post('/aulas/{aula}/actividades', [ActividadesController::class, 'store'])->name('actividades.store');
-        Route::get('/actividades/{actividad}', [ActividadesController::class, 'show'])->name('actividades.show');
-        Route::delete('/actividades/{actividad}/destroy', [ActividadesController::class, 'destroy'])->name('actividades.destroy');
+        Route::get('aulas/{aula}/actividades/create', [ActividadesController::class, 'create'])->name('actividades.create');
+        Route::post('aulas/{aula}/actividades', [ActividadesController::class, 'store'])->name('actividades.store');
+        Route::get('actividades/{actividad}', [ActividadesController::class, 'show'])->name('actividades.show');
+        Route::delete('actividades/{actividad}/destroy', [ActividadesController::class, 'destroy'])->name('actividades.destroy');
 
         // routes/web.php (grupo profesor)
 
@@ -158,18 +158,30 @@ Route::middleware(['auth', 'rol:profesor'])
             [\App\Http\Controllers\Profesor\CronogramaController::class, 'firmar']
         )->name('cronogramas.firmar');
 
-        Route::patch('cronogramas/{cronograma}/calificar',
-            [\App\Http\Controllers\Profesor\CronogramaController::class, 'calificar']
-        )->name('cronogramas.calificar');
+        Route::patch('cronogramas/{cronograma}/calificar', [\App\Http\Controllers\Profesor\CronogramaController::class, 'calificar'])
+            ->name('cronogramas.calificar');
 
         // Monitoreo de Prácticas
-        Route::get('monitoreos-practicas/alumno/{alumno}',
-            [\App\Http\Controllers\Profesor\MonitoreoPracticaController::class, 'index']
-        )->name('monitoreos-practicas.index');
 
-        Route::get('monitoreos-practicas/{monitoreoPractica}',
-            [\App\Http\Controllers\Profesor\MonitoreoPracticaController::class, 'show']
+        // CREATE (SIEMPRE ANTES)
+        Route::get('monitoreos-practicas/create', [\App\Http\Controllers\Profesor\MonitoreoPracticaController::class, 'create'])
+            ->name('monitoreos-practicas.create');
+
+        // INDEX por alumno
+        Route::get('monitoreos-practicas/alumno/{alumno}', [\App\Http\Controllers\Profesor\MonitoreoPracticaController::class, 'index'])
+            ->name('monitoreos-practicas.index');
+
+        // SHOW (AL FINAL)
+        Route::get('monitoreos-practicas/{monitoreoPractica}', [\App\Http\Controllers\Profesor\MonitoreoPracticaController::class, 'show']
         )->name('monitoreos-practicas.show');
+
+
+        // Ruta para guardar monitoreo
+        Route::post('/monitoreos-practicas', [\App\Http\Controllers\Profesor\MonitoreoPracticaController::class, 'store'])
+            ->name('monitoreos-practicas.store');
+
+
+
 
         // Informes Finales
         Route::get('informes-finales', [\App\Http\Controllers\Profesor\InformeFinalController::class, 'index'])
@@ -180,49 +192,49 @@ Route::middleware(['auth', 'rol:profesor'])
         // Formato 11
 
         // Ruta para listar todos los formatos once del profesor
-        Route::get('/formato-once', [\App\Http\Controllers\Profesor\FormatoOnceController::class, 'index'])
+        Route::get('formato-once', [\App\Http\Controllers\Profesor\FormatoOnceController::class, 'index'])
             ->name('formato-once.index');
 
         // Ruta para crear un nuevo formato once para un aula específica
-        Route::get('/formato-once/create/{aula}', [\App\Http\Controllers\Profesor\FormatoOnceController::class, 'create'])
+        Route::get('formato-once/create/{aula}', [\App\Http\Controllers\Profesor\FormatoOnceController::class, 'create'])
             ->name('formato-once.create');
 
         // Ruta para guardar el nuevo formato once
-        Route::post('/formato-once/store/{aula}', [\App\Http\Controllers\Profesor\FormatoOnceController::class, 'store'])
+        Route::post('formato-once/store/{aula}', [\App\Http\Controllers\Profesor\FormatoOnceController::class, 'store'])
             ->name('formato-once.store');
 
         // Ruta para ver un formato once específico
-        Route::get('/formato-once/{formatoOnce}', [\App\Http\Controllers\Profesor\FormatoOnceController::class, 'show'])
+        Route::get('formato-once/{formatoOnce}', [\App\Http\Controllers\Profesor\FormatoOnceController::class, 'show'])
             ->name('formato-once.show');
 
         // Ruta para editar un formato once
-        Route::get('/formato-once/{formatoOnce}/edit', [\App\Http\Controllers\Profesor\FormatoOnceController::class, 'edit'])
+        Route::get('formato-once/{formatoOnce}/edit', [\App\Http\Controllers\Profesor\FormatoOnceController::class, 'edit'])
             ->name('formato-once.edit');
 
-        Route::get('/formato-once/{formatoOnce}/destroy', [\App\Http\Controllers\Profesor\FormatoOnceController::class, 'destroy'])
+        Route::get('formato-once/{formatoOnce}/destroy', [\App\Http\Controllers\Profesor\FormatoOnceController::class, 'destroy'])
             ->name('formato-once.destroy');
 
-        Route::get('/aula/{aula}/list', [\App\Http\Controllers\Profesor\FormatoOnceController::class, 'list'])->name('formato-once.list');
+        Route::get('aula/{aula}/list', [\App\Http\Controllers\Profesor\FormatoOnceController::class, 'list'])->name('formato-once.list');
 
 
         // Ruta para actualizar un formato once
-        Route::put('/formato-once/list/{formatoOnce}', [\App\Http\Controllers\Profesor\FormatoOnceController::class, 'update'])
+        Route::put('formato-once/list/{formatoOnce}', [\App\Http\Controllers\Profesor\FormatoOnceController::class, 'update'])
             ->name('formato-once.update');
 
 
         // Ruta para generar PDF del formato once
-        Route::get('/formato-once/{formatoOnce}/pdf', [\App\Http\Controllers\Profesor\FormatoOnceController::class, 'generatePdf'])
+        Route::get('formato-once/{formatoOnce}/pdf', [\App\Http\Controllers\Profesor\FormatoOnceController::class, 'generatePdf'])
             ->name('formato-once.pdf');
 
         // Formato 12
 
-        Route::get('/formato-doce', [\App\Http\Controllers\Profesor\FormatoDoceController::class, 'index'])
+        Route::get('formato-doce', [\App\Http\Controllers\Profesor\FormatoDoceController::class, 'index'])
             ->name('formato-doce.index');
-        Route::get('/formato-doce/create', [\App\Http\Controllers\Profesor\FormatoDoceController::class, 'create'])
+        Route::get('formato-doce/create', [\App\Http\Controllers\Profesor\FormatoDoceController::class, 'create'])
             ->name('formato-doce.create');
-        Route::post('/formato-doce/store', [\App\Http\Controllers\Profesor\FormatoDoceController::class, 'store'])
+        Route::post('formato-doce/store', [\App\Http\Controllers\Profesor\FormatoDoceController::class, 'store'])
             ->name('formato-doce.store');
-        Route::get('/formato-doce/show', [\App\Http\Controllers\Profesor\FormatoDoceController::class, 'show'])
+        Route::get('formato-doce/show', [\App\Http\Controllers\Profesor\FormatoDoceController::class, 'show'])
             ->name('formato-doce.show');
         Route::get(
             'formato-doce/aula/{aula}/alumnos',
@@ -326,6 +338,29 @@ Route::middleware(['auth', 'rol:alumno'])
             'cronograma/{cronograma}/download-pdf',
             [CronogramaController::class, 'downloadPdf']
         )->name('cronograma.download-pdf');
+
+        // Monitoreo de Prácticas - Alumno
+
+        // INDEX por semana (el alumno ve su propio monitoreo de esa semana)
+        Route::get('monitoreos-practicas/semana/{semana}', [\App\Http\Controllers\Alumno\MonitoreoPracticaController::class, 'index'])
+            ->name('monitoreos-practicas.index');
+
+        // CREATE - debe ir ANTES de la ruta con {monitoreoPractica} para evitar conflictos
+        Route::get('monitoreos-practicas/create', [\App\Http\Controllers\Alumno\MonitoreoPracticaController::class, 'create'])
+            ->name('monitoreos-practicas.create');
+
+        // STORE
+        Route::post('monitoreos-practicas', [\App\Http\Controllers\Alumno\MonitoreoPracticaController::class, 'store'])
+            ->name('monitoreos-practicas.store');
+
+        // SHOW (si necesitas ver un monitoreo específico)
+        Route::get('monitoreos-practicas/{monitoreoPractica}', [\App\Http\Controllers\Alumno\MonitoreoPracticaController::class, 'show'])
+            ->name('monitoreos-practicas.show');
+
+        // Después de la ruta show
+        Route::get('monitoreos-practicas/{monitoreoPractica}/download-pdf',
+            [\App\Http\Controllers\Alumno\MonitoreoPracticaController::class, 'downloadPdf'])
+            ->name('monitoreos-practicas.download-pdf');
 
 
         // Gestión del Aula

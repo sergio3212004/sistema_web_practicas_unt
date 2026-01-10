@@ -98,7 +98,7 @@
                                         <span class="text-white font-bold text-sm">{{ $semana->numero }}</span>
                                     </div>
                                     <div>
-                                        <h3 class="text-lg font-bold text-gray-900">{{ $semana->nombre }}</h3>
+                                        <h3 class="text-lg font-bold text-gray-900">Semana {{ $semana->numero }}: {{ $semana->nombre }}</h3>
                                         <p class="text-xs text-gray-500">
                                             {{ $semana->actividades->count() }}
                                             {{ \Illuminate\Support\Str::plural('actividad', $semana->actividades->count()) }}
@@ -118,6 +118,13 @@
                                         <div class="bg-gradient-to-r from-indigo-500 to-purple-600 h-2 rounded-full"
                                              style="width: {{ $progresoSemana }}%"></div>
                                     </div>
+
+                                    {{-- Botón para acceder al monitoreo de prácticas de esta semana --}}
+                                    <a href="{{ route('alumno.monitoreos-practicas.index', $semana) }}"
+                                       class="inline-flex items-center px-3 py-1.5 bg-white border border-indigo-300 text-indigo-700 text-xs font-medium rounded-lg hover:bg-indigo-50 transition-colors">
+                                        @svg('heroicon-o-document-check', 'w-4 h-4 mr-1')
+                                        Ver monitoreo
+                                    </a>
                                 </div>
                             </div>
                         </div>

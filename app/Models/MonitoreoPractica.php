@@ -27,6 +27,6 @@ class MonitoreoPractica extends Model
     }
 
     public function monitoreosPracticasActividades() {
-        return $this->hasMany(MonitoreoPracticaActividad::class, 'monitoreo_actividad_id', 'id');
+        return $this->hasMany(MonitoreoPracticaActividad::class, 'monitoreo_practica_id', 'id');
     }
 }

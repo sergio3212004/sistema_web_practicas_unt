@@ -14,9 +14,13 @@ class MonitoreoPracticaActividad extends Model
         'al_dia', //  boolean
         'observacion',
         'firma_practicante',
-        'firma_supervisor'
+        'firma_supervisor',
+        'fecha'
     ];
 
+    protected $casts = [
+        'fecha' => 'date',
+    ];
     public function cronogramaActividad() {
         return $this->belongsTo(CronogramaActividad::class, 'cronograma_actividad_id', 'id');
     }

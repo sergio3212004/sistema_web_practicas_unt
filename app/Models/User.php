@@ -69,16 +69,16 @@ class User extends Authenticatable
 
     public function getNombreAttribute() {
         if ($this->administrador) {
-            return trim($this->administrador->apellido_paterno . '' . $this->administrador->apellido_materno .  ' ' . $this->administrador->nombres);
+            return trim($this->administrador->apellido_paterno . ' ' . $this->administrador->apellido_materno .  ' ' . $this->administrador->nombres);
 
         }
 
         if ($this->alumno) {
-            return trim($this->alumno->apellido_paterno . '' . $this->alumno->apellido_materno .  ' ' . $this->alumno->nombres);
+            return trim($this->alumno->apellido_paterno . ' ' . $this->alumno->apellido_materno .  ' ' . $this->alumno->nombres);
         }
 
         if ($this->profesor) {
-            return trim($this->profesor->apellido_paterno . '' . $this->profesor->apellido_materno .  ' ' . $this->profesor->nombres);
+            return trim($this->profesor->apellido_paterno . ' ' . $this->profesor->apellido_materno .  ' ' . $this->profesor->nombres);
         }
 
         if ($this->empresa) {

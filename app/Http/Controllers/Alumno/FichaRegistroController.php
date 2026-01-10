@@ -106,7 +106,7 @@ class FichaRegistroController extends Controller
                 'telefono_jefe_directo' => $request->telefono_jefe_directo,
                 'correo_jefe_directo' => $request->correo_jefe_directo,
                 'firma_practicante' => $nombreFirma,
-                'aceptado' => false
+                'aceptado' => null
             ]);
 
             /** -------------------------

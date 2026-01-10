@@ -143,6 +143,10 @@ Route::middleware(['auth', 'rol:profesor'])
             [\App\Http\Controllers\Profesor\FichaRegistroController::class, 'aceptar']
         )->name('fichas.aceptar');
 
+        Route::patch('fichas/{fichaRegistro}/rechazar',
+            [\App\Http\Controllers\Profesor\FichaRegistroController::class, 'rechazar']
+        )->name('fichas.rechazar');
+
         // Cronogramas (profesor)
         Route::get(
             'cronogramas/{cronograma}',
@@ -157,6 +161,15 @@ Route::middleware(['auth', 'rol:profesor'])
         Route::patch('cronogramas/{cronograma}/calificar',
             [\App\Http\Controllers\Profesor\CronogramaController::class, 'calificar']
         )->name('cronogramas.calificar');
+
+        // Monitoreo de Prácticas
+        Route::get('monitoreos-practicas/alumno/{alumno}',
+            [\App\Http\Controllers\Profesor\MonitoreoPracticaController::class, 'index']
+        )->name('monitoreos-practicas.index');
+
+        Route::get('monitoreos-practicas/{monitoreoPractica}',
+            [\App\Http\Controllers\Profesor\MonitoreoPracticaController::class, 'show']
+        )->name('monitoreos-practicas.show');
 
         // Informes Finales
         Route::get('informes-finales', [\App\Http\Controllers\Profesor\InformeFinalController::class, 'index'])
@@ -200,6 +213,24 @@ Route::middleware(['auth', 'rol:profesor'])
         // Ruta para generar PDF del formato once
         Route::get('/formato-once/{formatoOnce}/pdf', [\App\Http\Controllers\Profesor\FormatoOnceController::class, 'generatePdf'])
             ->name('formato-once.pdf');
+
+        // Formato 12
+
+        Route::get('/formato-doce', [\App\Http\Controllers\Profesor\FormatoDoceController::class, 'index'])
+            ->name('formato-doce.index');
+        Route::get('/formato-doce/create', [\App\Http\Controllers\Profesor\FormatoDoceController::class, 'create'])
+            ->name('formato-doce.create');
+        Route::post('/formato-doce/store', [\App\Http\Controllers\Profesor\FormatoDoceController::class, 'store'])
+            ->name('formato-doce.store');
+        Route::get('/formato-doce/show', [\App\Http\Controllers\Profesor\FormatoDoceController::class, 'show'])
+            ->name('formato-doce.show');
+        Route::get(
+            'formato-doce/aula/{aula}/alumnos',
+            [\App\Http\Controllers\Profesor\FormatoDoceController::class, 'getAlumnos']
+        )->name('formato-doce.alumnos');
+
+        Route::delete('/formato-doce/{id}/destroy', [\App\Http\Controllers\Profesor\FormatoDoceController::class, 'destroy'])
+            ->name('formato-doce.destroy');
     });
 
 // Rutas de la empresa

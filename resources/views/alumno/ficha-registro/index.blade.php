@@ -106,24 +106,32 @@
                                 </div>
 
                                 <div>
-                                    @if($ficha->aceptado)
+                                    @if($ficha->aceptado === true)
                                         <span class="inline-flex items-center px-4 py-2 bg-green-500 text-white text-sm font-semibold rounded-full shadow-lg">
                                             @svg('heroicon-o-check-circle', 'w-5 h-5 mr-2')
                                             Ficha Aceptada
                                         </span>
+
+                                    @elseif($ficha->aceptado === false)
+                                        <span class="inline-flex items-center px-4 py-2 bg-red-600 text-white text-sm font-semibold rounded-full shadow-lg">
+                                            @svg('heroicon-o-x-circle', 'w-5 h-5 mr-2')
+                                            Rechazada
+                                        </span>
+
                                     @else
                                         <span class="inline-flex items-center px-4 py-2 bg-yellow-400 text-gray-900 text-sm font-semibold rounded-full shadow-lg">
                                             @svg('heroicon-o-clock', 'w-5 h-5 mr-2')
                                             En Revisión
                                         </span>
                                     @endif
+
                                 </div>
                             </div>
                         </div>
 
                         <!-- Información adicional -->
                         <div class="px-8 py-6">
-                            @if(!$ficha->aceptado)
+                            @if($ficha->aceptado===null)
                                 <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-6">
                                     <div class="flex items-start">
                                         <div class="flex-shrink-0">
@@ -137,7 +145,7 @@
                                         </div>
                                     </div>
                                 </div>
-                            @else
+                            @elseif($ficha->aceptado===true)
                                 <div class="bg-green-50 border border-green-200 rounded-xl p-4 mb-6">
                                     <div class="flex items-start">
                                         <div class="flex-shrink-0">
@@ -147,6 +155,20 @@
                                             <h4 class="text-sm font-semibold text-green-800 mb-1">¡Felicitaciones! Tu ficha ha sido aceptada</h4>
                                             <p class="text-sm text-green-700">
                                                 Ahora puedes proceder a crear tu cronograma de actividades y comenzar tus prácticas.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            @else
+                                <div class="bg-red-50 border border-red-200 rounded-xl p-4 mb-6">
+                                    <div class="flex items-start">
+                                        <div class="flex-shrink-0">
+                                            @svg('heroicon-o-x-circle', 'w-6 h-6 text-red-600')
+                                        </div>
+                                        <div class="ml-3">
+                                            <h4 class="text-sm font-semibold text-red-800 mb-1">Lo sentimos, tu ficha ha sido rechazada</h4>
+                                            <p class="text-sm text-red-700">
+                                                Comunicate con tu profesor coordinador para saber cual ha sido el problema, elimina la actual y vuelve a iniciar el proceso.
                                             </p>
                                         </div>
                                     </div>
@@ -269,12 +291,9 @@
                             <div>
                                 <h4 class="font-semibold text-gray-800 mb-2">¿Necesitas ayuda?</h4>
                                 <p class="text-sm text-gray-600 mb-3">
-                                    Si tienes dudas sobre tu ficha o el proceso de prácticas, puedes contactar al coordinador académico o consultar la guía de prácticas pre profesionales.
+                                    Si tienes dudas sobre tu ficha o el proceso de prácticas, puedes contactar al coordinador académico.
                                 </p>
-                                <button class="text-sm font-medium text-blue-800 hover:text-blue-900 inline-flex items-center group">
-                                    Ver guía de prácticas
-                                    @svg('heroicon-o-arrow-right', 'w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform')
-                                </button>
+
                             </div>
                         </div>
                     </div>

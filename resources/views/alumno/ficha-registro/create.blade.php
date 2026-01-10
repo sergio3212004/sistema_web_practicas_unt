@@ -281,17 +281,23 @@
                                 </div>
 
                                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+                                    <!-- Departamento fijo -->
                                     <div>
                                         <label class="block text-sm font-semibold text-gray-700 mb-2">
                                             Departamento <span class="text-red-500">*</span>
                                         </label>
-                                        <select name="departamento"
-                                                id="departamento"
-                                                required
-                                                class="w-full px-4 py-3 border-2 border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all">
-                                            <option value="">Seleccione</option>
+
+                                        <select disabled
+                                                class="w-full px-4 py-3 border-2 border-blue-200 rounded-lg bg-gray-100 cursor-not-allowed">
+                                            <option value="La Libertad">La Libertad</option>
                                         </select>
+
+                                        <!-- Campo oculto para no romper backend -->
+                                        <input type="hidden" name="departamento" value="La Libertad">
                                     </div>
+
+                                    <!-- Provincia -->
                                     <div>
                                         <label class="block text-sm font-semibold text-gray-700 mb-2">
                                             Provincia <span class="text-red-500">*</span>
@@ -299,11 +305,12 @@
                                         <select name="provincia"
                                                 id="provincia"
                                                 required
-                                                disabled
-                                                class="w-full px-4 py-3 border-2 border-blue-200 rounded-lg bg-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all">
+                                                class="w-full px-4 py-3 border-2 border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-500">
                                             <option value="">Seleccione</option>
                                         </select>
                                     </div>
+
+                                    <!-- Distrito -->
                                     <div>
                                         <label class="block text-sm font-semibold text-gray-700 mb-2">
                                             Distrito <span class="text-red-500">*</span>
@@ -312,11 +319,13 @@
                                                 id="distrito"
                                                 required
                                                 disabled
-                                                class="w-full px-4 py-3 border-2 border-blue-200 rounded-lg bg-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all">
+                                                class="w-full px-4 py-3 border-2 border-blue-200 rounded-lg bg-gray-100">
                                             <option value="">Seleccione</option>
                                         </select>
                                     </div>
+
                                 </div>
+
                             </div>
                         </div>
 
@@ -738,71 +747,58 @@
             // CARGA DE UBIGEO
             // ==========================================
             document.addEventListener('DOMContentLoaded', async function () {
-                const departamentoSelect = document.getElementById("departamento");
-                const provinciaSelect = document.getElementById("provincia");
-                const distritoSelect = document.getElementById("distrito");
 
-                let ubigeo = [];
+            const provinciaSelect = document.getElementById("provincia");
+            const distritoSelect = document.getElementById("distrito");
 
-                try {
-                    ubigeo = await fetch("{{ asset('ubigeo.json') }}")
-                        .then(res => res.json());
-                } catch (error) {
-                    console.error("Error cargando ubigeo.json:", error);
-                    return;
-                }
+            let ubigeo = [];
 
-                // Cargar departamentos
-                ubigeo.forEach(dep => {
-                    const option = document.createElement("option");
-                    option.value = dep.nombre;
-                    option.textContent = dep.nombre;
-                    departamentoSelect.appendChild(option);
-                });
+            try {
+            ubigeo = await fetch("{{ asset('ubigeo.json') }}")
+            .then(res => res.json());
+        } catch (error) {
+            console.error("Error cargando ubigeo.json:", error);
+            return;
+        }
 
-                // Cambio de departamento
-                departamentoSelect.addEventListener("change", () => {
-                    provinciaSelect.innerHTML = '<option value="">Seleccione</option>';
-                    distritoSelect.innerHTML = '<option value="">Seleccione</option>';
-                    provinciaSelect.disabled = true;
-                    distritoSelect.disabled = true;
+            // Buscar La Libertad
+            const laLibertad = ubigeo.find(d => d.nombre === "La Libertad");
 
-                    const dep = ubigeo.find(d => d.nombre === departamentoSelect.value);
-                    if (!dep) return;
+            if (!laLibertad) {
+            console.error("No se encontró La Libertad en ubigeo.json");
+            return;
+        }
 
-                    dep.provincias.forEach(prov => {
-                        const option = document.createElement("option");
-                        option.value = prov.nombre;
-                        option.textContent = prov.nombre;
-                        provinciaSelect.appendChild(option);
-                    });
+            // Cargar provincias automáticamente
+            laLibertad.provincias.forEach(prov => {
+            const option = document.createElement("option");
+            option.value = prov.nombre;
+            option.textContent = prov.nombre;
+            provinciaSelect.appendChild(option);
+        });
 
-                    provinciaSelect.disabled = false;
-                    provinciaSelect.classList.remove('bg-gray-100');
-                });
+            // Cambio de provincia
+            provinciaSelect.addEventListener("change", () => {
+            distritoSelect.innerHTML = '<option value="">Seleccione</option>';
+            distritoSelect.disabled = true;
 
-                // Cambio de provincia
-                provinciaSelect.addEventListener("change", () => {
-                    distritoSelect.innerHTML = '<option value="">Seleccione</option>';
-                    distritoSelect.disabled = true;
+            const prov = laLibertad.provincias.find(p => p.nombre === provinciaSelect.value);
+            if (!prov) return;
 
-                    const dep = ubigeo.find(d => d.nombre === departamentoSelect.value);
-                    if (!dep) return;
+            prov.distritos.forEach(dist => {
+            const option = document.createElement("option");
+            option.value = dist;
+            option.textContent = dist;
+            distritoSelect.appendChild(option);
+        });
 
-                    const prov = dep.provincias.find(p => p.nombre === provinciaSelect.value);
-                    if (!prov) return;
+            distritoSelect.disabled = false;
+            distritoSelect.classList.remove('bg-gray-100');
+        });
 
-                    prov.distritos.forEach(dist => {
-                        const option = document.createElement("option");
-                        option.value = dist;
-                        option.textContent = dist;
-                        distritoSelect.appendChild(option);
-                    });
+        });
 
-                    distritoSelect.disabled = false;
-                    distritoSelect.classList.remove('bg-gray-100');
-                });
-            });
+
         </script>
     @endpush
 

@@ -377,12 +377,14 @@
                                     <option value="">Todos los documentos</option>
                                     <option value="ficha">Ficha de Registro</option>
                                     <option value="cronograma">Cronograma</option>
+                                    <option value="monitoreo_practicas">Monitoreo de Prácticas</option>
                                 </select>
                             </div>
                         </div>
 
                         <div class="grid grid-cols-1 gap-4" id="listaDocumentos">
                             @foreach($aula->alumnos as $alumno)
+                                {{-- Ficha de Registro --}}
                                 @if($alumno->fichaRegistro)
                                     <div class="documento-item border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow duration-200"
                                          data-alumno="{{ $alumno->id }}"
@@ -400,11 +402,17 @@
                                                     <p class="text-xs text-gray-500 mt-1">
                                                         Estado:
                                                         <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium
-                                                            @if($alumno->fichaRegistro->estado === 'aprobado') bg-green-100 text-green-800
-                                                            @elseif($alumno->fichaRegistro->estado === 'pendiente') bg-yellow-100 text-yellow-800
+                                                            @if($alumno->fichaRegistro->aceptado === true) bg-green-100 text-green-800
+                                                            @elseif($alumno->fichaRegistro->aceptado === null) bg-yellow-100 text-yellow-800
                                                             @else bg-red-100 text-red-800
                                                             @endif">
-                                                            {{ ucfirst($alumno->fichaRegistro->estado) }}
+                                                            @if($alumno->fichaRegistro->aceptado === true)
+                                                                Aprobado
+                                                            @elseif($alumno->fichaRegistro->aceptado === null)
+                                                                Pendiente
+                                                            @else
+                                                                Rechazado
+                                                            @endif
                                                         </span>
                                                     </p>
                                                 </div>
@@ -420,6 +428,7 @@
                                     </div>
                                 @endif
 
+                                {{-- Cronograma --}}
                                 @if($alumno->fichaRegistro && $alumno->fichaRegistro->cronograma)
                                     <div class="documento-item border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow duration-200"
                                          data-alumno="{{ $alumno->id }}"
@@ -448,6 +457,40 @@
                                             <a href="{{ route('profesor.cronogramas.show', $alumno->fichaRegistro->cronograma) }}"
                                                class="inline-flex items-center px-4 py-2 bg-blue-800 hover:bg-blue-900 text-white text-sm font-medium rounded-lg transition-colors duration-200">
                                                 Ver Documento
+                                                <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                                </svg>
+                                            </a>
+                                        </div>
+                                    </div>
+
+                                    {{-- Monitoreo de Prácticas --}}
+                                    @php
+                                        $totalMonitoreos = $alumno->fichaRegistro->cronograma->monitoreosPracticas()->count();
+                                    @endphp
+                                    <div class="documento-item border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow duration-200"
+                                         data-alumno="{{ $alumno->id }}"
+                                         data-tipo="monitoreo_practicas">
+                                        <div class="flex items-center justify-between">
+                                            <div class="flex items-center flex-1">
+                                                <div class="flex-shrink-0 bg-indigo-100 rounded-lg p-3">
+                                                    <svg class="w-6 h-6 text-indigo-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+                                                    </svg>
+                                                </div>
+                                                <div class="ml-4">
+                                                    <h4 class="text-sm font-semibold text-gray-900">Monitoreo de Prácticas</h4>
+                                                    <p class="text-sm text-gray-600">{{ $alumno->user->nombre }}</p>
+                                                    <p class="text-xs text-gray-500 mt-1">
+                                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                                                            {{ $totalMonitoreos }} {{ $totalMonitoreos === 1 ? 'semana registrada' : 'semanas registradas' }}
+                                                        </span>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <a href="{{ route('profesor.monitoreos-practicas.index', $alumno) }}"
+                                               class="inline-flex items-center px-4 py-2 bg-blue-800 hover:bg-blue-900 text-white text-sm font-medium rounded-lg transition-colors duration-200">
+                                                Ver Monitoreos
                                                 <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                                                 </svg>

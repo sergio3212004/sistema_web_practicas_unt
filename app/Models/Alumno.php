@@ -60,6 +60,11 @@ class Alumno extends Model
         return $this->hasMany(FormatoOnceAlumno::class, 'alumno_id', 'id');
     }
 
+    public function formatoDoceAlumnos() {
+        return $this->hasMany(FormatoDoceAlumno::class, 'alumno_id', 'id');
+    }
+
+
     public function monitoreosPracticas() {
         return $this->hasMany(MonitoreoPractica::class, 'alumno_id', 'id');
     }

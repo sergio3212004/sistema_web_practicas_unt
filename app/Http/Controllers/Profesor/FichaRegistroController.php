@@ -37,4 +37,19 @@ class FichaRegistroController extends Controller
 
         return back()->with('success', 'Ficha aceptada correctamente');
     }
+    public function rechazar(FichaRegistro $fichaRegistro)
+    {
+        $profesor = Auth::user()->profesor;
+
+        abort_if(
+            $fichaRegistro->alumno->aula->profesor_id !== $profesor->id,
+            403
+        );
+
+        $fichaRegistro->update([
+            'aceptado' => false,
+        ]);
+
+        return back()->with('success', 'Ficha aceptada correctamente');
+    }
 }

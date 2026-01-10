@@ -469,17 +469,19 @@
                         <div class="flex gap-3">
                             <!-- Botón de eliminar (solo si no está aceptado) -->
                             @if(!$fichaRegistro->aceptado)
-                                <button onclick="confirmarEliminacion()"
+                            <form method="POST"
+                                  action="{{ route('profesor.fichas.rechazar', $fichaRegistro) }}"
+                                  onsubmit="return confirm('¿Rechazar esta ficha de registro?')">
+                                @csrf
+                                @method('PATCH')
+
+                                <button type="submit"
                                         class="inline-flex items-center px-6 py-3 bg-red-600 border-2 border-red-600 rounded-xl text-white font-semibold hover:bg-red-700 hover:border-red-700 transition-all duration-200 shadow-lg group">
-                                    @svg('heroicon-o-trash', 'w-5 h-5 mr-2 group-hover:scale-110 transition-transform')
-                                    Eliminar Ficha
+                                    Rechazar Ficha
                                 </button>
 
-                                <!-- Formulario oculto para eliminación -->
-                                <form id="form-eliminar" action="{{ route('alumno.ficha.destroy', $fichaRegistro) }}" method="POST" class="hidden">
-                                    @csrf
-                                    @method('DELETE')
-                                </form>
+                            </form>
+
                             @endif
 
                             @if(!$fichaRegistro->aceptado)
@@ -524,15 +526,6 @@
         </div>
     </div>
 
-    @push('scripts')
-        <script>
-            function confirmarEliminacion() {
-                if (confirm('¿Estás seguro de que deseas eliminar esta ficha de registro?\n\nEsta acción no se puede deshacer y perderás toda la información registrada.')) {
-                    document.getElementById('form-eliminar').submit();
-                }
-            }
-        </script>
-    @endpush
 
 </x-app-layout>
 

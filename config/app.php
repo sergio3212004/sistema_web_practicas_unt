@@ -87,7 +87,6 @@ return [
     'same_site' => 'lax',
 
     'aliases' => [
-        // ... otros aliases
         'PDF' => Barryvdh\DomPDF\Facade\Pdf::class,
     ],
     /*

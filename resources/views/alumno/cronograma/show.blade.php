@@ -247,6 +247,7 @@
                     </div>
 
                     <!-- Estado de firmas -->
+
                     <div class="mb-8 bg-blue-50 border-2 border-blue-200 rounded-xl overflow-hidden">
                         <div class="bg-gradient-to-r from-blue-800 to-blue-900 px-6 py-3">
                             <h3 class="text-lg font-bold text-white flex items-center">
@@ -259,7 +260,7 @@
                                 <div class="bg-white border-2 border-blue-200 rounded-lg p-4 text-center">
                                     <p class="text-sm font-medium text-gray-800 mb-2">Firma del Practicante</p>
                                     @if($cronograma->firma_practicante)
-                                        <img src="{{ Storage::url($cronograma->firma_practicante) }}" alt="Firma Practicante" class="mx-auto h-16 object-contain">
+                                        <img src="{{ \Illuminate\Support\Facades\Storage::url($cronograma->firma_practicante) }}" alt="Firma Practicante" class="mx-auto h-16 object-contain">
                                     @else
                                         <span class="text-gray-500 text-xs">Pendiente</span>
                                     @endif
@@ -269,7 +270,7 @@
                                 <div class="bg-white border-2 border-blue-200 rounded-lg p-4 text-center">
                                     <p class="text-sm font-medium text-gray-800 mb-2">VB° Jefe Directo</p>
                                     @if($cronograma->firma_jefe_directo)
-                                        <img src="{{ Storage::url($cronograma->firma_jefe_directo) }}" alt="Firma Jefe" class="mx-auto h-16 object-contain">
+                                        <img src="{{ \Illuminate\Support\Facades\Storage::url($cronograma->firma_jefe_directo) }}" alt="Firma Jefe" class="mx-auto h-16 object-contain">
                                     @else
                                         <span class="text-yellow-600 text-xs">Esperando firma</span>
                                     @endif
@@ -279,7 +280,7 @@
                                 <div class="bg-white border-2 border-blue-200 rounded-lg p-4 text-center">
                                     <p class="text-sm font-medium text-gray-800 mb-2">VB° Profesor Supervisor</p>
                                     @if($cronograma->firma_profesor)
-                                        <img src="{{ Storage::url($cronograma->firma_profesor) }}" alt="Firma Profesor" class="mx-auto h-16 object-contain">
+                                        <img src="{{ \Illuminate\Support\Facades\Storage::url($cronograma->firma_profesor) }}" alt="Firma Profesor" class="mx-auto h-16 object-contain">
                                     @else
                                         <span class="text-yellow-600 text-xs">Esperando firma</span>
                                     @endif

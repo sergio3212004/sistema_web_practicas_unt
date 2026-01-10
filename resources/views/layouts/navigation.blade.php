@@ -112,6 +112,12 @@
                                 'name' => 'Formato 11 - PPP',
                                 'icon' => 'heroicon-o-clipboard-document-check',
                                 'color' => 'green'
+                            ],
+                            [
+                                'route' => 'profesor.formato-doce.index',
+                                'name' => 'Formato 12 - PPP',
+                                'icon' => 'heroicon-o-clipboard-document-check',
+                                'color' => 'orange'
                             ]
                         ],
                         'empresa' => [

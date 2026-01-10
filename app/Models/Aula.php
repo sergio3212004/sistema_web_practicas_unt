@@ -53,4 +53,8 @@ class Aula extends Model
     public function formatosOnce() {
         return $this->hasMany(FormatoOnce::class, 'aula_id', 'id');
     }
+
+    public function formatosDoce() {
+        return $this->hasMany(FormatoDoce::class, 'aula_id', 'id');
+    }
 }

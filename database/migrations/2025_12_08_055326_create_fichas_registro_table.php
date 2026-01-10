@@ -53,7 +53,7 @@ return new class extends Migration
             $table->string('firma_empresa')->nullable();
             $table->string('firma_programa')->nullable();
             $table->string('firma_practicante')->nullable();
-            $table->boolean('aceptado')->default(false);
+            $table->boolean('aceptado')->default(null)->nullable();
 
 
             $table->timestamps();

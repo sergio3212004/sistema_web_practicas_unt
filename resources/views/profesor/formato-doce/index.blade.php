@@ -7,29 +7,11 @@
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <div>
                         <h1 class="text-3xl font-bold text-blue-900">Monitoreo de Prácticas Pre Profesionales</h1>
-                        <p class="text-gray-600 mt-2">Gestión de formatos F12</p>
+                        <p class="text-gray-600 mt-2">Seleccione un aula para gestionar los formatos F12</p>
                     </div>
-                    <a href="{{ route('profesor.formato-doce.create') }}"
-                       class="bg-blue-700 hover:bg-blue-800 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition duration-200 flex items-center gap-2 whitespace-nowrap">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                        </svg>
-                        Nuevo Formato
-                    </a>
                 </div>
             </div>
 
-            <!-- Mensajes de Éxito -->
-            @if(session('success'))
-                <div class="bg-green-50 border-l-4 border-green-500 p-4 mb-6 rounded-r-lg shadow-sm">
-                    <div class="flex">
-                        <svg class="h-5 w-5 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                        </svg>
-                        <p class="ml-3 text-green-700 font-medium">{{ session('success') }}</p>
-                    </div>
-                </div>
-            @endif
 
             <!-- Mensajes de Error -->
             @if(session('error'))
@@ -43,116 +25,76 @@
                 </div>
             @endif
 
-            <!-- Tabla de Formatos -->
-            <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-                @if($formatos->count() > 0)
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-blue-900">
-                            <tr>
-                                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider">
-                                    Fecha
-                                </th>
-                                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider">
-                                    Curso
-                                </th>
-                                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider">
-                                    Ciclo
-                                </th>
-                                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider">
-                                    Semestre
-                                </th>
-                                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider">
-                                    N° Estudiantes
-                                </th>
-                                <th scope="col" class="px-6 py-4 text-right text-xs font-semibold text-white uppercase tracking-wider">
-                                    Acciones
-                                </th>
-                            </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
-                            @foreach($formatos as $formato)
-                                <tr class="hover:bg-gray-50 transition duration-150">
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">
-                                        {{ $formato->created_at->format('d/m/Y') }}
-                                        <span class="block text-xs text-gray-500">{{ $formato->created_at->format('H:i') }}</span>
-                                    </td>
-                                    <td class="px-6 py-4 text-sm text-gray-900">
-                                        <div class="font-medium">{{ $formato->aula->curso->nombre ?? 'N/A' }}</div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                            Ciclo {{ $formato->aula->ciclo ?? 'N/A' }}
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                        {{ $formato->aula->semestre->nombre ?? 'N/A' }}
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                        <span class="inline-flex items-center justify-center w-10 h-10 bg-blue-100 text-blue-800 rounded-full font-bold">
-                                            {{ $formato->formatosDoceAlumnos->count() }}
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <div class="flex justify-end items-center gap-3">
-                                            <a href="{{ route('profesor.formato-doce.show', $formato->id) }}"
-                                               class="inline-flex items-center text-blue-700 hover:text-blue-900 font-semibold transition duration-150"
-                                               title="Ver detalles">
-                                                <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                                                </svg>
-                                                Ver
-                                            </a>
-                                            <form action="{{ route('profesor.formato-doce.destroy', $formato->id) }}"
-                                                  method="POST"
-                                                  onsubmit="return confirm('¿Está seguro de eliminar este formato? Esta acción no se puede deshacer.');"
-                                                  class="inline-block">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit"
-                                                        class="inline-flex items-center text-red-600 hover:text-red-800 font-semibold transition duration-150"
-                                                        title="Eliminar formato">
-                                                    <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                                                    </svg>
-                                                    Eliminar
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @endforeach
-                            </tbody>
-                        </table>
-                    </div>
+            <!-- Listado de Aulas -->
+            @if($aulas->count() > 0)
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    @foreach($aulas as $aula)
+                        <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition duration-200">
+                            <div class="bg-gradient-to-r from-blue-700 to-blue-900 px-6 py-4">
+                                <h3 class="text-xl font-bold text-white">{{ $aula->curso->nombre ?? 'Sin Curso' }}</h3>
+                                <p class="text-blue-100 text-sm mt-1">{{ $aula->semestre->nombre ?? 'Sin Semestre' }}</p>
+                            </div>
 
-                    <!-- Paginación -->
-                    @if($formatos->hasPages())
-                        <div class="bg-gray-50 px-6 py-4 border-t border-gray-200">
-                            {{ $formatos->links() }}
+                            <div class="p-6">
+                                <div class="space-y-3 mb-4">
+                                    <div class="flex items-center text-sm text-gray-600">
+                                        <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                                        </svg>
+                                        <span class="font-medium">Aula:</span>
+                                        <span class="ml-1">{{ $aula->numero ?? 'N/A' }}</span>
+                                    </div>
+
+                                    <div class="flex items-center text-sm text-gray-600">
+                                        <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                                        </svg>
+                                        <span class="font-medium">Ciclo:</span>
+                                        <span class="ml-1">{{ $aula->ciclo ?? 'N/A' }}</span>
+                                    </div>
+
+                                    <div class="flex items-center text-sm text-gray-600">
+                                        <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                                        </svg>
+                                        <span class="font-medium">Alumnos:</span>
+                                        <span class="ml-1">{{ $aula->alumnos->count() }}</span>
+                                    </div>
+
+                                    <div class="flex items-center text-sm text-gray-600">
+                                        <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                        </svg>
+                                        <span class="font-medium">Formatos F12:</span>
+                                        <span class="ml-1 bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full text-xs font-semibold">
+                                            {{ $aula->formatosDoce->count() }}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div class="pt-4 border-t border-gray-200">
+                                    <a href="{{ route('profesor.formato-doce.list', $aula->id) }}"
+                                       class="w-full inline-flex items-center justify-center px-4 py-2.5 bg-blue-700 hover:bg-blue-800 text-white font-semibold rounded-lg shadow-sm transition duration-200">
+                                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                                        </svg>
+                                        Ver Formatos
+                                    </a>
+                                </div>
+                            </div>
                         </div>
-                    @endif
-                @else
-                    <!-- Estado vacío -->
-                    <div class="text-center py-16">
-                        <svg class="mx-auto h-16 w-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                        </svg>
-                        <h3 class="mt-4 text-lg font-medium text-gray-900">No hay formatos registrados</h3>
-                        <p class="mt-2 text-sm text-gray-500">Comience creando un nuevo formato de monitoreo de prácticas pre profesionales.</p>
-                        <div class="mt-6">
-                            <a href="{{ route('profesor.formato-doce.create') }}"
-                               class="inline-flex items-center px-6 py-3 border border-transparent shadow-sm text-base font-medium rounded-lg text-white bg-blue-700 hover:bg-blue-800 transition duration-200">
-                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                                </svg>
-                                Crear Primer Formato
-                            </a>
-                        </div>
-                    </div>
-                @endif
-            </div>
+                    @endforeach
+                </div>
+            @else
+                <!-- Estado vacío -->
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-16 text-center">
+                    <svg class="mx-auto h-16 w-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                    </svg>
+                    <h3 class="mt-4 text-lg font-medium text-gray-900">No tiene aulas asignadas</h3>
+                    <p class="mt-2 text-sm text-gray-500">Contacte al administrador para que le asigne aulas.</p>
+                </div>
+            @endif
 
             <!-- Información adicional -->
             <div class="mt-6 bg-blue-50 border-l-4 border-blue-700 p-4 rounded-r-lg">
@@ -169,5 +111,4 @@
             </div>
         </div>
     </div>
-
 </x-app-layout>

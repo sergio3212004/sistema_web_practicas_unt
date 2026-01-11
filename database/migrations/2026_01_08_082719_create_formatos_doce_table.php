@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('formatos_doce', function (Blueprint $table) {
             $table->id();
             $table->foreignId('aula_id')->constrained('aulas')->onDelete('cascade');
+            $table->enum('nivel', ['inicial', 'intermedio', 'avanzado'])->default('inicial');
             $table->string('firma_coordinador');
             $table->timestamps();
         });

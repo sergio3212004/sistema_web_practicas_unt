@@ -6,7 +6,7 @@
 
 <p class="mb-6">{{ __("Aquí puedes gestionar los semestres del sistema.") }}</p>
 
-<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
     {{-- Seleccionable de Semestres y Cierre --}}
     <div class="p-4 border rounded-lg shadow-md">
@@ -57,11 +57,6 @@
                 Crear y Activar Nuevo Semestre
             </button>
         </form>
-    </div>
-
-    {{-- 🎁 Espacio para otras acciones del administrador --}}
-    <div class="p-4 border rounded-lg shadow-md flex items-center justify-center">
-        <p class="text-center text-gray-500">Otras herramientas de administración...</p>
     </div>
 
 </div>

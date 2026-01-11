@@ -10,6 +10,7 @@ class FormatoDoce extends Model
     protected $table = 'formatos_doce';
     protected $fillable = [
         'aula_id',
+        'nivel', // enum: inicial, intermedio o avanzado
         'firma_coordinador',
     ];
 

@@ -66,6 +66,12 @@
                                 'name' => 'Informes Finales',
                                 'icon' => 'heroicon-o-document-chart-bar',
                                 'color' => 'orange'
+                            ],
+                            [
+                                'route' => 'admin.formatos.index',
+                                'name' => 'Formatos de Calidad',
+                                'icon' => 'heroicon-o-clipboard-document',
+                                'color' => 'green'
                             ]
                         ],
                         'alumno' => [

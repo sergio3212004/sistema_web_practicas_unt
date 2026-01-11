@@ -11,7 +11,6 @@ class FormatoDoceAlumno extends Model
     protected $fillable = [
         'formato_doce_id',
         'alumno_id',
-        'nivel', // 'inicial', 'intermedio', 'avanzado'
         'sede_practica',
         'responsable',
         'contacto_responsable',

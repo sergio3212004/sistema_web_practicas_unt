@@ -163,9 +163,6 @@ Route::middleware(['auth', 'rol:profesor'])
 
         // Monitoreo de Prácticas
 
-        // CREATE (SIEMPRE ANTES)
-        Route::get('monitoreos-practicas/create', [\App\Http\Controllers\Profesor\MonitoreoPracticaController::class, 'create'])
-            ->name('monitoreos-practicas.create');
 
         // INDEX por alumno
         Route::get('monitoreos-practicas/alumno/{alumno}', [\App\Http\Controllers\Profesor\MonitoreoPracticaController::class, 'index'])
@@ -175,13 +172,13 @@ Route::middleware(['auth', 'rol:profesor'])
         Route::get('monitoreos-practicas/{monitoreoPractica}', [\App\Http\Controllers\Profesor\MonitoreoPracticaController::class, 'show']
         )->name('monitoreos-practicas.show');
 
+        Route::put('/monitoreos-practicas/{monitoreoPractica}/update-firmas', [\App\Http\Controllers\Profesor\MonitoreoPracticaController::class, 'updateFirmas'])
+            ->name('monitoreos-practicas.update-firmas');
 
-        // Ruta para guardar monitoreo
-        Route::post('/monitoreos-practicas', [\App\Http\Controllers\Profesor\MonitoreoPracticaController::class, 'store'])
-            ->name('monitoreos-practicas.store');
+        // pdf
 
-
-
+        Route::get('/monitoreos-practicas/{monitoreoPractica}/download-pdf', [\App\Http\Controllers\Profesor\MonitoreoPracticaController::class, 'downloadPdf'])
+            ->name('monitoreos-practicas.download-pdf');
 
         // Informes Finales
         Route::get('informes-finales', [\App\Http\Controllers\Profesor\InformeFinalController::class, 'index'])

@@ -13,21 +13,16 @@
                     </a>
                     <div>
                         <h1 class="text-3xl font-bold text-blue-900">Nuevo Formato de Monitoreo F12</h1>
-                        <p class="text-gray-600 mt-1">{{ $aula->curso->nombre ?? 'Sin Curso' }} - Ciclo {{ $aula->ciclo ?? 'N/A' }}</p>
                     </div>
                 </div>
             </div>
 
             <!-- Información del Aula -->
             <div class="bg-gradient-to-r from-blue-700 to-blue-900 rounded-lg shadow-sm p-6 mb-6 text-white">
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
                         <p class="text-blue-100 text-sm">Semestre</p>
                         <p class="font-semibold text-lg">{{ $aula->semestre->nombre ?? 'N/A' }}</p>
-                    </div>
-                    <div>
-                        <p class="text-blue-100 text-sm">Ciclo</p>
-                        <p class="font-semibold text-lg">{{ $aula->ciclo ?? 'N/A' }}</p>
                     </div>
                     <div>
                         <p class="text-blue-100 text-sm">Aula</p>
@@ -53,7 +48,7 @@
                         Información General
                     </h2>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div>
                             <label class="block text-sm font-semibold text-gray-700 mb-2">
                                 Fecha de Monitoreo
@@ -62,6 +57,23 @@
                                    value="{{ date('Y-m-d') }}"
                                    readonly
                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-700 font-medium">
+                        </div>
+
+                        <div>
+                            <label for="ciclo" class="block text-sm font-semibold text-gray-700 mb-2">
+                                Ciclo <span class="text-red-500">*</span>
+                            </label>
+                            <input type="number"
+                                   name="ciclo"
+                                   id="ciclo"
+                                   required
+                                   min="1"
+                                   max="10"
+                                   placeholder="Ej: 1, 2, 3..."
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            @error('ciclo')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
                         </div>
 
                         <div>

@@ -11,6 +11,7 @@ class FormatoDoce extends Model
     protected $fillable = [
         'aula_id',
         'nivel', // enum: inicial, intermedio o avanzado
+        'ciclo',
         'firma_coordinador',
     ];
 

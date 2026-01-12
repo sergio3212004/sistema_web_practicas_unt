@@ -14,7 +14,6 @@
                         </a>
                         <div>
                             <h1 class="text-3xl font-bold text-blue-900">Formato de Monitoreo F12</h1>
-                            <p class="text-gray-600 mt-1">{{ $formato->aula->curso->nombre ?? 'Sin Curso' }} - Ciclo {{ $formato->aula->ciclo ?? 'N/A' }}</p>
                         </div>
                     </div>
                     <div class="flex gap-3">
@@ -62,7 +61,7 @@
                     </div>
                     <div>
                         <p class="text-blue-100 text-sm">Ciclo</p>
-                        <p class="font-semibold text-lg">{{ $formato->aula->ciclo ?? 'N/A' }}</p>
+                        <p class="font-semibold text-lg">{{ $formato->ciclo ?? 'N/A' }}</p>
                     </div>
                     <div>
                         <p class="text-blue-100 text-sm">Aula</p>

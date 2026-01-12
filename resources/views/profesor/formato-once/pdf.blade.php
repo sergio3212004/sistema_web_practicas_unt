@@ -206,7 +206,6 @@
 <div class="info-section">
     <p><strong>Fecha:</strong> {{ \Carbon\Carbon::now()->format('d/m/Y') }}</p>
     <p><strong>Nombre del coordinador:</strong> {{ $formatoOnce->aula->profesor->nombres }} {{ $formatoOnce->aula->profesor->apellido_paterno }} {{ $formatoOnce->aula->profesor->apellido_materno }}</p>
-    <p><strong>Aula:</strong> {{ $formatoOnce->aula->numero }} - {{ $formatoOnce->aula->semestre->nombre ?? 'N/A' }}</p>
 </div>
 
 <table>

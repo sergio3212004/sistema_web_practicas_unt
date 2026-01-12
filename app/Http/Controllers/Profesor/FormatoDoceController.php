@@ -108,6 +108,7 @@ class FormatoDoceController extends Controller
 
         // Validación
         $validated = $request->validate([
+            'ciclo' => 'required|integer|min:1|max:10',
             'nivel' => 'required|in:inicial,intermedio,avanzado',
             'firma_coordinador' => 'required|string',
             'alumnos' => 'required|array|min:1',
@@ -135,6 +136,7 @@ class FormatoDoceController extends Controller
             // Crear el formato
             $formato = FormatoDoce::create([
                 'aula_id' => $aula->id,
+                'ciclo' => $validated['ciclo'],
                 'nivel' => $validated['nivel'],
                 'firma_coordinador' => 'firmas/formato-12/' . $firmaName,
             ]);
@@ -168,7 +170,6 @@ class FormatoDoceController extends Controller
                 ->with('error', 'Error al crear el formato: ' . $e->getMessage());
         }
     }
-
     /**
      * Mostrar un formato específico
      */

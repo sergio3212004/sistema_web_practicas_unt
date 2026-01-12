@@ -126,15 +126,20 @@
             height: 12px;
             border: 1px solid #000;
             margin: 0 3px;
+            position: relative;
         }
 
         .checkbox.checked::after {
-            content: '✓';
+            content: 'X';
             font-weight: bold;
             display: block;
             text-align: center;
             line-height: 12px;
             font-size: 10pt;
+            position: absolute;
+            top: -1px;
+            left: 0;
+            right: 0;
         }
 
         .firma-section {
@@ -187,7 +192,7 @@
 
     <div class="info-row">
         <span class="info-label">CICLO:</span>
-        <span class="info-value">{{ $formatoDoce->aula->ciclo ?? 'N/A' }}</span>
+        <span class="info-value">{{ $formatoDoce->ciclo ?? 'N/A' }}</span>
     </div>
 
     <div class="info-row">
@@ -205,21 +210,19 @@
 <table>
     <thead>
     <tr>
-        <th class="col-num">N°</th>
-        <th class="col-nombre">Apellidos y nombres del estudiante</th>
-        <th class="col-sede">Sede de Práctica Pre Profesional</th>
-        <th class="col-responsable">Responsable de la Sede de Práctica Pre Profesional</th>
-        <th class="col-contacto">Datos de contacto de responsable de la Sede de Práctica Pre Profesional
+        <th class="col-num" rowspan="2">N°</th>
+        <th class="col-nombre" rowspan="2">Apellidos y nombres del estudiante</th>
+        <th class="col-sede" rowspan="2">Sede de Práctica Pre Profesional</th>
+        <th class="col-responsable" rowspan="2">Responsable de la Sede de Práctica Pre Profesional</th>
+        <th class="col-contacto" rowspan="2">Datos de contacto de responsable de la Sede de Práctica Pre Profesional
             (correo/teléfono)
         </th>
         <th class="col-avance" colspan="2">Nivel de avance del Plan de Práctica Pre Profesional</th>
-        <th class="col-observaciones">Observaciones</th>
+        <th class="col-observaciones" rowspan="2">Observaciones</th>
     </tr>
     <tr>
-        <th colspan="5"></th>
         <th style="width: 30px;">Atrasado</th>
         <th style="width: 30px;">Al día</th>
-        <th></th>
     </tr>
     </thead>
     <tbody>
@@ -239,21 +242,6 @@
             <td class="col-observaciones">{{ $registro->observaciones ?? '' }}</td>
         </tr>
     @endforeach
-
-    @if($formatoDoce->formatosDoceAlumnos->count() < 5)
-        @for($i = $formatoDoce->formatosDoceAlumnos->count(); $i < 5; $i++)
-            <tr>
-                <td class="col-num">{{ $i + 1 }}</td>
-                <td class="col-nombre">&nbsp;</td>
-                <td class="col-sede">&nbsp;</td>
-                <td class="col-responsable">&nbsp;</td>
-                <td class="col-contacto">&nbsp;</td>
-                <td class="checkbox-cell"><span class="checkbox"></span></td>
-                <td class="checkbox-cell"><span class="checkbox"></span></td>
-                <td class="col-observaciones">&nbsp;</td>
-            </tr>
-        @endfor
-    @endif
     </tbody>
 </table>
 

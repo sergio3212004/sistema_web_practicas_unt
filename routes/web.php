@@ -290,7 +290,7 @@ Route::middleware(['auth', 'rol:empresa'])
 
 
 // Rutas del alumno
-Route::middleware(['auth', 'rol:alumno'])
+Route::middleware(['auth', 'rol:alumno', 'web'])
     ->prefix('alumno')
     ->as('alumno.')
     ->group(function () {

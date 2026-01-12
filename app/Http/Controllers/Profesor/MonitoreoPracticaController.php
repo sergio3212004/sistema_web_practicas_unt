@@ -86,6 +86,8 @@ class MonitoreoPracticaController extends Controller
             'firmas' => 'required|array|min:1',
             'firmas.*.actividad_id' => 'required|exists:monitoreos_practicas_actividades,id',
             'firmas.*.firma_supervisor' => 'required|string',
+            'actividades' => 'nullable|array',
+            'actividades.*.observacion' => 'nullable|string|max:1000',
         ]);
 
         try {
@@ -95,7 +97,7 @@ class MonitoreoPracticaController extends Controller
             $baseDir = "firmas/monitoreo-practica/alumno-{$monitoreoPractica->alumno_id}/semana-{$monitoreoPractica->semana_id}";
 
             // Actualizar las firmas
-            foreach ($validated['firmas'] as $firma) {
+            foreach ($validated['firmas'] as $index => $firma) {
                 $actividad = $monitoreoPractica->monitoreosPracticasActividades()
                     ->findOrFail($firma['actividad_id']);
 
@@ -110,16 +112,24 @@ class MonitoreoPracticaController extends Controller
                     "{$baseDir}/actividad-{$actividad->cronograma_actividad_id}/supervisor.png"
                 );
 
-                $actividad->update([
+                // Preparar datos para actualizar
+                $dataToUpdate = [
                     'firma_supervisor' => $firmaSupervisorPath,
-                ]);
+                ];
+
+                // Agregar observación si existe
+                if (isset($validated['actividades'][$index]['observacion'])) {
+                    $dataToUpdate['observacion'] = $validated['actividades'][$index]['observacion'];
+                }
+
+                $actividad->update($dataToUpdate);
             }
 
             DB::commit();
 
             return redirect()
                 ->route('profesor.monitoreos-practicas.show', $monitoreoPractica)
-                ->with('success', 'Firmas guardadas exitosamente.');
+                ->with('success', 'Firmas y observaciones guardadas exitosamente.');
 
         } catch (\Exception $e) {
             DB::rollBack();

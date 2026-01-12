@@ -102,6 +102,9 @@ class EntregaController extends Controller
     /**
      * Almacenar una nueva entrega
      */
+    /**
+     * Almacenar una nueva entrega
+     */
     public function store(Request $request, Actividad $actividad)
     {
         $alumno = Auth::user()->alumno;
@@ -166,7 +169,7 @@ class EntregaController extends Controller
                 // Guardar solo el enlace público del archivo de Drive
                 $ruta = $file->webViewLink ?? null;
 
-                // Validar que el enlace exista (opcional pero recomendado)
+                // Validar que el enlace exista
                 if (!$ruta) {
                     return redirect()->back()
                         ->with('error', 'El archivo de Google Drive no tiene un enlace público accesible.')
@@ -193,7 +196,6 @@ class EntregaController extends Controller
         return redirect()->route('alumno.aula.index', $actividad->aula_id)
             ->with('success', '¡Entrega realizada exitosamente!');
     }
-
     /**
      * Mostrar los detalles de una entrega específica
      */
@@ -296,10 +298,9 @@ class EntregaController extends Controller
                 'archivo.max' => 'El archivo no puede superar los 10MB.'
             ]);
 
-            // Eliminar archivo anterior si existe
-            $oldInfo = json_decode($entrega->ruta, true);
-            if (!isset($oldInfo['type']) || $oldInfo['type'] !== 'drive') {
-                if ($entrega->ruta && Storage::disk('public')->exists($entrega->ruta)) {
+            // Eliminar archivo anterior si existe y no es de Drive
+            if ($entrega->ruta && !filter_var($entrega->ruta, FILTER_VALIDATE_URL)) {
+                if (Storage::disk('public')->exists($entrega->ruta)) {
                     Storage::disk('public')->delete($entrega->ruta);
                 }
             }
@@ -327,13 +328,15 @@ class EntregaController extends Controller
                     'fields' => 'id, name, mimeType, webViewLink'
                 ]);
 
-                $ruta = json_encode([
-                    'type' => 'drive',
-                    'file_id' => $request->drive_file_id,
-                    'file_name' => $request->drive_file_name,
-                    'web_view_link' => $file->webViewLink ?? null,
-                    'mime_type' => $file->mimeType ?? null
-                ]);
+                // Guardar solo el enlace público del archivo de Drive
+                $ruta = $file->webViewLink ?? null;
+
+                // Validar que el enlace exista
+                if (!$ruta) {
+                    return redirect()->back()
+                        ->with('error', 'El archivo de Google Drive no tiene un enlace público accesible.')
+                        ->withInput();
+                }
 
             } catch (\Exception $e) {
                 return redirect()->back()
@@ -367,17 +370,12 @@ class EntregaController extends Controller
             abort(403, 'No tienes acceso a esta entrega.');
         }
 
-        // Verificar si es una entrega de Drive
-        $driveInfo = json_decode($entrega->ruta, true);
-        if (isset($driveInfo['type']) && $driveInfo['type'] === 'drive') {
-            // Redirigir a Google Drive
-            if (isset($driveInfo['web_view_link'])) {
-                return redirect($driveInfo['web_view_link']);
-            }
-            return redirect()->back()->with('error', 'No se encontró el enlace de Google Drive.');
+        // Verificar si es una URL (Google Drive)
+        if (filter_var($entrega->ruta, FILTER_VALIDATE_URL)) {
+            return redirect($entrega->ruta);
         }
 
-        // Es un archivo normal, descargarlo
+        // Es un archivo local
         if (!$entrega->ruta || !Storage::disk('public')->exists($entrega->ruta)) {
             return redirect()->back()->with('error', 'El archivo no existe.');
         }
@@ -413,10 +411,9 @@ class EntregaController extends Controller
 
         $aulaId = $entrega->actividad->aula_id;
 
-        // Eliminar archivo solo si no es de Drive
-        $driveInfo = json_decode($entrega->ruta, true);
-        if (!isset($driveInfo['type']) || $driveInfo['type'] !== 'drive') {
-            if ($entrega->ruta && Storage::disk('public')->exists($entrega->ruta)) {
+        // Eliminar archivo solo si no es una URL de Drive
+        if ($entrega->ruta && !filter_var($entrega->ruta, FILTER_VALIDATE_URL)) {
+            if (Storage::disk('public')->exists($entrega->ruta)) {
                 Storage::disk('public')->delete($entrega->ruta);
             }
         }
@@ -431,13 +428,14 @@ class EntregaController extends Controller
     /**
      * Conectar con Google Drive
      */
+
     public function conectarDrive()
     {
         $client = $this->getGoogleClient();
         $authUrl = $client->createAuthUrl();
 
         // Guardar la URL de retorno en sesión
-        Session::put('drive_return_url', url()->previous());
+        Session::put('google_drive_return_url', url()->previous());
 
         return redirect($authUrl);
     }
@@ -448,7 +446,8 @@ class EntregaController extends Controller
     public function callbackDrive(Request $request)
     {
         if (!$request->has('code')) {
-            return redirect(Session::get('drive_return_url', route('dashboard')))
+            $returnUrl = Session::get('google_drive_return_url', route('dashboard'));
+            return redirect($returnUrl)
                 ->with('error', 'No se recibió autorización de Google Drive');
         }
 
@@ -456,15 +455,16 @@ class EntregaController extends Controller
         $token = $client->fetchAccessTokenWithAuthCode($request->code);
 
         if (isset($token['error'])) {
-            return redirect(Session::get('drive_return_url', route('dashboard')))
+            $returnUrl = Session::get('google_drive_return_url', route('dashboard'));
+            return redirect($returnUrl)
                 ->with('error', 'Error al conectar con Google Drive');
         }
 
         // Guardar el token en la sesión
         Session::put('google_drive_token', $token);
 
-        $returnUrl = Session::get('drive_return_url', route('dashboard'));
-        Session::forget('drive_return_url');
+        $returnUrl = Session::get('google_drive_return_url', route('dashboard'));
+        Session::forget('google_drive_return_url');
 
         return redirect($returnUrl)
             ->with('success', 'Google Drive conectado exitosamente');

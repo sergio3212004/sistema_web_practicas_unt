@@ -467,37 +467,39 @@
                         </a>
 
                         <div class="flex gap-3">
-                            <!-- Botón de eliminar (solo si no está aceptado) -->
-                            @if(!$fichaRegistro->aceptado)
-                            <form method="POST"
-                                  action="{{ route('profesor.fichas.rechazar', $fichaRegistro) }}"
-                                  onsubmit="return confirm('¿Rechazar esta ficha de registro?')">
-                                @csrf
-                                @method('PATCH')
+                            @if($fichaRegistro->firma_empresa && $fichaRegistro->firma_empresa && $fichaRegistro->firma_empresa)
+                                @if(!$fichaRegistro->aceptado)
+                                    <form method="POST"
+                                          action="{{ route('profesor.fichas.rechazar', $fichaRegistro) }}"
+                                          onsubmit="return confirm('¿Rechazar esta ficha de registro?')">
+                                        @csrf
+                                        @method('PATCH')
 
-                                <button type="submit"
-                                        class="inline-flex items-center px-6 py-3 bg-red-600 border-2 border-red-600 rounded-xl text-white font-semibold hover:bg-red-700 hover:border-red-700 transition-all duration-200 shadow-lg group">
-                                    Rechazar Ficha
-                                </button>
+                                        <button type="submit"
+                                                class="inline-flex items-center px-6 py-3 bg-red-600 border-2 border-red-600 rounded-xl text-white font-semibold hover:bg-red-700 hover:border-red-700 transition-all duration-200 shadow-lg group">
+                                            Rechazar Ficha
+                                        </button>
 
-                            </form>
+                                    </form>
 
+                                @endif
+
+                                @if(!$fichaRegistro->aceptado)
+                                    <form method="POST"
+                                          action="{{ route('profesor.fichas.aceptar', $fichaRegistro) }}"
+                                          onsubmit="return confirm('¿Aceptar esta ficha de registro?')">
+                                        @csrf
+                                        @method('PATCH')
+
+                                        <button type="submit"
+                                                class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-green-700 to-green-500 border-2 border-green-700 rounded-xl text-white font-semibold hover:from-green-800 hover:to-green-600 hover:shadow-xl hover:scale-105 transition-all duration-200 group">
+                                            Aceptar ficha
+                                        </button>
+
+                                    </form>
+                                @endif
                             @endif
 
-                            @if(!$fichaRegistro->aceptado)
-                            <form method="POST"
-                                  action="{{ route('profesor.fichas.aceptar', $fichaRegistro) }}"
-                                  onsubmit="return confirm('¿Aceptar esta ficha de registro?')">
-                                @csrf
-                                @method('PATCH')
-
-                                <button type="submit"
-                                        class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-green-700 to-green-500 border-2 border-green-700 rounded-xl text-white font-semibold hover:from-green-800 hover:to-green-600 hover:shadow-xl hover:scale-105 transition-all duration-200 group">
-                                    Aceptar ficha
-                                </button>
-
-                            </form>
-                            @endif
 
                         </div>
                     </div>

@@ -397,10 +397,13 @@
     ctx.strokeStyle = '#000000';
 
     function pos(e) {
-        const r = canvas.getBoundingClientRect();
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+
         return {
-            x: e.clientX - r.left,
-            y: e.clientY - r.top
+            x: (e.clientX - rect.left) * scaleX,
+            y: (e.clientY - rect.top) * scaleY
         };
     }
 
@@ -421,31 +424,45 @@
     canvas.addEventListener('mouseup', () => dibujando = false);
     canvas.addEventListener('mouseleave', () => dibujando = false);
 
-    // Soporte táctil (opcional)
+    // Soporte táctil
     canvas.addEventListener('touchstart', e => {
         e.preventDefault();
+        dibujando = true;
         const touch = e.touches[0];
-        const mouseEvent = new MouseEvent('mousedown', {
-            clientX: touch.clientX,
-            clientY: touch.clientY
-        });
-        canvas.dispatchEvent(mouseEvent);
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+
+        const p = {
+            x: (touch.clientX - rect.left) * scaleX,
+            y: (touch.clientY - rect.top) * scaleY
+        };
+
+        ctx.beginPath();
+        ctx.moveTo(p.x, p.y);
     });
 
     canvas.addEventListener('touchmove', e => {
         e.preventDefault();
+        if (!dibujando) return;
+
         const touch = e.touches[0];
-        const mouseEvent = new MouseEvent('mousemove', {
-            clientX: touch.clientX,
-            clientY: touch.clientY
-        });
-        canvas.dispatchEvent(mouseEvent);
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+
+        const p = {
+            x: (touch.clientX - rect.left) * scaleX,
+            y: (touch.clientY - rect.top) * scaleY
+        };
+
+        ctx.lineTo(p.x, p.y);
+        ctx.stroke();
     });
 
     canvas.addEventListener('touchend', e => {
         e.preventDefault();
-        const mouseEvent = new MouseEvent('mouseup', {});
-        canvas.dispatchEvent(mouseEvent);
+        dibujando = false;
     });
 
     function limpiarFirma() {
@@ -454,7 +471,7 @@
     }
 
     document.querySelector('form').addEventListener('submit', e => {
-        const data = ctx.getImageData(0,0,canvas.width,canvas.height).data;
+        const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
         if (![...data].some(v => v !== 0)) {
             e.preventDefault();
             alert('Debe firmar antes de continuar.');

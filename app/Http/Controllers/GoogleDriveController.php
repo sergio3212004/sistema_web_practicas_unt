@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Session;
 
 class GoogleDriveController extends Controller
 {
-    //
     protected function getClient()
     {
         $client = new GoogleClient();
@@ -26,10 +25,14 @@ class GoogleDriveController extends Controller
         return $client;
     }
 
-    public function redirectToGoogle()
+    public function redirectToGoogle(Request $request)
     {
         $client = $this->getClient();
         $authUrl = $client->createAuthUrl();
+
+        // Guardar la URL de retorno en la sesión
+        $returnUrl = $request->input('return_url', route('profile.edit'));
+        Session::put('google_drive_return_url', $returnUrl);
 
         return redirect($authUrl);
     }
@@ -37,7 +40,8 @@ class GoogleDriveController extends Controller
     public function handleGoogleCallback(Request $request)
     {
         if (!$request->has('code')) {
-            return redirect()->route('profile.edit')
+            $returnUrl = Session::get('google_drive_return_url', route('profile.edit'));
+            return redirect($returnUrl)
                 ->with('error', 'No se recibió autorización de Google Drive');
         }
 
@@ -45,7 +49,8 @@ class GoogleDriveController extends Controller
         $token = $client->fetchAccessTokenWithAuthCode($request->code);
 
         if (isset($token['error'])) {
-            return redirect()->route('profile.edit')
+            $returnUrl = Session::get('google_drive_return_url', route('profile.edit'));
+            return redirect($returnUrl)
                 ->with('error', 'Error al conectar con Google Drive');
         }
 
@@ -53,7 +58,11 @@ class GoogleDriveController extends Controller
         Session::put('google_drive_token', $token);
         Session::put('google_picker_ready', true);
 
-        return redirect()->route('profile.edit')
+        // Obtener la URL de retorno y limpiarla de la sesión
+        $returnUrl = Session::get('google_drive_return_url', route('profile.edit'));
+        Session::forget('google_drive_return_url');
+
+        return redirect($returnUrl)
             ->with('status', 'google-connected');
     }
 }

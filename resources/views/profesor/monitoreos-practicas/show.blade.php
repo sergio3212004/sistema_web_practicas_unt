@@ -327,7 +327,10 @@
                                                         @endif
                                                     </td>
                                                     <td class="border-2 border-blue-200 px-4 py-4 text-sm text-gray-700">
-                                                        {{ $actividad->observacion ?? 'Sin observaciones' }}
+                                                        <textarea name="actividades[{{ $index }}][observacion]"
+                                                                  rows="3"
+                                                                  placeholder="Observaciones opcionales..."
+                                                                  class="w-full px-3 py-2 border-2 border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm resize-none">{{ old('actividades.' . $index . '.observacion', $actividad->observacion ?? '') }}</textarea>
                                                     </td>
                                                     <td class="border-2 border-blue-200 px-4 py-4 text-center">
                                                         @if($actividad->firma_practicante)

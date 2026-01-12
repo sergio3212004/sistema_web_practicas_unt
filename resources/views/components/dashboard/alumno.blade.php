@@ -7,7 +7,7 @@
            class="group bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 hover:border-indigo-200 transform hover:-translate-y-1">
 
             <!-- Encabezado con gradiente -->
-            <div class="bg-gradient-to-br from-indigo-600 to-indigo-700 px-6 py-6 relative overflow-hidden">
+            <div class="bg-gradient-to-br from-blue-500 to-blue-600 px-6 py-6 relative overflow-hidden">
                 <div class="absolute top-0 right-0 w-32 h-32 bg-white opacity-5 rounded-full -mr-16 -mt-16"></div>
                 <div class="absolute bottom-0 left-0 w-24 h-24 bg-white opacity-5 rounded-full -ml-12 -mb-12"></div>
 

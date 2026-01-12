@@ -1,3 +1,7 @@
+@php
+    use Illuminate\Support\Facades\Storage;
+@endphp
+
 <x-app-layout>
     <div class="container mx-auto px-4 py-8">
         <div class="max-w-6xl mx-auto">

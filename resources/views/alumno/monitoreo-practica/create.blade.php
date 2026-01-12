@@ -299,6 +299,7 @@
                                                     <textarea name="actividades[{{ $index }}][observacion]"
                                                               rows="3"
                                                               placeholder="Observaciones opcionales..."
+                                                              disabled
                                                               class="w-full px-3 py-2 border-2 border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm resize-none">{{ old('actividades.' . $index . '.observacion') }}</textarea>
                                                 </td>
                                                 <td class="border-2 border-blue-200 px-4 py-4">

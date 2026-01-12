@@ -11,6 +11,11 @@
             box-sizing: border-box;
         }
 
+        @page {
+            size: A4;
+            margin: 15mm;
+        }
+
         body {
             font-family: Arial, sans-serif;
             font-size: 11px;
@@ -20,6 +25,8 @@
 
         .container {
             width: 100%;
+            max-width: 210mm;
+            margin: 0 auto;
             padding: 15px;
         }
 
@@ -111,15 +118,16 @@
 
         /* Tabla de actividades */
         .activities-table {
-            width: 100%;
+            width: 90%;
             border-collapse: collapse;
-            margin-top: 10px;
+            margin: 10px auto 0 auto;
+            table-layout: fixed;
         }
 
         .activities-table th,
         .activities-table td {
             border: 1px solid #000;
-            padding: 5px;
+            padding: 4px;
             text-align: center;
             vertical-align: middle;
         }
@@ -131,21 +139,21 @@
         }
 
         .activities-table td {
-            font-size: 10px;
+            font-size: 9px;
         }
 
         .activities-table .actividad-col {
             text-align: left;
-            width: 30%;
+            width: 20%;
         }
 
         .activities-table .observacion-col {
             text-align: left;
-            width: 20%;
+            width: 18%;
         }
 
         .activities-table .fecha-col {
-            width: 10%;
+            width: 9%;
         }
 
         .activities-table .nro-col {
@@ -153,7 +161,7 @@
         }
 
         .activities-table .avance-col {
-            width: 8%;
+            width: 6%;
         }
 
         .activities-table .firma-col {
@@ -165,7 +173,7 @@
             width: 12px;
             height: 12px;
             border: 1px solid #000;
-            margin: 0 3px;
+            margin: 0 auto;
             vertical-align: middle;
         }
 
@@ -178,8 +186,9 @@
         }
 
         .firma-img {
-            max-width: 80px;
-            max-height: 40px;
+            max-width: 70px;
+            max-height: 35px;
+            display: block;
             margin: 0 auto;
         }
 
@@ -245,7 +254,7 @@
                 <div class="field-group">
                     <div class="field">
                         <span class="field-label">Celular:</span>
-                        <span class="field-value">{{ $monitoreoPractica->alumno->telefono ?? 'No registrado' }}</span>
+                        <span class="field-value">{{ $monitoreoPractica->alumno->user->telefono ?? 'No registrado' }}</span>
                     </div>
                 </div>
             </div>
@@ -351,23 +360,17 @@
     <table class="activities-table">
         <thead>
         <tr>
-            <th class="nro-col">Nro</th>
-            <th class="fecha-col">Fecha</th>
-            <th class="actividad-col">Actividad</th>
+            <th class="nro-col" rowspan="2">Nro</th>
+            <th class="fecha-col" rowspan="2">Fecha</th>
+            <th class="actividad-col" rowspan="2">Actividad</th>
             <th colspan="2" class="avance-col">Nivel de avance del<br>Plan de Práctica<br>Pre Profesional</th>
-            <th class="observacion-col">Observaciones</th>
-            <th class="firma-col">Firma<br>Practicante</th>
-            <th class="firma-col">Firma<br>Profesor<br>Supervisor</th>
+            <th class="observacion-col" rowspan="2">Observaciones</th>
+            <th class="firma-col" rowspan="2">Firma<br>Practicante</th>
+            <th class="firma-col" rowspan="2">Firma<br>Profesor<br>Supervisor</th>
         </tr>
         <tr>
-            <th></th>
-            <th></th>
-            <th></th>
             <th style="font-size: 8px;">Atrasado</th>
             <th style="font-size: 8px;">Al día</th>
-            <th></th>
-            <th></th>
-            <th></th>
         </tr>
         </thead>
         <tbody>
